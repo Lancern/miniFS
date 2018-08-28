@@ -17,7 +17,15 @@ class MFSRawDevice
         当在子类中被重写时，返回当前设备中包含的总数据量，以字节为单位。
 
     MFSRawDeviceView * MFSRawDevice::OpenView(UINT64 offset, DWORD viewSize)
+        以当前设备的读写控制属性打开设备的一个部分视图。
+        @param offset 视图的起始偏移量。
+        @param viewSize 视图包含的数据的字节大小。
+
+    MFSRawDeviceView * MFSRawDevice::OpenView(UINT64 offset, DWORD viewSize, bool readonly)
         当在子类中被重写时，打开当前设备的一个部分视图并返回该视图对象。
+        @param offset 视图的起始偏移量。
+        @param viewSize 视图包含的数据的字节大小。
+        @param readonly 视图是否为只读。
 
     void MFSRawDevice::Close()
         当在子类中被重写时，释放并关闭设备资源。该函数不保证所有挂起的更改均正确写入基础设备。
@@ -32,7 +40,8 @@ public:
     virtual bool CanWrite() const = 0;
     virtual UINT64 GetTotalSize() const = 0;
 
-    virtual MFSRawDeviceView * OpenView(UINT64 offset, DWORD viewSize) = 0;
+    MFSRawDeviceView * OpenView(UINT64 offset, DWORD viewSize);
+    virtual MFSRawDeviceView * OpenView(UINT64 offset, DWORD viewSize, bool readonly) = 0;
 
     virtual void Close() = 0;
 

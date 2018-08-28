@@ -23,9 +23,12 @@ MFSOSFileDevice::~MFSOSFileDevice()
 bool MFSOSFileDevice::CanWrite() const { return _canWrite; }
 UINT64 MFSOSFileDevice::GetTotalSize() const { return _fileSize; }
 
-MFSRawDeviceView * MFSOSFileDevice::OpenView(UINT64 offset, DWORD length) 
+MFSRawDeviceView * MFSOSFileDevice::OpenView(UINT64 offset, DWORD length, bool readonly) 
 {
-    MFSRawDeviceView * view = new MFSOSFileView(_hFileMapping, offset, length, !_canWrite);
+    if (!readonly && !_canWrite)
+        return nullptr;
+
+    MFSRawDeviceView * view = new MFSOSFileView(_hFileMapping, offset, length, readonly);
     return view;
 }
 

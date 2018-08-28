@@ -20,7 +20,7 @@ public:
     bool CanWrite() const override;
     UINT64 GetTotalSize() const override;
 
-    MFSRawDeviceView * OpenView(UINT64 offset, DWORD viewSize);
+    MFSRawDeviceView * OpenView(UINT64 offset, DWORD viewSize, bool readonly) override;
 
     void Close() override;
 

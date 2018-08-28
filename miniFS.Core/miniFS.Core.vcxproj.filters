@@ -27,6 +27,12 @@
     <ClInclude Include="MFSRawDeviceView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MFSBlockDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MFSBufferedBlockDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFSOSFileView.cpp">
@@ -39,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MFSRawDeviceView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MFSBlockDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MFSBufferedBlockDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

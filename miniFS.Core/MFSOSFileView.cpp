@@ -26,36 +26,27 @@ DWORD MFSOSFileView::Read(LPVOID lpBuffer, DWORD offset, DWORD length)
     if (length == 0)
         return 0;
 
-    char *lpBufferTmp = reinterpret_cast<char *>(lpBuffer);
-    const char *lpViewTmp = reinterpret_cast<const char *>(_lpFileMappingAddress) + offset;
-    DWORD rest = length;
-
-    while (rest--)
-        *lpBufferTmp++ = *lpViewTmp++;
-
+    memcpy(lpBuffer, reinterpret_cast<const char *>(_lpFileMappingAddress) + offset, length);
     return length;
 }
 
 DWORD MFSOSFileView::Write(DWORD offset, DWORD length, LPCVOID lpBuffer) 
 {
+    if (!_canWrite)
+        return 0;
     if (length == 0)
         return 0;
     if (!lpBuffer)
         return 0;
 
-    const char *lpBufferTmp = reinterpret_cast<const char *>(lpBuffer);
-    char *lpViewTmp = reinterpret_cast<char *>(_lpFileMappingAddress) + offset;
-    DWORD rest = length;
-
-    while (rest--)
-        *lpViewTmp++ = *lpBufferTmp++;
-
+    memcpy(reinterpret_cast<char *>(_lpFileMappingAddress) + offset, lpBuffer, length);
     return length;
 }
 
 void MFSOSFileView::Flush() 
 {
-    FlushViewOfFile(_lpFileMappingAddress, _viewSize);
+    if (_canWrite)
+        FlushViewOfFile(_lpFileMappingAddress, _viewSize);
 }
 
 void MFSOSFileView::Close()
