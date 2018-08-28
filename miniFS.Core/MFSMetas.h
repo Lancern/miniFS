@@ -20,6 +20,7 @@ struct MFSFSMasterInfo
 #define MFS_FSENTRY_ACCESS_WRITE    4
 #define MFS_FSENTRY_ACCESS_EXECUTE  8
 #define MFS_FSENTRY_FLAG_HIDE       16
+#define MFS_FSENTRY_FLAG_PROTECTED  32
 
 struct MFSFSEntryCommonMeta
 {
@@ -29,7 +30,6 @@ struct MFSFSEntryCommonMeta
     uint64_t lastAccessTimestamp;   // 上次访问时间戳
     uint64_t lastModTimestamp;      // 上次修改时间戳
     uint32_t refCount;              // 引用计数
-    uint32_t reserved;
 };
 
 struct MFSFSFileEntryMeta
@@ -46,6 +46,7 @@ struct MFSFSDirectoryEntryMeta
 struct MFSFSEntryMeta
 {
     MFSFSEntryCommonMeta common;
+    uint32_t reserved;
     union
     {
         MFSFSFileEntryMeta fileMeta;
