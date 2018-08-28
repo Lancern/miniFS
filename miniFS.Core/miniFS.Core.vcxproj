@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="MFSBlockDevice.h" />
     <ClInclude Include="MFSBufferedBlockDevice.h" />
+    <ClInclude Include="MFSMetas.h" />
     <ClInclude Include="MFSRawDevice.h" />
     <ClInclude Include="MFSRawDeviceView.h" />
     <ClInclude Include="MFSOSFileDevice.h" />
