@@ -37,6 +37,7 @@
     <ClInclude Include="src\serialize\MFSBitmapSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\fs\MFSFSEntry.h" />
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
     <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp" />
     <ClCompile Include="src\fs\MFSPartition.cpp" />

@@ -101,5 +101,8 @@
     <ClCompile Include="src\fs\MFSPartition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="include\fs\MFSFSEntry.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
