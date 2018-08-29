@@ -166,6 +166,16 @@ std::vector<MFSString> MFSString::Split(const std::vector<WCHAR>& separators) co
     return result;
 }
 
+MFSString::Iterator MFSString::begin() const
+{
+    return Iterator(*this);
+}
+
+MFSString::Iterator MFSString::end() const
+{
+    return Iterator(_data.get() + _len);
+}
+
 MFSString & MFSString::operator=(const MFSString & another)
 {
     this->_len = another._len;
@@ -241,4 +251,83 @@ MFSString operator+(const MFSString & s1, const MFSString & s2)
     return s1.Concat(s2);
 }
 
+MFSString::Iterator::Iterator(const MFSString & string)
+    : _iter(string._data.get())
+{
+}
 
+MFSString::Iterator::Iterator(const WCHAR * ptr)
+    : _iter(ptr)
+{
+}
+
+WCHAR MFSString::Iterator::operator*() const
+{
+    return *_iter;
+}
+
+WCHAR MFSString::Iterator::operator[](int offset) const
+{
+    return _iter[offset];
+}
+
+MFSString::Iterator & MFSString::Iterator::operator++()
+{
+    ++this->_iter;
+    return *this;
+}
+
+MFSString::Iterator MFSString::Iterator::operator++(int)
+{
+    MFSString::Iterator tmp(*this);
+    ++_iter;
+    return tmp;
+}
+
+MFSString::Iterator & MFSString::Iterator::operator--()
+{
+    --_iter;
+}
+
+MFSString::Iterator MFSString::Iterator::operator--(int)
+{
+    MFSString::Iterator tmp(*this);
+    --_iter;
+    return tmp;
+}
+
+MFSString::Iterator & MFSString::Iterator::operator+=(int offset)
+{
+    _iter += offset;
+    return *this;
+}
+
+MFSString::Iterator & MFSString::Iterator::operator-=(int offset)
+{
+    _iter -= offset;
+    return *this;
+}
+
+MFSString::Iterator MFSString::Iterator::operator+(int offset)
+{
+    MFSString::Iterator tmp(*this);
+    tmp += offset;
+    return tmp;
+}
+
+MFSString::Iterator MFSString::Iterator::operator-(int offset)
+{
+    MFSString::Iterator tmp(*this);
+    tmp -= offset;
+    return tmp;
+}
+
+bool MFSString::Iterator::operator==(const Iterator & another) const
+{
+    return this->_iter == another._iter;
+}
+
+bool MFSString::Iterator::operator!=(const Iterator & another) const
+{
+    return this->_iter != another._iter;
+}

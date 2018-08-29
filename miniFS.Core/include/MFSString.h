@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <memory>
 #include <vector>
+#include <iterator>
 
 /*
 
@@ -72,6 +73,38 @@ class MFSString
 class MFSString
 {
 public:
+
+    class Iterator
+    {
+    public:
+        using difference_type = size_t;
+        using value_type = WCHAR;
+        using pointer = WCHAR * ;
+        using reference = WCHAR & ;
+        using iterator_category = std::random_access_iterator_tag;
+
+        explicit Iterator(const MFSString & string);
+        explicit Iterator(const WCHAR * ptr);
+        
+        WCHAR operator * () const;
+        WCHAR operator [] (int offset) const;
+
+        Iterator & operator ++ ();
+        Iterator operator ++ (int);
+        Iterator & operator -- ();
+        Iterator operator -- (int);
+        Iterator & operator += (int offset);
+        Iterator & operator -= (int offset);
+        Iterator operator + (int offset);
+        Iterator operator - (int offset);
+
+        bool operator == (const Iterator & another) const;
+        bool operator != (const Iterator & another) const;
+        
+    private:
+        const WCHAR * _iter;
+    };
+
     MFSString();
     MFSString(LPCWSTR psRaw);
     MFSString(LPCWSTR psBuffer, DWORD length);
@@ -96,6 +129,9 @@ public:
     MFSString Substring(DWORD startOffset, DWORD length) const;
 
     std::vector<MFSString> Split(const std::vector<WCHAR> & separators) const;
+
+    Iterator begin() const;
+    Iterator end() const;
 
     MFSString & operator = (const MFSString & another);
     MFSString & operator = (MFSString && another);
