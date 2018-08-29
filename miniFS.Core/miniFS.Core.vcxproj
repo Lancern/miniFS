@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\device\MFSBlockDevice.h" />
     <ClInclude Include="include\device\MFSBufferedBlockDevice.h" />
+    <ClInclude Include="include\MFSBitmap.h" />
     <ClInclude Include="include\MFSEncoding.h" />
     <ClInclude Include="include\fs\MFSMetas.h" />
     <ClInclude Include="include\device\MFSRawDevice.h" />
@@ -33,6 +34,7 @@
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
     <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp" />
+    <ClCompile Include="src\MFSBitmap.cpp" />
     <ClCompile Include="src\MFSEncoding.cpp" />
     <ClCompile Include="src\device\MFSRawDevice.cpp" />
     <ClCompile Include="src\device\MFSRawDeviceView.cpp" />
