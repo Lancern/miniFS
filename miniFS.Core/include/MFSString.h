@@ -31,6 +31,9 @@ class MFSString
     DWORD MFSString::GetLength() const
         获取当前字符串的长度。
 
+    const WCHAR * MFSString::GetRawString() const
+        获取当前字符串的 C 字符串表示。
+
     int MFSString::CompareTo(const MFSString & another) const
         比较当前的字符串和另一个给定的字符串的字典序。
         若当前串的字典序在 another 之前，返回一个负数；若当前串与 another 相同，返回 0；否则返回一个正数。
@@ -77,6 +80,7 @@ public:
     ~MFSString();
 
     DWORD GetLength() const;
+    const WCHAR * GetRawString() const;
 
     int CompareTo(const MFSString & another) const;
 

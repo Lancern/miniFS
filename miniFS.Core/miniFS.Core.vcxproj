@@ -28,6 +28,7 @@
     <ClInclude Include="include\device\MFSOSFileDevice.h" />
     <ClInclude Include="include\device\MFSOSFileView.h" />
     <ClInclude Include="include\MFSString.h" />
+    <ClInclude Include="include\MFSUTF8Encoding.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
@@ -38,6 +39,7 @@
     <ClCompile Include="src\device\MFSOSFileDevice.cpp" />
     <ClCompile Include="src\device\MFSOSFileView.cpp" />
     <ClCompile Include="src\MFSString.cpp" />
+    <ClCompile Include="src\MFSUTF8Encoding.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

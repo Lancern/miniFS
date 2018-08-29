@@ -49,6 +49,11 @@ DWORD MFSString::GetLength() const
     return _len;
 }
 
+const WCHAR * MFSString::GetRawString() const
+{
+    return _data.get();
+}
+
 int MFSString::CompareTo(const MFSString & another) const
 {
     DWORD p1 = 0;
