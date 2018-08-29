@@ -8,12 +8,13 @@ MFSTestunit::MFSTestunit()
 
 MFSTest::MFSTest()
 {
+	CloseCommand c1;
 	MFSCommand * list[15];
 	for (int i = 0; i < 15; i++)
 	{
-		MFSTestunit *tmp;
-		tmp->link = head->link;
-		head->link = tmp;
-		tmp->base = list[i];
+		MFSTestunit tmp;
+		tmp.link = head.link;
+		head.link = &tmp;
+		tmp.base = list[i];
 	}
 }

@@ -11,7 +11,7 @@ class MFSConsole
 
 */
 
-enum MFSConsoleForegroundColors
+enum MFSConsoleColors
 {
     Black = 0x0000,
     Blue = 0x0001,
@@ -24,18 +24,6 @@ enum MFSConsoleForegroundColors
     Intensity = 0x0008
 };
 
-enum MFSConsoleBackgroundColors
-{
-    Blue = 0x0010,
-    Green = 0x0020,
-    Red = 0x0040,
-    Cyan = Blue | Green,
-    Yellow = Red | Green,
-    Purple = Blue | Red,
-    White = Blue | Green | Red,
-    Intensity = 0x0080
-};
-
 class MFSConsole
 {
 public:
@@ -45,11 +33,11 @@ public:
     void SetTitle(const MFSString & string);
     MFSString GetTitle() const;
 
-    MFSConsoleBackgroundColors GetBackgroundColor() const;
-    MFSConsoleForegroundColors GetForegroundColor() const;
+    MFSConsoleColors GetBackgroundColor() const;
+    MFSConsoleColors GetForegroundColor() const;
 
-    void SetBackgroundColor(MFSConsoleBackgroundColors color);
-    void SetForegroundColor(MFSConsoleForegroundColors color);
+    void SetBackgroundColor(MFSConsoleColors color);
+    void SetForegroundColor(MFSConsoleColors color);
 
     WCHAR ReadChar();
     DWORD ReadKey();
@@ -65,6 +53,8 @@ public:
 private:
     HANDLE _hInput;
     HANDLE _hOutput;
+
+	void SetColor(MFSConsoleColors background, MFSConsoleColors foreground);
 };
 
 MFSConsole * MFSGetDefaultConsole();

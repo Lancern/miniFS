@@ -4,43 +4,24 @@
 #include "../miniFS.Core/include/MFSString.h"
 #include "include/MFSCommand.h"
 #include "include/MFSTest.h"
-
-int 
-std::istream & operator >> (std::wistream & input, MFSString & string)
-{
-	const auto terminators = { '\t', ' ', '\n' };
-
-	std::vector<WCHAR> buffer;
-	while (!input.eof())
-	{
-		WCHAR ch;
-		input.get(ch);
-		buffer.push_back(ch);
-
-		if (std::find(terminators.begin(), terminators.end(), ch))
-		{
-			buffer.pop_back();
-			break;
-		}
-	}
-
-	string = MFSString(buffer.data(), buffer.size());
-}
+#include "include/io/MFSConsole.h"
 
 int main()
 {
 	MFSTest command;
-	MFSTestunit *tmp = command.head->link;
+	MFSTestunit *tmp = command.head.link;
+	MFSConsole *point = MFSGetDefaultConsole();
 	while (1)
 	{
-		MFSString strInput;
-		std::cout << "miniFS>";
-		std::wcin >> strInput;
+		MFSString strInput = point->ReadLine();
+		point->SetForegroundColor(MFSConsoleColors::Red);
+		point->SetBackgroundColor(MFSConsoleColors::Green);
+		point->Log(strInput);
 		for (int i = 0; i < 15; i++)
 		{
 			if (tmp->base->Accept(strInput))
 			{
-				tmp->base->Action();
+				//tmp->base->Action();
 				break;
 			}
 			tmp = tmp->link;

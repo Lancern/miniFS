@@ -92,6 +92,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\miniFS.Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -175,8 +176,6 @@
     <ClCompile Include="src\command\TpCommand.cpp" />
     <ClCompile Include="src\command\UnmountCommand.cpp" />
     <ClCompile Include="src\io\MFSConsole.cpp" />
-    <ClCompile Include="src\MFSCommand.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MFSTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
