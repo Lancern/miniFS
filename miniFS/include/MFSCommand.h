@@ -1,12 +1,13 @@
 #pragma once
 #include "../../miniFS.Core/include/MFSString.h"
+#include <vector>
 
 class MFSCommand
 {
-
 public:
-	MFSCommand();
+	virtual bool Accept(const MFSString & string) const = 0;
+	virtual void Action(char * argv[]) const = 0;
 
-	bool Accept(const MFSString & string) const;
-	void Action() const;
+protected:
+	MFSCommand() = default;
 };

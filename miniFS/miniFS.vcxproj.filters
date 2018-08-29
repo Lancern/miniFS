@@ -18,18 +18,93 @@
     <ClInclude Include="include\MFSCommand.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\MFSTest.h">
+    <ClInclude Include="include\command\CreateCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\MountCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\UnmountCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\CloseCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\HelpCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\FormatCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\DirCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\MkdirCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\CopyCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\MoveCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\DelCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\StatCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\TpCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\LinkCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Commands.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\MFSCommand.cpp">
+    <ClCompile Include="src\command\CreateCommand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\command\MountCommand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\MFSTest.cpp">
+    <ClCompile Include="src\command\UnmountCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\CloseCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\HelpCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\FormatCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\DirCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\MkdirCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\CopyCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\MoveCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\DelCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\StatCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\TpCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\LinkCommand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
