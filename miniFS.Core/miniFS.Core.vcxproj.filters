@@ -63,6 +63,15 @@
     <ClInclude Include="include\MFSAllocationTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\fs\MFSPartition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stream\MFSStreamReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stream\MFSStreamWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp">
@@ -102,6 +111,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\fs\MFSFSEntry.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fs\MFSPartition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stream\MFSStreamReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stream\MFSStreamWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
