@@ -31,8 +31,11 @@ public:
 	void Reset(size_t pos);
 	void Read(std::vector<void*>& blocks, size_t blockSize);
 	void Write(std::vector<void*>& blocks, size_t blockSize) const;
+	bool HasNext() const;
+	size_t NextEmptyBlock() const;
 
 private:
 	std::vector<bool> _bitmap;
+	size_t _currId;
 };
 

@@ -27,7 +27,7 @@ MFSBitmap::Reference::operator bool() const
 }
 
 MFSBitmap::MFSBitmap(size_t size)
-	: _bitmap(size)
+	: _bitmap(size), _currId(0)
 {
 }
 
@@ -58,11 +58,24 @@ size_t MFSBitmap::Size() const
 void MFSBitmap::Set(size_t pos, bool value)
 {
 	_bitmap[pos] = value;
+	if (value)
+	{
+		size_t n = _bitmap.size();
+		for (size_t i = pos + 1; i != pos; i = (i + 1) % n)
+			if (!_bitmap[i])
+			{
+				_currId = i;
+				break;
+			}
+		if (_currId == pos) _currId = -1;
+	}
+	else if (!~_currId) _currId = pos;
 }
 
 void MFSBitmap::Reset(size_t pos)
 {
 	_bitmap[pos] = false;
+	if (!~_currId) _currId = pos;
 }
 
 void MFSBitmap::Read(std::vector<void*>& blocks, size_t blockSize)
@@ -92,4 +105,14 @@ void MFSBitmap::Write(std::vector<void*>& blocks, size_t blockSize) const
 			*(pValue++) = x;
 		}
 	}
+}
+
+bool MFSBitmap::HasNext() const
+{
+	return ~_currId;
+}
+
+size_t MFSBitmap::NextEmptyBlock() const
+{
+	return _currId;
 }
