@@ -139,9 +139,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\io\MFSConsole.h" />
     <ClInclude Include="include\MFSCommand.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\io\MFSConsole.cpp" />
     <ClCompile Include="src\MFSCommand.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
