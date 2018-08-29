@@ -5,11 +5,13 @@
 
 class MFSBitmap
 {
+	static constexpr size_t BIT_PACK_SIZE = 64;
+
 public:
 	class Reference
 	{
 	public:
-		Reference(std::vector<bool>::reference value);
+		Reference(uint64_t& value, size_t offset);
 		~Reference();
 
 		Reference& operator = (bool x);
@@ -17,7 +19,8 @@ public:
 		operator bool() const;
 
 	private:
-		std::vector<bool>::reference value;
+		uint64_t& value;
+		size_t offset;
 	};
 
 	explicit MFSBitmap(size_t size);
@@ -25,20 +28,15 @@ public:
 
 	bool Test(size_t pos) const;
 	size_t Size() const;
-
 	void Set(size_t pos, bool value = true);
 	void Reset(size_t pos);
-
-	void Read(std::vector<void*>& blocks, size_t blockSize);
-	void Write(std::vector<void*>& blocks, size_t blockSize) const;
-	bool HasNext() const;
-	size_t NextEmptyBlock() const;
 
     Reference operator [] (size_t pos);
     bool operator [] (size_t pos) const;
 
+	friend class MFSBitmapSerializer;
+
 private:
-	std::vector<bool> _bitmap;
-	size_t _currId;
+	std::vector<uint64_t> _bitmap;
 };
 

@@ -23,3 +23,8 @@ void MFSAllocationTable::Add(int32_t first, int32_t last)
 {
 	_next[first] = last;
 }
+
+size_t MFSAllocationTable::Size() const
+{
+	return _next.size();
+}
