@@ -48,19 +48,19 @@
     <ClInclude Include="include\MFSBitmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\stream\MFSStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\fs\MFSPartition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\serialize\MFSBitmapSerializer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\serialize\MFSSerializer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\stream\MFSStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\serialize\MFSBitmapSerializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MFSAllocationTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,7 +98,7 @@
     <ClCompile Include="src\stream\MFSStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\fs\MFSPartition.cpp">
+    <ClCompile Include="src\MFSAllocationTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\fs\MFSFSEntry.h">

@@ -31,11 +31,14 @@ public:
 
 	void Read(std::vector<void*>& blocks, size_t blockSize);
 	void Write(std::vector<void*>& blocks, size_t blockSize) const;
+	bool HasNext() const;
+	size_t NextEmptyBlock() const;
 
     Reference operator [] (size_t pos);
     bool operator [] (size_t pos) const;
 
 private:
 	std::vector<bool> _bitmap;
+	size_t _currId;
 };
 
