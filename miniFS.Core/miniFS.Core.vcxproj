@@ -32,6 +32,7 @@
     <ClInclude Include="include\device\MFSOSFileView.h" />
     <ClInclude Include="include\MFSString.h" />
     <ClInclude Include="include\MFSUTF8Encoding.h" />
+    <ClInclude Include="include\serialize\MFSAllocationTableSerializer.h" />
     <ClInclude Include="include\serialize\MFSBitmapSerializer.h" />
     <ClInclude Include="include\serialize\MFSSerializer.h" />
     <ClInclude Include="include\stream\MFSStream.h" />
@@ -53,6 +54,7 @@
     <ClCompile Include="src\device\MFSOSFileView.cpp" />
     <ClCompile Include="src\MFSString.cpp" />
     <ClCompile Include="src\MFSUTF8Encoding.cpp" />
+    <ClCompile Include="src\serialize\MFSAllocationTableSerializer.cpp" />
     <ClCompile Include="src\stream\MFSStream.cpp" />
     <ClCompile Include="src\stream\MFSStreamReader.cpp" />
     <ClCompile Include="src\stream\MFSStreamWriter.cpp" />

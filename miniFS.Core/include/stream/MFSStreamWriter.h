@@ -47,7 +47,7 @@ private:
 template<typename PODType>
 inline void MFSStreamWriter::Write(PODType object)
 {
-    static_assert()
+	static_assert(std::is_pod_v<PODType>, "Type given is not a valid POD type.");
 
     _stream->Write(&object, sizeof(object));
 }

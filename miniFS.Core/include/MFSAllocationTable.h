@@ -12,6 +12,9 @@ public:
 	int32_t& operator [] (size_t pos);
 	int32_t operator [] (size_t pos) const;
 	void Add(int32_t first, int32_t last);
+	size_t Size() const;
+
+	friend class MFSAllocationTableSerializer;
 
 private:
 	std::vector<int32_t> _next;
