@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\device\MFSBlockDevice.h" />
     <ClInclude Include="include\device\MFSBufferedBlockDevice.h" />
+    <ClInclude Include="include\fs\MFSPartition.h" />
     <ClInclude Include="include\MFSBitmap.h" />
     <ClInclude Include="include\MFSEncoding.h" />
     <ClInclude Include="include\fs\MFSMetas.h" />
@@ -30,10 +31,15 @@
     <ClInclude Include="include\device\MFSOSFileView.h" />
     <ClInclude Include="include\MFSString.h" />
     <ClInclude Include="include\MFSUTF8Encoding.h" />
+    <ClInclude Include="include\serialize\MFSBitmapSerializer.h" />
+    <ClInclude Include="include\serialize\MFSSerializer.h" />
+    <ClInclude Include="include\stream\MFSStream.h" />
+    <ClInclude Include="src\serialize\MFSBitmapSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
     <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp" />
+    <ClCompile Include="src\fs\MFSPartition.cpp" />
     <ClCompile Include="src\MFSBitmap.cpp" />
     <ClCompile Include="src\MFSEncoding.cpp" />
     <ClCompile Include="src\device\MFSRawDevice.cpp" />
@@ -42,6 +48,7 @@
     <ClCompile Include="src\device\MFSOSFileView.cpp" />
     <ClCompile Include="src\MFSString.cpp" />
     <ClCompile Include="src\MFSUTF8Encoding.cpp" />
+    <ClCompile Include="src\stream\MFSStream.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
