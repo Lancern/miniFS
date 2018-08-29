@@ -139,10 +139,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Commands.h" />
+    <ClInclude Include="include\command\CloseCommand.h" />
+    <ClInclude Include="include\command\CopyCommand.h" />
+    <ClInclude Include="include\command\DelCommand.h" />
+    <ClInclude Include="include\command\DirCommand.h" />
+    <ClInclude Include="include\command\FormatCommand.h" />
+    <ClInclude Include="include\command\HelpCommand.h" />
+    <ClInclude Include="include\command\LinkCommand.h" />
+    <ClInclude Include="include\command\MkdirCommand.h" />
+    <ClInclude Include="include\command\MountCommand.h" />
+    <ClInclude Include="include\command\MoveCommand.h" />
+    <ClInclude Include="include\command\StatCommand.h" />
+    <ClInclude Include="include\command\TpCommand.h" />
+    <ClInclude Include="include\command\UnmountCommand.h" />
     <ClInclude Include="include\MFSCommand.h" />
+    <ClInclude Include="include\command\CreateCommand.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\MFSCommand.cpp" />
+    <ClCompile Include="src\command\CloseCommand.cpp" />
+    <ClCompile Include="src\command\CopyCommand.cpp" />
+    <ClCompile Include="src\command\CreateCommand.cpp" />
+    <ClCompile Include="src\command\DelCommand.cpp" />
+    <ClCompile Include="src\command\DirCommand.cpp" />
+    <ClCompile Include="src\command\FormatCommand.cpp" />
+    <ClCompile Include="src\command\HelpCommand.cpp" />
+    <ClCompile Include="src\command\LinkCommand.cpp" />
+    <ClCompile Include="src\command\MkdirCommand.cpp" />
+    <ClCompile Include="src\command\MountCommand.cpp" />
+    <ClCompile Include="src\command\MoveCommand.cpp" />
+    <ClCompile Include="src\command\StatCommand.cpp" />
+    <ClCompile Include="src\command\TpCommand.cpp" />
+    <ClCompile Include="src\command\UnmountCommand.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
