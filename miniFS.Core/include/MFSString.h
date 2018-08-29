@@ -15,7 +15,9 @@ class MFSString
     MFSString::MFSString()
         初始化 MFSString 对象为一空字符串。
 
-    MFSString::MFSString(LPCWSTR psRaw)
+    
+	
+	::MFSString(LPCWSTR psRaw)
         从给定的 C 风格 Unicode 字符串创建 MFSString 类的新实例。
 
     MFSString::MFSString(LPCWSTR psBuffer, DWORD length)

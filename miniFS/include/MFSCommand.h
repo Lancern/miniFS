@@ -3,6 +3,8 @@
 
 class MFSCommand
 {
+
+public:
 	MFSCommand();
 
 	bool Accept(const MFSString & string) const;

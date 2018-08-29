@@ -1,7 +1,5 @@
 #include "../include/MFSString.h"
 
-
-
 MFSString::MFSString()
 {
 }
@@ -286,14 +284,14 @@ MFSString::Iterator MFSString::Iterator::operator++(int)
 
 MFSString::Iterator & MFSString::Iterator::operator--()
 {
+	MFSString::Iterator tmp(*this);
     --_iter;
+	return tmp;
 }
 
 MFSString::Iterator MFSString::Iterator::operator--(int)
 {
-    MFSString::Iterator tmp(*this);
     --_iter;
-    return tmp;
 }
 
 MFSString::Iterator & MFSString::Iterator::operator+=(int offset)
