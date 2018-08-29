@@ -41,32 +41,32 @@ MFSString MFSConsole::GetTitle() const
     return ret;
 }
 
-MFSConsoleBackgroundColors MFSConsole::GetBackgroundColor() const
+MFSConsoleColors MFSConsole::GetBackgroundColor() const
+{
+    CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
+    GetConsoleScreenBufferInfo(_hOutput, &bufferInfo);
+
+    DWORD attr = (bufferInfo.wAttributes & 0x00F0) >> 4;
+    return static_cast<MFSConsoleColors>(attr);
+}
+
+MFSConsoleColors MFSConsole::GetForegroundColor() const
 {
     CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
     GetConsoleScreenBufferInfo(_hOutput, &bufferInfo);
 
     DWORD attr = bufferInfo.wAttributes & 0x000F;
-    return static_cast<MFSConsoleBackgroundColors>(attr);
+    return static_cast<MFSConsoleColors>(attr);
 }
 
-MFSConsoleForegroundColors MFSConsole::GetForegroundColor() const
+void MFSConsole::SetBackgroundColor(MFSConsoleColors color)
 {
-    CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
-    GetConsoleScreenBufferInfo(_hOutput, &bufferInfo);
-
-    DWORD attr = bufferInfo.wAttributes & 0x00F0;
-    return static_cast<MFSConsoleForegroundColors>(attr);
+	SetColor(color, GetForegroundColor());
 }
 
-void MFSConsole::SetBackgroundColor(MFSConsoleBackgroundColors color)
+void MFSConsole::SetForegroundColor(MFSConsoleColors color)
 {
-    SetConsoleTextAttribute(_hOutput, static_cast<WORD>(color));
-}
-
-void MFSConsole::SetForegroundColor(MFSConsoleForegroundColors color)
-{
-    SetConsoleTextAttribute(_hOutput, static_cast<WORD>(color));
+	SetColor(GetBackgroundColor(), color);
 }
 
 WCHAR MFSConsole::ReadChar()
@@ -99,6 +99,8 @@ MFSString MFSConsole::ReadLine()
         if (buffer.back() == L'\n')
         {
             buffer.pop_back();
+			if (!buffer.empty() && buffer.back() == '\r')
+				buffer.pop_back();
             break;
         }
     }
@@ -115,4 +117,9 @@ void MFSConsole::Log(const MFSString & string)
 {
     for (WCHAR ch : string)
         LogChar(ch);
+}
+
+void MFSConsole::SetColor(MFSConsoleColors background, MFSConsoleColors foreground)
+{
+	SetConsoleTextAttribute(_hOutput, (static_cast<DWORD>(background) << 4) | static_cast<DWORD>(foreground));
 }
