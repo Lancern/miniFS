@@ -23,16 +23,19 @@ public:
 	explicit MFSBitmap(size_t size);
 	~MFSBitmap();
 
-	Reference operator [] (size_t pos);
-	bool operator [] (size_t pos) const;
 	bool Test(size_t pos) const;
 	size_t Size() const;
+
 	void Set(size_t pos, bool value = true);
 	void Reset(size_t pos);
+
 	void Read(std::vector<void*>& blocks, size_t blockSize);
 	void Write(std::vector<void*>& blocks, size_t blockSize) const;
 	bool HasNext() const;
 	size_t NextEmptyBlock() const;
+
+    Reference operator [] (size_t pos);
+    bool operator [] (size_t pos) const;
 
 private:
 	std::vector<bool> _bitmap;
