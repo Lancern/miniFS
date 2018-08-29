@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\io\MFSConsole.h" />
     <ClInclude Include="include\Commands.h" />
     <ClInclude Include="include\command\CloseCommand.h" />
     <ClInclude Include="include\command\CopyCommand.h" />
@@ -173,6 +174,8 @@
     <ClCompile Include="src\command\StatCommand.cpp" />
     <ClCompile Include="src\command\TpCommand.cpp" />
     <ClCompile Include="src\command\UnmountCommand.cpp" />
+    <ClCompile Include="src\io\MFSConsole.cpp" />
+    <ClCompile Include="src\MFSCommand.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MFSTest.cpp" />
   </ItemGroup>

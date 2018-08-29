@@ -63,6 +63,9 @@
     <ClInclude Include="include\Commands.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\io\MFSConsole.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="include\MFSTest.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -117,6 +120,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\MFSTest.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\io\MFSConsole.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
