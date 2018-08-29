@@ -1,4 +1,4 @@
-#include "MFSRawDeviceView.h"
+#include "../../include/device/MFSRawDeviceView.h"
 
 
 

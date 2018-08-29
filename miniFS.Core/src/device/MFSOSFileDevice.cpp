@@ -1,5 +1,5 @@
-#include "MFSOSFileDevice.h"
-#include "MFSOSFileView.h"
+#include "../../include/device/MFSOSFileDevice.h"
+#include "../../include/device/MFSOSFileView.h"
 
 
 MFSOSFileDevice::MFSOSFileDevice(HANDLE hFile, bool readonly)

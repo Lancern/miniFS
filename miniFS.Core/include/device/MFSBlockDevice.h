@@ -49,7 +49,7 @@ public:
     virtual UINT64 GetBlocksCount() const;
 
     virtual bool ReadBlock(LPVOID lpBuffer, UINT64 blockId);
-    virtual bool WriteBlock(UINT64 blockId, LPCVOID lpBuMFSffer);
+    virtual bool WriteBlock(UINT64 blockId, LPCVOID lpBuffer);
 
     virtual void Close();
 

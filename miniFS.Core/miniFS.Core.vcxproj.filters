@@ -15,51 +15,57 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MFSOSFileView.h">
+    <ClInclude Include="include\device\MFSBlockDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MFSOSFileDevice.h">
+    <ClInclude Include="include\device\MFSBufferedBlockDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MFSRawDevice.h">
+    <ClInclude Include="include\device\MFSOSFileDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MFSRawDeviceView.h">
+    <ClInclude Include="include\device\MFSOSFileView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MFSBlockDevice.h">
+    <ClInclude Include="include\device\MFSRawDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MFSBufferedBlockDevice.h">
+    <ClInclude Include="include\device\MFSRawDeviceView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MFSMetas.h">
+    <ClInclude Include="include\MFSEncoding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MFSString.h">
+    <ClInclude Include="include\MFSString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fs\MFSMetas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MFSOSFileView.cpp">
+    <ClCompile Include="src\device\MFSBlockDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MFSOSFileDevice.cpp">
+    <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MFSRawDevice.cpp">
+    <ClCompile Include="src\device\MFSOSFileDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MFSRawDeviceView.cpp">
+    <ClCompile Include="src\device\MFSOSFileView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MFSBlockDevice.cpp">
+    <ClCompile Include="src\device\MFSRawDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MFSBufferedBlockDevice.cpp">
+    <ClCompile Include="src\device\MFSRawDeviceView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MFSString.cpp">
+    <ClCompile Include="src\MFSEncoding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MFSString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
