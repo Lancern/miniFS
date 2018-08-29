@@ -155,8 +155,10 @@
     <ClInclude Include="include\command\UnmountCommand.h" />
     <ClInclude Include="include\MFSCommand.h" />
     <ClInclude Include="include\command\CreateCommand.h" />
+    <ClInclude Include="include\MFSTest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="src\command\CloseCommand.cpp" />
     <ClCompile Include="src\command\CopyCommand.cpp" />
     <ClCompile Include="src\command\CreateCommand.cpp" />
@@ -171,6 +173,8 @@
     <ClCompile Include="src\command\StatCommand.cpp" />
     <ClCompile Include="src\command\TpCommand.cpp" />
     <ClCompile Include="src\command\UnmountCommand.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\MFSTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

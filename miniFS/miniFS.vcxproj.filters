@@ -63,6 +63,9 @@
     <ClInclude Include="include\Commands.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\MFSTest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\command\CreateCommand.cpp">
@@ -105,6 +108,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\command\LinkCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MFSTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
