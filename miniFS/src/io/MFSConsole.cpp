@@ -24,7 +24,7 @@ MFSConsole::~MFSConsole()
 
 void MFSConsole::SetTitle(const MFSString & string)
 {
-    SetConsoleTitle(string.GetRawString());
+    SetConsoleTitleW(string.GetRawString());
 }
 
 MFSString MFSConsole::GetTitle() const
@@ -46,7 +46,7 @@ MFSConsoleColors MFSConsole::GetBackgroundColor() const
     CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
     GetConsoleScreenBufferInfo(_hOutput, &bufferInfo);
 
-    DWORD attr = (bufferInfo.wAttributes & 0x00F0) >> 4;
+    WORD attr = (bufferInfo.wAttributes & 0x00F0) >> 4;
     return static_cast<MFSConsoleColors>(attr);
 }
 
@@ -55,7 +55,7 @@ MFSConsoleColors MFSConsole::GetForegroundColor() const
     CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
     GetConsoleScreenBufferInfo(_hOutput, &bufferInfo);
 
-    DWORD attr = bufferInfo.wAttributes & 0x000F;
+    WORD attr = bufferInfo.wAttributes & 0x000F;
     return static_cast<MFSConsoleColors>(attr);
 }
 
@@ -121,5 +121,5 @@ void MFSConsole::Log(const MFSString & string)
 
 void MFSConsole::SetColor(MFSConsoleColors background, MFSConsoleColors foreground)
 {
-	SetConsoleTextAttribute(_hOutput, (static_cast<DWORD>(background) << 4) | static_cast<DWORD>(foreground));
+	SetConsoleTextAttribute(_hOutput, (static_cast<WORD>(background) << 4) | static_cast<WORD>(foreground));
 }

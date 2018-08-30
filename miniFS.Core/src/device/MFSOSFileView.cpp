@@ -45,12 +45,17 @@ DWORD MFSOSFileView::Write(DWORD offset, DWORD length, LPCVOID lpBuffer)
 
 void MFSOSFileView::Flush() 
 {
-    if (_canWrite)
+    if (_canWrite && _lpFileMappingAddress)
         FlushViewOfFile(_lpFileMappingAddress, _viewSize);
 }
 
 void MFSOSFileView::Close()
 {
-    Flush();
-    UnmapViewOfFile(_lpFileMappingAddress);
+    if (_lpFileMappingAddress)
+    {
+        Flush();
+        UnmapViewOfFile(_lpFileMappingAddress);
+
+        _lpFileMappingAddress = NULL;
+    }
 }
