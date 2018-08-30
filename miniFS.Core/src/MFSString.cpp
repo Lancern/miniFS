@@ -60,7 +60,7 @@ int MFSString::CompareTo(const MFSString & another) const
     while (p1 < this->_len && p2 < another._len)
     {
         WCHAR ch1 = this->_data[p1];
-        WCHAR ch2 = this->_data[p2];
+        WCHAR ch2 = another._data[p2];
         if (ch1 != ch2)
             return (static_cast<int>(ch1) - static_cast<int>(ch2));
         
