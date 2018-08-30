@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MFSSerializer.h"
-#include "../MFSAllocationTable.h"
+#include "../fs/MFSAllocationTable.h"
 
 
 class MFSAllocationTableSerializer
