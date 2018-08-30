@@ -18,6 +18,7 @@ MFSString::MFSString(LPCWSTR psBuffer, DWORD length)
 {
     WCHAR * pBuffer = new WCHAR[_len + 1];
     memcpy_s(pBuffer, (_len + 1) * sizeof(WCHAR), psBuffer, _len * sizeof(WCHAR));
+	pBuffer[_len] = 0;
 
     _data.reset(pBuffer);
 }
@@ -67,7 +68,7 @@ int MFSString::CompareTo(const MFSString & another) const
         ++p2;
     }
 
-    return p1 - p2;
+    return static_cast<int>(this->GetLength()) - static_cast<int>(another.GetLength());
 }
 
 int MFSString::IndexOf(const MFSString & substring) const

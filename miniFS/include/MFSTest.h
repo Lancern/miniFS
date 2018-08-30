@@ -14,7 +14,7 @@ public:
 class MFSTest {
 
 public:
-	MFSTestunit head;
+	MFSTestunit *Chead;
 
 	MFSTest();
 };

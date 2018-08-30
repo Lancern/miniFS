@@ -9,15 +9,16 @@
 int main()
 {
 	MFSTest command;
-	MFSTestunit *tmp = command.head.link;
 	MFSConsole *point = MFSGetDefaultConsole();
+
 	while (1)
 	{
+		MFSTestunit *tmp = command.Chead->link;
 		MFSString strInput = point->ReadLine();
-		point->SetForegroundColor(MFSConsoleColors::Red);
-		point->SetBackgroundColor(MFSConsoleColors::Green);
+		/*point->SetForegroundColor(MFSConsoleColors::Red);
+		point->SetBackgroundColor(MFSConsoleColors::Green);*/
 		point->Log(strInput);
-		for (int i = 0; i < 15; i++)
+		for (int i = 0; i < 14; i++)
 		{
 			if (tmp->base->Accept(strInput))
 			{
