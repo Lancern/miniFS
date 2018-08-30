@@ -11,9 +11,11 @@ void MFSAllocationTableSerializer::Serialize(MFSStream * stream, MFSAllocationTa
 
 MFSAllocationTable * MFSAllocationTableSerializer::Deserialize(MFSStream * stream)
 {
-	MFSAllocationTable* ret = new MFSAllocationTable((stream->GetLength() - stream->GetPosition()) / sizeof(int32_t));
+    size_t atsize = static_cast<size_t>(
+        (stream->GetLength() - stream->GetPosition()) / sizeof(uint32_t));
+	MFSAllocationTable* ret = new MFSAllocationTable(atsize);
 	MFSStreamReader reader(stream);
 	for (size_t i = 0; i < ret->Size(); i++)
-		ret->_next[i] = reader.ReadPODObject<int32_t>();
+		ret->_next[i] = reader.ReadPODObject<uint32_t>();
 	return ret;
 }
