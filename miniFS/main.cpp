@@ -14,19 +14,20 @@ int main()
 	while (1)
 	{
 		MFSTestunit *tmp = command.Chead->link;
+		std::cout << "miniFS>";
 		MFSString strInput = point->ReadLine();
 		/*point->SetForegroundColor(MFSConsoleColors::Red);
 		point->SetBackgroundColor(MFSConsoleColors::Green);*/
-		point->Log(strInput);
-		for (int i = 0; i < 14; i++)
-		{
-			if (tmp->base->Accept(strInput))
-			{
-				//tmp->base->Action();
-				break;
-			}
-			tmp = tmp->link;
-		}
+		//point->Log(strInput);
+		//for (int i = 0; i < 14; i++)
+		//{
+		//	if (tmp->base->Accept(strInput))
+		//	{
+		//		//tmp->base->Action();
+		//		break;
+		//	}
+		//	tmp = tmp->link;
+		//}
 	}
 	return 0;
 }
