@@ -81,6 +81,17 @@ class MFSString
 template <typename IntegerT> MFSString MFSGetString(IntegerT value)
     将一个整数数值转换为其字符串表示。
 
+	std::vector<MFSString> MFSString::Split(const std::vector<WCHAR> & separators, bool type) const
+		将当前字符串以指定的分隔符为界限拆分为若干个子串。
+		type为1时进行除空字符串操作。
+		@param separators 分隔符。
+		@return 当前字符串以分隔符为界拆分出的子串。
+
+	std::vector<MFSString> MFSString::SplitName(const std::vector<WCHAR> & separators) const
+		将当前字符串以指定的分隔符为界限拆分为若干个子串, 用于处理含有特殊字符的文件名, 默认去空串。
+		@param separators 分隔符。
+		@return 当前字符串以分隔符为界拆分出的子串。
+
 */
 
 class MFSString
@@ -142,6 +153,8 @@ public:
     MFSString Substring(DWORD startOffset, DWORD length) const;
 
     std::vector<MFSString> Split(const std::vector<WCHAR> & separators) const;
+	std::vector<MFSString> Split(const std::vector<WCHAR> & separators, bool type) const;
+	std::vector<MFSString> SplitName(const std::vector<WCHAR> & separators) const;
 
     bool IsInteger() const;
 

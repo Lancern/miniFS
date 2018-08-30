@@ -81,6 +81,12 @@
     <ClInclude Include="include\stream\MFSNativeFileStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\fs\MFSDirectoryBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\serialize\MFSDirectoryBlockSerializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\stream\MFSMemoryStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -159,6 +165,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\stream\MFSStreamTextReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fs\MFSDirectoryBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serialize\MFSDirectoryBlockSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

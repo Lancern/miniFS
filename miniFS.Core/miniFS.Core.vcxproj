@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\device\MFSBlockDevice.h" />
     <ClInclude Include="include\device\MFSBufferedBlockDevice.h" />
+    <ClInclude Include="include\fs\MFSDirectoryBlock.h" />
     <ClInclude Include="include\fs\MFSPartition.h" />
     <ClInclude Include="include\fs\MFSAllocationTable.h" />
     <ClInclude Include="include\MFSBitmap.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="include\MFSUTF8Encoding.h" />
     <ClInclude Include="include\serialize\MFSAllocationTableSerializer.h" />
     <ClInclude Include="include\serialize\MFSBitmapSerializer.h" />
+    <ClInclude Include="include\serialize\MFSDirectoryBlockSerializer.h" />
     <ClInclude Include="include\serialize\MFSSerializer.h" />
     <ClInclude Include="include\stream\MFSBlockStream.h" />
     <ClInclude Include="include\stream\MFSMemoryStream.h" />
@@ -51,6 +53,7 @@
     <ClCompile Include="src\stream\MFSStreamTextReader.cpp" />
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
     <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp" />
+    <ClCompile Include="src\fs\MFSDirectoryBlock.cpp" />
     <ClCompile Include="src\fs\MFSPartition.cpp" />
     <ClCompile Include="src\fs\MFSAllocationTable.cpp" />
     <ClCompile Include="src\MFSBitmap.cpp" />

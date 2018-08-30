@@ -14,22 +14,28 @@ int main()
 	while (1)
 	{
 		MFSTestunit *tmp = command.Chead->link;
+		std::vector<WCHAR> split = {L'|'};
+		std::vector<MFSString> subString;
 		point->Log(L"miniFS>");
 		MFSString strInput = point->ReadLine();
 		/*point->SetForegroundColor(MFSConsoleColors::Red);
 		point->SetBackgroundColor(MFSConsoleColors::Green);*/
-		//strInput.Split();
-		point->Log(strInput);
-		for (int i = 0; i < 14; i++)
-		{
-			if (tmp->base->Accept(strInput))
+		subString = strInput.SplitName(split);
+		for (const MFSString & part : subString) {
+
+			std::vector<WCHAR> splitNew = { L' ', L'\t'};
+			std::vector<MFSString> paragrameter;
+			paragrameter = part.SplitName(splitNew);
+			/*for (int i = 0; i < 14; i++)
 			{
-				std::vector<MFSString> arg;
-				arg.empty();
-				tmp->base->Action(arg);
-				break;
-			}
-			tmp = tmp->link;
+				if (tmp->base->Accept(paragrameter[0]))
+				{
+					paragrameter.erase(paragrameter.begin());
+					tmp->base->Action(paragrameter);
+					break;
+				}
+				tmp = tmp->link;
+			}*/
 		}
 	}
 	return 0;

@@ -155,15 +155,61 @@ std::vector<MFSString> MFSString::Split(const std::vector<WCHAR>& separators) co
     while (windowLeft < this->_len)
     {
         DWORD windowRight = windowLeft;
-        while (windowRight < this->_len && 
-            std::find(separators.begin(), separators.end(), _data[windowRight]) != separators.end())
-            ++windowRight;
+		while (windowRight < this->_len &&
+			std::find(separators.begin(), separators.end(), _data[windowRight]) == separators.end())
+			++windowRight;
 
         result.emplace_back(_data.get() + windowLeft, windowRight - windowLeft);
         windowLeft = windowRight + 1;
     }
 
     return result;
+}
+
+std::vector<MFSString> MFSString::Split(const std::vector<WCHAR>& separators, bool type) const
+{
+	std::vector<MFSString> result;
+
+	DWORD windowLeft = 0;
+	while (windowLeft < this->_len)
+	{
+		DWORD windowRight = windowLeft;
+		while (windowRight < this->_len &&
+			std::find(separators.begin(), separators.end(), _data[windowRight]) == separators.end())
+			++windowRight;
+		if (type == TRUE)
+		{
+			if (windowRight - windowLeft != 0)
+				result.emplace_back(_data.get() + windowLeft, windowRight - windowLeft);
+		}
+		windowLeft = windowRight + 1;
+	}
+
+	return result;
+}
+
+std::vector<MFSString> MFSString::SplitName(const std::vector<WCHAR>& separators) const
+{
+	std::vector<MFSString> result;
+	bool flag = 0;
+
+	DWORD windowLeft = 0;
+	while (windowLeft < this->_len)
+	{
+		DWORD windowRight = windowLeft;
+		while (windowRight < this->_len &&
+			(std::find(separators.begin(), separators.end(), _data[windowRight]) == separators.end()) || flag)
+		{
+			if (_data[windowRight] == L'\"')
+				flag = flag ^ 1;
+			++windowRight;
+		}
+		if (windowRight-windowLeft != 0) 
+			result.emplace_back(_data.get() + windowLeft, windowRight - windowLeft);
+		windowLeft = windowRight + 1;
+	}
+
+	return result;
 }
 
 bool MFSString::IsInteger() const
