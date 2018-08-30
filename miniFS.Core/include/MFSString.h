@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <iterator>
+#include <type_traits>
 
 /*
 
@@ -69,6 +70,16 @@ class MFSString
         将当前字符串以指定的分隔符为界限拆分为若干个子串。
         @param separators 分隔符。
         @return 当前字符串以分隔符为界拆分出的子串。
+
+    bool MFSString::IsInteger() const
+        确定当前的字符串是否表示一个整数。
+
+    template <typename IntegerT> IntegerT MFSString::ParseInteger() const
+        将当前字符串转换为其表示的整数。
+
+
+template <typename IntegerT> MFSString MFSGetString(IntegerT value)
+    将一个整数数值转换为其字符串表示。
 
 	std::vector<MFSString> MFSString::Split(const std::vector<WCHAR> & separators, bool type) const
 		将当前字符串以指定的分隔符为界限拆分为若干个子串。
@@ -145,6 +156,11 @@ public:
 	std::vector<MFSString> Split(const std::vector<WCHAR> & separators, bool type) const;
 	std::vector<MFSString> SplitName(const std::vector<WCHAR> & separators) const;
 
+    bool IsInteger() const;
+
+    template <typename IntegerT>
+    IntegerT ParseInteger() const;
+
     Iterator begin() const;
     Iterator end() const;
 
@@ -166,3 +182,80 @@ bool operator > (const MFSString & s1, const MFSString & s2);
 bool operator <= (const MFSString & s1, const MFSString & s2);
 bool operator >= (const MFSString & s1, const MFSString & s2);
 MFSString operator + (const MFSString & s1, const MFSString & s2);
+
+template <typename IntegerT>
+MFSString MFSGetString(IntegerT value)
+{
+    static_assert(std::is_integral_v<IntegerT>, "The type given should be a integer type.");
+
+    DWORD valueLen = 0;
+    if constexpr (std::is_signed_v<IntegerT>)
+    {
+        if (value < 0)
+            valueLen = 1;
+    }
+
+    if (value == 0)
+        ++valueLen;
+    for (IntegerT tmp = value; tmp; tmp /= 10)
+        ++valueLen;
+
+    WCHAR * lpBuffer = new WCHAR[valueLen + 1];
+    WCHAR * lpBufferBase = lpBuffer;
+    if constexpr (std::is_signed_v<IntegerT>)
+    {
+        if (value < 0)
+        {
+            *lpBuffer++ = L'-';
+            value = -value;
+        }
+    }
+
+    if (value == 0)
+        *lpBuffer++ = L'0';
+
+    IntegerT level = 1;
+    while (value / 10 >= level)
+        level *= 10;
+
+    while (value)
+    {
+        IntegerT d = value / level;
+        *lpBuffer++ = L'0' + d;
+        value /= 10;
+        level /= 10;
+    }
+
+    *lpBuffer = 0;
+    MFSString result(lpBuffer);
+
+    delete[] lpBufferBase;
+    return result;
+}
+
+template<typename IntegerT>
+inline IntegerT MFSString::ParseInteger() const
+{
+    static_assert(std::is_integral_v<IntegerT>, "The type given should be a integer type.");
+
+    IntegerT result = 0;
+
+    if (_len == 0)
+        return 0;
+
+    IntegerT sign = 1;
+    DWORD i = 0;
+    if (_data[i] == '-')
+    {
+        sign = static_cast<IntegerT>(-1);
+        ++i;
+    }
+
+    for (; i < _len; ++i)
+    {
+        IntegerT d = _data[i] - L'0';
+        result = result * 10 + d;
+    }
+
+    return result * sign;
+}
