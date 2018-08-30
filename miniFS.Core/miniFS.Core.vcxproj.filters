@@ -78,6 +78,12 @@
     <ClInclude Include="include\MFSBlockAllocationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\fs\MFSDirectoryBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\serialize\MFSDirectoryBlockSerializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp">
@@ -132,6 +138,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MFSBlockAllocationManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fs\MFSDirectoryBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serialize\MFSDirectoryBlockSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
