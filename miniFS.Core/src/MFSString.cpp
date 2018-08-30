@@ -1,4 +1,5 @@
 #include "../include/MFSString.h"
+#include <cwctype>
 
 MFSString::MFSString()
 {
@@ -163,6 +164,24 @@ std::vector<MFSString> MFSString::Split(const std::vector<WCHAR>& separators) co
     }
 
     return result;
+}
+
+bool MFSString::IsInteger() const
+{
+    if (_len == 0)
+        return false;
+
+    DWORD i = 0;
+    if (_data[0] == L'-')
+        ++i;
+
+    for (; i < _len; ++i)
+    {
+        if (!iswdigit(_data[i]))
+            return false;
+    }
+
+    return true;
 }
 
 MFSString::Iterator MFSString::begin() const

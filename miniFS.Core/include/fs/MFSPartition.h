@@ -3,6 +3,8 @@
 #include "../device/MFSBlockDevice.h"
 #include "MFSFSEntry.h"
 #include "MFSMetas.h"
+#include "MFSBlockAllocationManager.h"
+#include "MFSAllocationTable.h"
 
 /*
 
@@ -63,4 +65,5 @@ public:
 
 private:
     MFSBlockDevice * _device;
+    
 };
