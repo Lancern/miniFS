@@ -60,9 +60,6 @@
     <ClInclude Include="src\serialize\MFSBitmapSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MFSAllocationTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\fs\MFSPartition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -75,7 +72,10 @@
     <ClInclude Include="include\serialize\MFSAllocationTableSerializer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MFSBlockAllocationManager.h">
+    <ClInclude Include="include\fs\MFSAllocationTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fs\MFSBlockAllocationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -113,9 +113,6 @@
     <ClCompile Include="src\stream\MFSStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MFSAllocationTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="include\fs\MFSFSEntry.h">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -131,7 +128,10 @@
     <ClCompile Include="src\serialize\MFSAllocationTableSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MFSBlockAllocationManager.cpp">
+    <ClCompile Include="src\fs\MFSAllocationTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fs\MFSBlockAllocationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

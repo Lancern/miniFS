@@ -1,4 +1,4 @@
-#include "../include/MFSBlockAllocationManager.h"
+#include "../../include/fs/MFSBlockAllocationManager.h"
 
 MFSBlockAllocationManager::MFSBlockAllocationManager(MFSBitmap* _bitmap)
 	: _bitmap(_bitmap), _alloc(0)

@@ -22,9 +22,9 @@
     <ClInclude Include="include\device\MFSBlockDevice.h" />
     <ClInclude Include="include\device\MFSBufferedBlockDevice.h" />
     <ClInclude Include="include\fs\MFSPartition.h" />
-    <ClInclude Include="include\MFSAllocationTable.h" />
+    <ClInclude Include="include\fs\MFSAllocationTable.h" />
     <ClInclude Include="include\MFSBitmap.h" />
-    <ClInclude Include="include\MFSBlockAllocationManager.h" />
+    <ClInclude Include="include\fs\MFSBlockAllocationManager.h" />
     <ClInclude Include="include\MFSEncoding.h" />
     <ClInclude Include="include\fs\MFSMetas.h" />
     <ClInclude Include="include\device\MFSRawDevice.h" />
@@ -46,9 +46,9 @@
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
     <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp" />
     <ClCompile Include="src\fs\MFSPartition.cpp" />
-    <ClCompile Include="src\MFSAllocationTable.cpp" />
+    <ClCompile Include="src\fs\MFSAllocationTable.cpp" />
     <ClCompile Include="src\MFSBitmap.cpp" />
-    <ClCompile Include="src\MFSBlockAllocationManager.cpp" />
+    <ClCompile Include="src\fs\MFSBlockAllocationManager.cpp" />
     <ClCompile Include="src\MFSEncoding.cpp" />
     <ClCompile Include="src\device\MFSRawDevice.cpp" />
     <ClCompile Include="src\device\MFSRawDeviceView.cpp" />
