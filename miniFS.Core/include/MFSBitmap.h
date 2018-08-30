@@ -23,7 +23,7 @@ public:
 		size_t offset;
 	};
 
-	explicit MFSBitmap(size_t size);
+	explicit MFSBitmap(size_t sizeInBits);
 	~MFSBitmap();
 
 	bool Test(size_t pos) const;

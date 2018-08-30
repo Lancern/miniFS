@@ -35,8 +35,8 @@ MFSBitmap::Reference::operator bool() const
 	return value >> offset & 1;
 }
 
-MFSBitmap::MFSBitmap(size_t size)
-	: _bitmap(size / BIT_PACK_SIZE)
+MFSBitmap::MFSBitmap(size_t sizeInBits)
+	: _bitmap(sizeInBits / BIT_PACK_SIZE + sizeInBits % BIT_PACK_SIZE ? 1 : 0)
 {
 }
 

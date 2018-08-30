@@ -1,10 +1,12 @@
 #pragma once
 
 #include "../device/MFSBlockDevice.h"
+#include "../stream/MFSBlockStream.h"
 #include "MFSFSEntry.h"
 #include "MFSMetas.h"
 #include "MFSBlockAllocationManager.h"
 #include "MFSAllocationTable.h"
+#include <memory>
 
 /*
 
@@ -51,6 +53,7 @@ public:
     ~MFSPartition();
 
     MFSBlockDevice * GetDevice() const;
+    bool IsValidDevice() const;
 
     bool IsRaw() const;
     UINT64 GetTotalSpaceInBytes() const;
@@ -64,6 +67,16 @@ public:
     void Close();
 
 private:
-    MFSBlockDevice * _device;
+    std::unique_ptr<MFSBlockDevice> _device;
+    MFSFSMasterInfo _master;
+    std::unique_ptr<MFSAllocationTable> _blockChain;
+    std::unique_ptr<MFSBlockAllocationManager> _blockAllocation;
+    std::unique_ptr<MFSFSEntryMeta[]> _fsnodePool;
+    bool _validDevice;
     
+    void LoadDevice(MFSBlockDevice * device);
+    bool LoadMasterInfo(MFSBlockStream * deviceStream);
+    bool LoadBlockAllocationManager(MFSBlockStream * deviceStream);
+    bool LoadAllocationTable(MFSBlockStream * deviceStream);
+    bool LoadFSNodePool(MFSBlockStream * deviceStream);
 };

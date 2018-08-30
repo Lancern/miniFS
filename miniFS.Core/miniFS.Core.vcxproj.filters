@@ -81,6 +81,18 @@
     <ClInclude Include="include\stream\MFSNativeFileStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\stream\MFSMemoryStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stream\MFSBlockStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stream\MFSStreamTextReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stream\MFSStreamTextWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp">
@@ -138,6 +150,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\stream\MFSNativeFileStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stream\MFSMemoryStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stream\MFSBlockStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stream\MFSStreamTextReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

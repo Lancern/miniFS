@@ -36,14 +36,19 @@
     <ClInclude Include="include\serialize\MFSAllocationTableSerializer.h" />
     <ClInclude Include="include\serialize\MFSBitmapSerializer.h" />
     <ClInclude Include="include\serialize\MFSSerializer.h" />
+    <ClInclude Include="include\stream\MFSBlockStream.h" />
+    <ClInclude Include="include\stream\MFSMemoryStream.h" />
     <ClInclude Include="include\stream\MFSNativeFileStream.h" />
     <ClInclude Include="include\stream\MFSStream.h" />
     <ClInclude Include="include\stream\MFSStreamReader.h" />
+    <ClInclude Include="include\stream\MFSStreamTextReader.h" />
+    <ClInclude Include="include\stream\MFSStreamTextWriter.h" />
     <ClInclude Include="include\stream\MFSStreamWriter.h" />
     <ClInclude Include="src\serialize\MFSBitmapSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\fs\MFSFSEntry.h" />
+    <ClCompile Include="src\stream\MFSStreamTextReader.cpp" />
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
     <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp" />
     <ClCompile Include="src\fs\MFSPartition.cpp" />
@@ -58,6 +63,8 @@
     <ClCompile Include="src\MFSString.cpp" />
     <ClCompile Include="src\MFSUTF8Encoding.cpp" />
     <ClCompile Include="src\serialize\MFSAllocationTableSerializer.cpp" />
+    <ClCompile Include="src\stream\MFSBlockStream.cpp" />
+    <ClCompile Include="src\stream\MFSMemoryStream.cpp" />
     <ClCompile Include="src\stream\MFSNativeFileStream.cpp" />
     <ClCompile Include="src\stream\MFSStream.cpp" />
     <ClCompile Include="src\stream\MFSStreamReader.cpp" />
