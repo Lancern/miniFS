@@ -6,7 +6,7 @@ class MFSCommand
 {
 public:
 	virtual bool Accept(const MFSString & string) const = 0;
-	virtual void Action(char * argv[]) const = 0;
+	virtual void Action(const std::vector<MFSString> & argv) const = 0;
 
 protected:
 	MFSCommand() = default;

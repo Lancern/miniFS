@@ -4,46 +4,38 @@
 #include "../miniFS.Core/include/MFSString.h"
 #include "include/MFSCommand.h"
 #include "include/MFSTest.h"
-
-int 
-std::istream & operator >> (std::wistream & input, MFSString & string)
-{
-	const auto terminators = { '\t', ' ', '\n' };
-
-	std::vector<WCHAR> buffer;
-	while (!input.eof())
-	{
-		WCHAR ch;
-		input.get(ch);
-		buffer.push_back(ch);
-
-		if (std::find(terminators.begin(), terminators.end(), ch))
-		{
-			buffer.pop_back();
-			break;
-		}
-	}
-
-	string = MFSString(buffer.data(), buffer.size());
-}
+#include "include/io/MFSConsole.h"
 
 int main()
 {
 	MFSTest command;
-	MFSTestunit *tmp = command.head->link;
+	MFSConsole *point = MFSGetDefaultConsole();
+
 	while (1)
 	{
-		MFSString strInput;
-		std::cout << "miniFS>";
-		std::wcin >> strInput;
-		for (int i = 0; i < 15; i++)
-		{
-			if (tmp->base->Accept(strInput))
+		MFSTestunit *tmp = command.Chead->link;
+		std::vector<WCHAR> split = {L'|'};
+		std::vector<MFSString> subString;
+		point->Log(L"miniFS>");
+		MFSString strInput = point->ReadLine();
+		/*point->SetForegroundColor(MFSConsoleColors::Red);
+		point->SetBackgroundColor(MFSConsoleColors::Green);*/
+		subString = strInput.SplitName(split);
+		for (const MFSString & part : subString) {
+
+			std::vector<WCHAR> splitNew = { L' ', L'\t'};
+			std::vector<MFSString> paragrameter;
+			paragrameter = part.SplitName(splitNew);
+			/*for (int i = 0; i < 14; i++)
 			{
-				tmp->base->Action();
-				break;
-			}
-			tmp = tmp->link;
+				if (tmp->base->Accept(paragrameter[0]))
+				{
+					paragrameter.erase(paragrameter.begin());
+					tmp->base->Action(paragrameter);
+					break;
+				}
+				tmp = tmp->link;
+			}*/
 		}
 	}
 	return 0;

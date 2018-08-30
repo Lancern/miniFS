@@ -3,6 +3,8 @@
 MFSPartition::MFSPartition(MFSBlockDevice * device)
     : _device(device)
 {
+    // Load device.
+    
 }
 
 MFSPartition::~MFSPartition()

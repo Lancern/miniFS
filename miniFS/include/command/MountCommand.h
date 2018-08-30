@@ -1,12 +1,11 @@
 #pragma once
 #include "../MFSCommand.h"
 
-class MountCommand : public MFSCommand
+class MountCommand :virtual public MFSCommand
 {
 public:
 	bool Accept(const MFSString & string) const;
 	void Action(const std::vector<MFSString> & argv) const;
 
-protected:
 	MountCommand();
 };

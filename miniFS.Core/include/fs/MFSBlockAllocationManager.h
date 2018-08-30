@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MFSBitmap.h"
+#include "../MFSBitmap.h"
 
 class MFSBlockAllocationManager
 {

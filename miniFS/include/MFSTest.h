@@ -1,5 +1,6 @@
 #pragma once
 #include "MFSCommand.h"
+#include "Commands.h"
 
 class MFSTestunit {
 
@@ -13,7 +14,7 @@ public:
 class MFSTest {
 
 public:
-	MFSTestunit *head;
+	MFSTestunit *Chead;
 
 	MFSTest();
 };
