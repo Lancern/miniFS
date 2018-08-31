@@ -9,6 +9,11 @@ MFSBlockAllocationManager::~MFSBlockAllocationManager()
 {
 }
 
+MFSBitmap * MFSBlockAllocationManager::GetBitmap() const
+{
+    return _bitmap;
+}
+
 uint32_t MFSBlockAllocationManager::AllocBlock()
 {
 	if (_alloc == InvalidBlockId) return InvalidBlockId;

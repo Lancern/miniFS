@@ -2,6 +2,7 @@
 #include "../../include/stream/MFSMemoryStream.h"
 #include "../../include/serialize/MFSBitmapSerializer.h"
 #include "../../include/serialize/MFSAllocationTableSerializer.h"
+#include "../../include/stream/MFSStreamWriter.h"
 
 
 
@@ -46,23 +47,61 @@ UINT64 MFSPartition::GetFreeSpaceInBytes() const
 
 void MFSPartition::BuildFileSystem()
 {
-    // TODO: Implement MFSPartition::BuildFileSystem().
+    // Build partition master record.
+    _master.magicSeq = MFS_MAGIC_SEQ;
+    _master.mfsVer = MFS_VER;
+    _master.totalBlocks = _device->GetBlocksCount();
+
+    DWORD blockSize = _device->GetBlockSize();
+    DWORD babBlocksCount = _master.totalBlocks / CHAR_BIT / blockSize;
+    DWORD fatBlocksCount = _master.totalBlocks * sizeof(DWORD) / blockSize;;
+    DWORD fsnodePoolBlockCount = _master.totalBlocks * sizeof(MFSFSEntryMeta) / blockSize;
+
+    _master.freeBlocks = _master.totalBlocks - 1 - babBlocksCount - fatBlocksCount - fsnodePoolBlockCount;
+
+    // Build block allocation bitmap.
+    
 }
 
 MFSFSEntry * MFSPartition::GetRoot() const
 {
+    if (!_validDevice || IsRaw())
+        return nullptr;
+
     // TODO: Implement MFSPartition::GetRoot().
+
     return nullptr;
 }
 
 void MFSPartition::Flush()
 {
-    // TODO: Implement MFSPartition::Flush().
+    if (!_validDevice)
+        return;
+
+    MFSBlockStream stream(_device.get());
+    MFSStreamWriter writer(&stream);
+    
+    // Write master info.
+    writer.Write(_master);
+    stream.Seek(MFSStreamSeekOrigin::Begin, _device->GetBlockSize());
+
+    // Write block allocation bitmap.
+    MFSBitmapSerializer().Serialize(&stream, _blockAllocation->GetBitmap());
+
+    // Write block chain (FAT).
+    MFSAllocationTableSerializer().Serialize(&stream, _blockChain.get());
+
+    // Write fsnode pool.
+    stream.Write(_fsnodePool.get(), _device->GetBlocksCount() * sizeof(MFSFSEntryMeta));
+
+    stream.Flush();
+    stream.Close();
 }
 
 void MFSPartition::Close()
 {
-    // TODO: Implement MFSPartition::Close().
+    Flush();
+    Close();
 }
 
 void MFSPartition::LoadDevice(MFSBlockDevice * device)

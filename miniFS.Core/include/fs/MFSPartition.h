@@ -69,12 +69,13 @@ public:
 private:
     std::unique_ptr<MFSBlockDevice> _device;
     MFSFSMasterInfo _master;
-    std::unique_ptr<MFSAllocationTable> _blockChain;
     std::unique_ptr<MFSBlockAllocationManager> _blockAllocation;
+    std::unique_ptr<MFSAllocationTable> _blockChain;
     std::unique_ptr<MFSFSEntryMeta[]> _fsnodePool;
     bool _validDevice;
     
     void LoadDevice(MFSBlockDevice * device);
+
     bool LoadMasterInfo(MFSBlockStream * deviceStream);
     bool LoadBlockAllocationManager(MFSBlockStream * deviceStream);
     bool LoadAllocationTable(MFSBlockStream * deviceStream);

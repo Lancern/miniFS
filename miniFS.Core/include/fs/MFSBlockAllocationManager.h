@@ -10,6 +10,8 @@ public:
 	MFSBlockAllocationManager(MFSBitmap* _bitmap);
 	~MFSBlockAllocationManager();
 
+    MFSBitmap * GetBitmap() const;
+
 	uint32_t AllocBlock();
 	void FreeBlock(uint32_t pos);
 
