@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\fs\MFSFSEntry.h" />
+    <ClCompile Include="src\serialize\MFSDirectoryBlockSerializer.cpp" />
     <ClCompile Include="src\stream\MFSStreamTextReader.cpp" />
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
     <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp" />

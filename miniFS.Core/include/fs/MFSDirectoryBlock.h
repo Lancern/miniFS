@@ -1,8 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
-#include <list>
+#include <unordered_map>
 
 #include "../../include/MFSString.h"
 #include "../../include/fs/MFSMetas.h"
@@ -13,20 +12,13 @@ public:
 	MFSDirectoryBlock(size_t size);
 	~MFSDirectoryBlock();
 
-	MFSFSDirectoryItem* AddDict(const MFSString& name);
-	void EraseDict(const MFSString& name);
-	MFSFSDirectoryItem* FindDict(const MFSString& name) const;
+	MFSFSDirectoryItem* FindDir(const MFSString& name) const;
+	MFSFSDirectoryItem* AddDir(const MFSString& name);
+	bool EraseDir(const MFSString& name);
 
 private:
-	uint32_t _dictUsed, _heapUsed;
-	size_t _blockSize, _dictSize, _heapSize;
-	WCHAR* _heapBase;
-	mutable std::list<MFSFSDirectoryItem> _dict;
-	std::vector<std::list<WCHAR*>> _heapPool;
-
-	WCHAR* HeapAlloc(size_t size);
-	void HeapFree(WCHAR* ptr);
-	void HeapCompress();
+	size_t _usedSize, _blockSize;
+	mutable std::unordered_map<MFSString, MFSFSDirectoryItem> _dir;
 
 	friend class MFSDirectoryBlockSerializer;
 };

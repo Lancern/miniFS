@@ -8,22 +8,24 @@ MFSDirectoryBlockSerializer::MFSDirectoryBlockSerializer(size_t blockSize)
 void MFSDirectoryBlockSerializer::Serialize(MFSStream * stream, MFSDirectoryBlock * object)
 {
 	MFSStreamWriter writer(stream);
-	writer.Write(object->_dictUsed);
-	writer.Write(object->_heapUsed);
-	for (auto& it : object->_dict)
-		writer.Write(it);
-	for (uint32_t i = 0; i < object->_heapUsed; i++)
-		writer.Write(*(object->_heapBase + i));
+	writer.Write(object->_dir.size());
+	for (auto& it : object->_dir)
+	{
+		writer.Write(it.first);
+		writer.Write(it.second);
+	}
 }
 
 MFSDirectoryBlock * MFSDirectoryBlockSerializer::Deserialize(MFSStream * stream)
 {
 	MFSDirectoryBlock* ret = new MFSDirectoryBlock(_blockSize - 8);
 	MFSStreamReader reader(stream);
-	ret->_dictUsed = reader.ReadPODObject<uint32_t>();
-	ret->_heapUsed = reader.ReadPODObject<uint32_t>();
-	for (uint32_t i = 0; i < ret->_dictUsed; i++)
-		ret->_dict.push_back(reader.ReadPODObject<MFSFSDirectoryItem>());
-	for (uint32_t i = 0; i < ret->_heapUsed; i++)
-		*(ret->_heapBase + i) = reader.ReadPODObject<WCHAR>();
+	uint32_t cnt = reader.ReadPODObject<uint32_t>();
+	while (cnt--)
+	{
+		MFSString key = reader.ReadString();
+		MFSFSDirectoryItem value = reader.ReadPODObject<MFSFSDirectoryItem>();
+		ret->_dir[key] = value;
+	}
+	return ret;
 }
