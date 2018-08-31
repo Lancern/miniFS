@@ -11,15 +11,20 @@ MFSDirectoryBlock::~MFSDirectoryBlock()
 
 MFSFSDirectoryItem * MFSDirectoryBlock::FindDir(const MFSString & name) const
 {
-	if (_dir.find(name) == _dir.end()) return nullptr;
+	if (_dir.find(name) == _dir.end()) 
+        return nullptr;
 	return &_dir[name];
 }
 
 MFSFSDirectoryItem * MFSDirectoryBlock::AddDir(const MFSString & name)
 {
-	if (FindDir(name) != nullptr) return nullptr;
+	if (FindDir(name) != nullptr) 
+        return nullptr;
+
 	size_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(WCHAR);
-	if (_usedSize + size > _blockSize) return nullptr;
+	if (_usedSize + size > _blockSize) 
+        return nullptr;
+    
 	_usedSize += size;
 	_dir[name] = MFSFSDirectoryItem();
 	return &_dir[name];
@@ -27,7 +32,9 @@ MFSFSDirectoryItem * MFSDirectoryBlock::AddDir(const MFSString & name)
 
 bool MFSDirectoryBlock::EraseDir(const MFSString & name)
 {
-	if (FindDir(name) == nullptr) return false;
+	if (FindDir(name) == nullptr) 
+        return false;
+
 	_dir.erase(name);
 	size_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(WCHAR);
 	_usedSize -= size;

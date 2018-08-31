@@ -54,6 +54,11 @@ struct MFSFSEntryMeta
     } spec;
 };
 
+struct MFSFSDirectoryBlockMasterInfo
+{
+    uint32_t itemsCount;        // 目录数据块中的目录项数量。
+};
+
 struct MFSFSDirectoryItem
 {
     uint32_t nameOffset;        // 目录项的名称在目录项名称堆区域内的起始偏移量。

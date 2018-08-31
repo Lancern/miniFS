@@ -13,24 +13,16 @@ MFSStream * MFSStreamReader::GetStream() const
     return _stream;
 }
 
-MFSString MFSStreamReader::ReadString(const std::vector<WCHAR> & terminators)
+MFSString MFSStreamReader::ReadString()
 {
     std::vector<WCHAR> buffer;
     while (_stream->HasNext())
     {
         buffer.push_back(ReadPODObject<WCHAR>());
-        if (std::find(terminators.begin(), terminators.end(), buffer.back()) != terminators.end())
+        if (buffer.back() == 0)
             break;
     }
+    if (buffer.back() != 0)
+        buffer.push_back(0);
     return MFSString(buffer.data(), buffer.size());
-}
-
-MFSString MFSStreamReader::ReadString()
-{
-    return ReadString({});
-}
-
-MFSString MFSStreamReader::ReadLine()
-{
-    return ReadString({ L'\n' });
 }
