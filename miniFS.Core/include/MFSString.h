@@ -71,15 +71,8 @@ class MFSString
         @param separators 分隔符。
         @return 当前字符串以分隔符为界拆分出的子串。
 
-    bool MFSString::IsInteger() const
-        确定当前的字符串是否表示一个整数。
-
     template <typename IntegerT> IntegerT MFSString::ParseInteger() const
         将当前字符串转换为其表示的整数。
-
-
-template <typename IntegerT> MFSString MFSGetString(IntegerT value)
-    将一个整数数值转换为其字符串表示。
 
 	std::vector<MFSString> MFSString::Split(const std::vector<WCHAR> & separators, bool type) const
 		将当前字符串以指定的分隔符为界限拆分为若干个子串。
@@ -91,6 +84,19 @@ template <typename IntegerT> MFSString MFSGetString(IntegerT value)
 		将当前字符串以指定的分隔符为界限拆分为若干个子串, 用于处理含有特殊字符的文件名, 默认去空串。
 		@param separators 分隔符。
 		@return 当前字符串以分隔符为界拆分出的子串。
+
+    UINT32 MFSString::GetHashCode() const
+        获取当前字符串的哈希值。
+
+    bool MFSString::IsInteger() const
+        确定当前的字符串是否表示一个整数。
+
+
+template <typename IntegerT> MFSString MFSGetString(IntegerT value)
+    将一个整数数值转换为其字符串表示。
+
+struct std::hash<MFSString>
+    为 MFSString 提供 STL 哈希表支持。
 
 */
 
@@ -155,6 +161,8 @@ public:
     std::vector<MFSString> Split(const std::vector<WCHAR> & separators) const;
 	std::vector<MFSString> Split(const std::vector<WCHAR> & separators, bool type) const;
 	std::vector<MFSString> SplitName(const std::vector<WCHAR> & separators) const;
+
+    UINT32 GetHashCode() const;
 
     bool IsInteger() const;
 
@@ -258,4 +266,18 @@ inline IntegerT MFSString::ParseInteger() const
     }
 
     return result * sign;
+}
+
+namespace std
+{
+    template <>
+    struct hash<MFSString>
+    {
+        size_t operator () (const MFSString & string) const;
+    };
+
+    inline size_t hash<MFSString>::operator()(const MFSString & string) const
+    {
+        return static_cast<size_t>(string.GetHashCode());
+    }
 }

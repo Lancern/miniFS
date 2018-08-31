@@ -212,6 +212,24 @@ std::vector<MFSString> MFSString::SplitName(const std::vector<WCHAR>& separators
 	return result;
 }
 
+UINT32 MFSString::GetHashCode() const
+{
+    // Use Jenkins hash function.
+    // Wikipedia: https://en.wikipedia.org/wiki/Jenkins_hash_function
+
+    UINT32 hash = 0;
+    for (DWORD i = 0; i < _len; ++i)
+    {
+        hash += static_cast<UINT32>(_data[i]);
+        hash += hash << 10;
+        hash ^= hash >> 6;
+    }
+    hash += hash << 3;
+    hash ^= hash >> 11;
+    hash += hash << 15;
+    return hash;
+}
+
 bool MFSString::IsInteger() const
 {
     if (_len == 0)
