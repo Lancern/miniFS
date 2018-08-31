@@ -69,8 +69,8 @@ public:
 private:
     std::unique_ptr<MFSBlockDevice> _device;
     MFSFSMasterInfo _master;
-    std::unique_ptr<MFSBlockAllocationManager> _blockAllocation;
-    std::unique_ptr<MFSAllocationTable> _blockChain;
+    std::unique_ptr<MFSBlockAllocationBitmap> _blockAllocation;
+    std::unique_ptr<MFSFileAllocationTable> _blockChain;
     std::unique_ptr<MFSFSEntryMeta[]> _fsnodePool;
     bool _validDevice;
     

@@ -45,20 +45,11 @@
     <ClInclude Include="include\MFSUTF8Encoding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MFSBitmap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\serialize\MFSBitmapSerializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\serialize\MFSSerializer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\stream\MFSStream.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\serialize\MFSBitmapSerializer.cpp">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="include\fs\MFSPartition.h">
       <Filter>Header Files</Filter>
@@ -67,15 +58,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\stream\MFSStreamWriter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\serialize\MFSAllocationTableSerializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\fs\MFSAllocationTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\fs\MFSBlockAllocationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\stream\MFSNativeFileStream.h">
@@ -97,6 +79,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\stream\MFSStreamTextWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fs\MFSBlockAllocationBitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\serialize\MFSBlockAllocationBitmapSerializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fs\MFSFileAllocationTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\serialize\MFSFileAllocationTableSerializer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -128,9 +122,6 @@
     <ClCompile Include="src\MFSUTF8Encoding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MFSBitmap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\stream\MFSStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -144,15 +135,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\stream\MFSStreamWriter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\serialize\MFSAllocationTableSerializer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\fs\MFSAllocationTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\fs\MFSBlockAllocationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\stream\MFSNativeFileStream.cpp">
@@ -174,6 +156,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\stream\MFSStreamTextWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fs\MFSBlockAllocationBitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serialize\MFSBlockAllocationBitmapSerializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fs\MFSFileAllocationTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serialize\MFSFileAllocationTableSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

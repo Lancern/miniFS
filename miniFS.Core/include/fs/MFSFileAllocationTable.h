@@ -3,18 +3,18 @@
 #include <cstdint>
 #include <vector>
 
-class MFSAllocationTable
+class MFSFileAllocationTable
 {
 public:
-	MFSAllocationTable(size_t size);
-	~MFSAllocationTable();
+	MFSFileAllocationTable(size_t size);
+	~MFSFileAllocationTable();
 
 	uint32_t& operator [] (size_t pos);
 	uint32_t operator [] (size_t pos) const;
 	void Add(uint32_t first, uint32_t last);
 	size_t Size() const;
 
-	friend class MFSAllocationTableSerializer;
+	friend class MFSFileAllocationTableSerializer;
 
 private:
 	std::vector<uint32_t> _next;

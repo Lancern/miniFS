@@ -89,7 +89,7 @@ void MFSPartition::Flush()
     MFSBitmapSerializer().Serialize(&stream, _blockAllocation->GetBitmap());
 
     // Write block chain (FAT).
-    MFSAllocationTableSerializer().Serialize(&stream, _blockChain.get());
+    MFSFileAllocationTableSerializer().Serialize(&stream, _blockChain.get());
 
     // Write fsnode pool.
     stream.Write(_fsnodePool.get(), _device->GetBlocksCount() * sizeof(MFSFSEntryMeta));
@@ -153,7 +153,7 @@ bool MFSPartition::LoadBlockAllocationManager(MFSBlockStream * deviceStream)
     if (ret)
     {
         MFSMemoryStream memStream(buffer, dwBabByteSize);
-        _blockAllocation.reset(new MFSBlockAllocationManager(MFSBitmapSerializer().Deserialize(&memStream)));
+        _blockAllocation.reset(new MFSBlockAllocationBitmap(MFSBitmapSerializer().Deserialize(&memStream)));
     }
 
     VirtualFree(buffer, 0, MEM_RELEASE);
@@ -175,7 +175,7 @@ bool MFSPartition::LoadAllocationTable(MFSBlockStream * deviceStream)
     if (ret)
     {
         MFSMemoryStream memStream(buffer, dwFatByteSize);
-        _blockChain.reset(MFSAllocationTableSerializer().Deserialize(&memStream));
+        _blockChain.reset(MFSFileAllocationTableSerializer().Deserialize(&memStream));
     }
 
     VirtualFree(buffer, 0, MEM_RELEASE);

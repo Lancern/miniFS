@@ -23,9 +23,8 @@
     <ClInclude Include="include\device\MFSBufferedBlockDevice.h" />
     <ClInclude Include="include\fs\MFSDirectoryBlock.h" />
     <ClInclude Include="include\fs\MFSPartition.h" />
-    <ClInclude Include="include\fs\MFSAllocationTable.h" />
-    <ClInclude Include="include\MFSBitmap.h" />
-    <ClInclude Include="include\fs\MFSBlockAllocationManager.h" />
+    <ClInclude Include="include\fs\MFSFileAllocationTable.h" />
+    <ClInclude Include="include\fs\MFSBlockAllocationBitmap.h" />
     <ClInclude Include="include\MFSEncoding.h" />
     <ClInclude Include="include\fs\MFSMetas.h" />
     <ClInclude Include="include\device\MFSRawDevice.h" />
@@ -34,8 +33,8 @@
     <ClInclude Include="include\device\MFSOSFileView.h" />
     <ClInclude Include="include\MFSString.h" />
     <ClInclude Include="include\MFSUTF8Encoding.h" />
-    <ClInclude Include="include\serialize\MFSAllocationTableSerializer.h" />
-    <ClInclude Include="include\serialize\MFSBitmapSerializer.h" />
+    <ClInclude Include="include\serialize\MFSFileAllocationTableSerializer.h" />
+    <ClInclude Include="include\serialize\MFSBlockAllocationBitmapSerializer.h" />
     <ClInclude Include="include\serialize\MFSDirectoryBlockSerializer.h" />
     <ClInclude Include="include\serialize\MFSSerializer.h" />
     <ClInclude Include="include\stream\MFSBlockStream.h" />
@@ -46,19 +45,18 @@
     <ClInclude Include="include\stream\MFSStreamTextReader.h" />
     <ClInclude Include="include\stream\MFSStreamTextWriter.h" />
     <ClInclude Include="include\stream\MFSStreamWriter.h" />
-    <ClInclude Include="src\serialize\MFSBitmapSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\fs\MFSFSEntry.h" />
+    <ClCompile Include="src\serialize\MFSBlockAllocationBitmapSerializer.cpp" />
     <ClCompile Include="src\serialize\MFSDirectoryBlockSerializer.cpp" />
     <ClCompile Include="src\stream\MFSStreamTextReader.cpp" />
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
     <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp" />
     <ClCompile Include="src\fs\MFSDirectoryBlock.cpp" />
     <ClCompile Include="src\fs\MFSPartition.cpp" />
-    <ClCompile Include="src\fs\MFSAllocationTable.cpp" />
-    <ClCompile Include="src\MFSBitmap.cpp" />
-    <ClCompile Include="src\fs\MFSBlockAllocationManager.cpp" />
+    <ClCompile Include="src\fs\MFSFileAllocationTable.cpp" />
+    <ClCompile Include="src\fs\MFSBlockAllocationBitmap.cpp" />
     <ClCompile Include="src\MFSEncoding.cpp" />
     <ClCompile Include="src\device\MFSRawDevice.cpp" />
     <ClCompile Include="src\device\MFSRawDeviceView.cpp" />
@@ -66,7 +64,7 @@
     <ClCompile Include="src\device\MFSOSFileView.cpp" />
     <ClCompile Include="src\MFSString.cpp" />
     <ClCompile Include="src\MFSUTF8Encoding.cpp" />
-    <ClCompile Include="src\serialize\MFSAllocationTableSerializer.cpp" />
+    <ClCompile Include="src\serialize\MFSFileAllocationTableSerializer.cpp" />
     <ClCompile Include="src\stream\MFSBlockStream.cpp" />
     <ClCompile Include="src\stream\MFSMemoryStream.cpp" />
     <ClCompile Include="src\stream\MFSNativeFileStream.cpp" />
