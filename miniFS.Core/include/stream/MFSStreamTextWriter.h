@@ -25,6 +25,9 @@ class MFSStreamTextReader
     void MFSStreamTextWriter::Write(const MFSString & string)
         将一个字符串写入基础流中。
 
+    void MFSStreamTextWriter::WriteChar(WCHAR ch)
+        将一个字符写入基础流中。
+
     void MFSStreamTextWriter::WriteLine(const MFSString & string)
         将一个字符串写入基础流中，然后写入一个换行符。
 
@@ -41,8 +44,15 @@ public:
     void WriteInteger(IntegerT value);
 
     void Write(const MFSString & string);
+    void WriteChar(WCHAR ch);
     void WriteLine(const MFSString & string);
 
 private:
     MFSStream * _stream;
 };
+
+template<typename IntegerT>
+inline void MFSStreamTextWriter::WriteInteger(IntegerT value)
+{
+    Write(MFSGetString(value));
+}

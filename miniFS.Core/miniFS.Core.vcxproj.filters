@@ -173,5 +173,8 @@
     <ClCompile Include="src\serialize\MFSDirectoryBlockSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\stream\MFSStreamTextWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
