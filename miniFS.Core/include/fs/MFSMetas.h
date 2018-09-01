@@ -100,8 +100,14 @@ struct MFSFSDirectoryBlockMasterInfo
     uint32_t itemsCount;        // 目录数据块中的目录项数量。
 };
 
+static_assert(sizeof(MFSFSDirectoryBlockMasterInfo) == 4, "Unexpected size of struct MFSFSDirectoryBlockMasterInfo.");
+static_assert(alignof(MFSFSDirectoryBlockMasterInfo) == 4, "Unexpected alignment of struct MFSFSDirectoryBlockMasterInfo.");
+
 struct MFSFSDirectoryItem
 {
     uint32_t nameOffset;        // 目录项的名称在目录项名称堆区域内的起始偏移量。
     uint32_t fsnodeId;          // 表示与该目录项对应的文件系统节点。
 };
+
+static_assert(sizeof(MFSFSDirectoryItem) == 8, "Unexpected size of struct MFSFSDirectoryItem.");
+static_assert(alignof(MFSFSDirectoryItem) == 4, "Unexpected alignment of struct MFSFSDirectoryItem.");
