@@ -11,8 +11,10 @@ public:
 
 	uint32_t& operator [] (size_t pos);
 	uint32_t operator [] (size_t pos) const;
+
 	void Add(uint32_t first, uint32_t last);
 	size_t Size() const;
+    uint32_t Get(size_t pos) const;
 
 	friend class MFSFileAllocationTableSerializer;
 

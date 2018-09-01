@@ -10,6 +10,20 @@
 class MFSBlockStream
 表示以一个块设备作为基础设备的流对象。
 
+    成员函数：
+
+    bool SeekBlock(UINT64 blockId)
+        移动流指针到指定设备块的起始位置。
+
+    UINT64 GetCurrentBlockId() const
+        获取当前流指针所位于的块编号。
+
+    UINT64 GetBlockInternalOffset() const
+        获取当前流指针所位于的块内偏移量。
+
+    UINT64 OnBlockSwap(UINT64 currentBlock)
+        当发生块交换时触发该函数。当在子类中重写时，根据当前块编号确定要换入的块编号。
+
 */
 
 class MFSBlockStream
@@ -38,9 +52,22 @@ public:
     void Flush() override;
     void Close() override;
 
+protected:
+    bool SeekBlock(UINT64 blockId);
+
+    UINT64 GetCurrentBlockId() const;
+    UINT64 GetBlockInternalOffset() const;
+
+    virtual UINT64 OnBlockSwap(UINT64 currentBlock);
+
 private:
     MFSBlockDevice * _device;
-    std::unique_ptr<UCHAR[]> _buffer;
+    std::unique_ptr<BYTE[]> _buffer;
     DWORD _insideOffset;
     UINT64 _blockOffset;
+
+    bool SeekBegin(INT64 offset);
+
+    bool TryReadByte(BYTE * buffer);
+    bool TryWriteByte(BYTE data);
 };

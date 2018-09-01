@@ -73,19 +73,19 @@ bool MFSMemoryStream::Seek(MFSStreamSeekOrigin origin, INT64 offset)
     switch (origin)
     {
     case MFSStreamSeekOrigin::Begin:
-        _offset = (offset < 0 ? 0 : offset);
+        _offset = (offset < 0 ? 0 : static_cast<DWORD>(offset));
         break;
     case MFSStreamSeekOrigin::Relative:
         if (offset < 0 && _offset < -offset)
             _offset = 0;
         else
-            _offset += offset;
+            _offset += static_cast<DWORD>(offset);
         break;
     case MFSStreamSeekOrigin::End:
         if (offset < 0 && _size < -offset)
             _offset = 0;
         else
-            _offset = _size + offset;
+            _offset = _size + static_cast<DWORD>(offset);
         break;
     default:
         return false;

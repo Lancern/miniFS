@@ -11,7 +11,8 @@ void MFSBlockAllocationBitmapSerializer::Serialize(MFSStream * stream, MFSBlockA
 
 MFSBlockAllocationBitmap * MFSBlockAllocationBitmapSerializer::Deserialize(MFSStream * stream)
 {
-	MFSBlockAllocationBitmap* ret = new MFSBlockAllocationBitmap((stream->GetLength() - stream->GetPosition()) * CHAR_BIT);
+	MFSBlockAllocationBitmap* ret = new MFSBlockAllocationBitmap(
+        static_cast<size_t>((stream->GetLength() - stream->GetPosition()) * CHAR_BIT));
 	MFSStreamReader reader(stream);
 	for (size_t i = 0; i < ret->_bitmap->Size(); i++)
 		ret->_bitmap->_bitmap[i] = reader.ReadPODObject<uint64_t>();

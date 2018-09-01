@@ -34,5 +34,9 @@ MFSRawDeviceView * MFSOSFileDevice::OpenView(UINT64 offset, DWORD length, bool r
 
 void MFSOSFileDevice::Close()
 {
-    CloseHandle(_hFileMapping);
+    if (_hFileMapping)
+    {
+        CloseHandle(_hFileMapping);
+        _hFileMapping = NULL;
+    }
 }

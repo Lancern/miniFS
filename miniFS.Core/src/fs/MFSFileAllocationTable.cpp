@@ -28,3 +28,8 @@ size_t MFSFileAllocationTable::Size() const
 {
 	return _next.size();
 }
+
+uint32_t MFSFileAllocationTable::Get(size_t pos) const
+{
+    return (*this)[pos];
+}

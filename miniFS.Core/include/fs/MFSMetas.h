@@ -10,8 +10,8 @@ struct MFSFSMasterInfo
     uint64_t magicSeq;      // mini-FS文件系统魔数。
     uint32_t mfsVer;        // mini-FS文件系统版本号
     uint32_t reversed;
-    uint64_t totalBlocks;   // 总的数据块数量
-    uint64_t freeBlocks;    // 处于空闲状态的数据块数量。
+    uint32_t totalBlocks;   // 总的数据块数量
+    uint32_t freeBlocks;    // 处于空闲状态的数据块数量。
 };
 
 #define MFS_FSENTRY_FLAG_DIRECTORY  0
