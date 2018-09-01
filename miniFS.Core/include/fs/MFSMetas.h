@@ -14,13 +14,12 @@ struct MFSFSMasterInfo
     uint32_t freeBlocks;    // 处于空闲状态的数据块数量。
 };
 
-#define MFS_FSENTRY_FLAG_DIRECTORY  0
-#define MFS_FSENTRY_FLAG_FILE       1
-#define MFS_FSENTRY_ACCESS_READ     2
-#define MFS_FSENTRY_ACCESS_WRITE    4
-#define MFS_FSENTRY_ACCESS_EXECUTE  8
-#define MFS_FSENTRY_FLAG_HIDE       16
-#define MFS_FSENTRY_FLAG_PROTECTED  32
+#define MFS_FSENTRY_FLAG_FILE           0x00000001
+#define MFS_FSENTRY_ACCESS_READ         0x00000002
+#define MFS_FSENTRY_ACCESS_WRITE        0x00000004
+#define MFS_FSENTRY_ACCESS_EXECUTE      0x00000008
+#define MFS_FSENTRY_FLAG_HIDE           0x00000010
+#define MFS_FSENTRY_FLAG_PROTECTED      0x00000020
 
 struct MFSFSEntryCommonMeta
 {
@@ -31,6 +30,7 @@ struct MFSFSEntryCommonMeta
     uint64_t lastModTimestamp;      // 上次修改时间戳
     uint32_t refCount;              // 引用计数
 };
+// sizeof(MFSFSEntryCommonMeta) == 40 with 4 padding bytes.
 
 struct MFSFSFileEntryMeta
 {
@@ -53,6 +53,9 @@ struct MFSFSEntryMeta
         MFSFSDirectoryEntryMeta directoryMeta;
     } spec;
 };
+
+// sizeof(MFSFSEntryMeta) == 56.
+// static_assert(alignof(MFSFSEntryMeta) == 64, "Unexpected align of struct MFSFSEntryMeta.");
 
 struct MFSFSDirectoryBlockMasterInfo
 {

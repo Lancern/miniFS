@@ -33,3 +33,8 @@ uint32_t MFSFileAllocationTable::Get(size_t pos) const
 {
     return (*this)[pos];
 }
+
+void MFSFileAllocationTable::Set(size_t pos, size_t value)
+{
+    _next[pos] = value;
+}

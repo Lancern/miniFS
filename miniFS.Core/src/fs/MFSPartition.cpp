@@ -3,6 +3,7 @@
 #include "../../include/serialize/MFSBlockAllocationBitmapSerializer.h"
 #include "../../include/serialize/MFSFileAllocationTableSerializer.h"
 #include "../../include/stream/MFSStreamWriter.h"
+#include "../../include/MFSDateTime.h"
 
 
 
@@ -57,12 +58,42 @@ void MFSPartition::BuildFileSystem()
     DWORD blockSize = _device->GetBlockSize();
     DWORD babBlocksCount = _master.totalBlocks / CHAR_BIT / blockSize;
     DWORD fatBlocksCount = _master.totalBlocks * sizeof(DWORD) / blockSize;
-    DWORD fsnodePoolBlockCount = _master.totalBlocks * sizeof(MFSFSEntryMeta) / blockSize;
+    DWORD fsnodePoolBlocksCount = _master.totalBlocks * sizeof(MFSFSEntryMeta) / blockSize;
+    DWORD fsblocksCount = 1 + babBlocksCount + fatBlocksCount + fsnodePoolBlocksCount;    // mini-FS 占用的块数量
 
-    _master.freeBlocks = _master.totalBlocks - 1 - babBlocksCount - fatBlocksCount - fsnodePoolBlockCount;
+    _master.freeBlocks = _master.totalBlocks - fsblocksCount;
 
     // Build block allocation bitmap.
+    _blockAllocation.reset(new MFSBlockAllocationBitmap(_device->GetBlocksCount()));
+    for (DWORD blockId = 0; blockId < fsblocksCount; ++blockId)
+        _blockAllocation->Set(blockId);
 
+    // Build file allocation table.
+    _blockChain.reset(new MFSFileAllocationTable(_device->GetBlocksCount()));
+    DWORD babBlockOffset = 1;
+    DWORD fatBlockOffset = babBlockOffset + babBlocksCount;
+    DWORD fsnodePoolBlockOffset = fatBlockOffset + fatBlocksCount;
+
+    _blockChain->Set(0, BLOCK_CHAIN_TAIL);
+
+    for (DWORD i = 0; i < babBlocksCount; ++i)
+        _blockChain->Set(babBlockOffset + i, babBlockOffset + i + 1);
+    _blockChain->Set(babBlockOffset + babBlocksCount - 1, BLOCK_CHAIN_TAIL);
+
+    for (DWORD i = 0; i < fatBlocksCount; ++i)
+        _blockChain->Set(fatBlockOffset + i, fatBlockOffset + i + 1);
+    _blockChain->Set(fatBlockOffset + fatBlocksCount - 1, BLOCK_CHAIN_TAIL);
+
+    for (DWORD i = 0; i < fsnodePoolBlocksCount; ++i)
+        _blockChain->Set(fsnodePoolBlockOffset + i, fsnodePoolBlockOffset + i + 1);
+    _blockChain->Set(fsnodePoolBlockOffset + fsnodePoolBlocksCount - 1, BLOCK_CHAIN_TAIL);
+
+    // Initialize fsnode pool.
+    _fsnodePool.reset(new MFSFSEntryMeta[static_cast<DWORD>(_device->GetBlocksCount())]);
+    // Initialize the first fsnode as the node for the root directory.
+    
+
+    // TODO: Implement MFSPartition::BuildFileSystem.
 }
 
 MFSFSEntry * MFSPartition::GetRoot() const
@@ -210,6 +241,16 @@ bool MFSPartition::LoadFSNodePool(MFSBlockStream * deviceStream)
     }
 
     return ret;
+}
+
+MFSPartition::ChainedBlockStream * MFSPartition::OpenBlockStream(DWORD firstBlock)
+{
+    return new ChainedBlockStream(this, firstBlock);
+}
+
+MFSPartition::ChainedBlockStream * MFSPartition::OpenBlockStream(DWORD firstBlock, UINT64 length)
+{
+    return new ChainedBlockStream(this, firstBlock, length);
 }
 
 

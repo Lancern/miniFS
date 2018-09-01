@@ -25,14 +25,13 @@
     <ClInclude Include="include\fs\MFSPartition.h" />
     <ClInclude Include="include\fs\MFSFileAllocationTable.h" />
     <ClInclude Include="include\fs\MFSBlockAllocationBitmap.h" />
-    <ClInclude Include="include\MFSEncoding.h" />
     <ClInclude Include="include\fs\MFSMetas.h" />
     <ClInclude Include="include\device\MFSRawDevice.h" />
     <ClInclude Include="include\device\MFSRawDeviceView.h" />
     <ClInclude Include="include\device\MFSOSFileDevice.h" />
     <ClInclude Include="include\device\MFSOSFileView.h" />
+    <ClInclude Include="include\MFSDateTime.h" />
     <ClInclude Include="include\MFSString.h" />
-    <ClInclude Include="include\MFSUTF8Encoding.h" />
     <ClInclude Include="include\serialize\MFSFileAllocationTableSerializer.h" />
     <ClInclude Include="include\serialize\MFSBlockAllocationBitmapSerializer.h" />
     <ClInclude Include="include\serialize\MFSDirectoryBlockSerializer.h" />
@@ -48,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\fs\MFSFSEntry.h" />
+    <ClCompile Include="src\MFSDateTime.cpp" />
     <ClCompile Include="src\serialize\MFSBlockAllocationBitmapSerializer.cpp" />
     <ClCompile Include="src\serialize\MFSDirectoryBlockSerializer.cpp" />
     <ClCompile Include="src\stream\MFSStreamTextReader.cpp" />
@@ -57,13 +57,11 @@
     <ClCompile Include="src\fs\MFSPartition.cpp" />
     <ClCompile Include="src\fs\MFSFileAllocationTable.cpp" />
     <ClCompile Include="src\fs\MFSBlockAllocationBitmap.cpp" />
-    <ClCompile Include="src\MFSEncoding.cpp" />
     <ClCompile Include="src\device\MFSRawDevice.cpp" />
     <ClCompile Include="src\device\MFSRawDeviceView.cpp" />
     <ClCompile Include="src\device\MFSOSFileDevice.cpp" />
     <ClCompile Include="src\device\MFSOSFileView.cpp" />
     <ClCompile Include="src\MFSString.cpp" />
-    <ClCompile Include="src\MFSUTF8Encoding.cpp" />
     <ClCompile Include="src\serialize\MFSFileAllocationTableSerializer.cpp" />
     <ClCompile Include="src\stream\MFSBlockStream.cpp" />
     <ClCompile Include="src\stream\MFSMemoryStream.cpp" />

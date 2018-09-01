@@ -15,6 +15,9 @@ public:
 	uint32_t AllocBlock();
 	void FreeBlock(uint32_t pos);
 
+    void Set(uint32_t pos);
+    void Reset(uint32_t pos);
+
 private:
 	class Bitmap
 	{
@@ -57,6 +60,8 @@ private:
 
 	std::shared_ptr<Bitmap> _bitmap;
 	uint32_t _alloc;
+
+    void LocateNextFreeBlock();
 
 	friend class MFSBlockAllocationBitmapSerializer;
 };
