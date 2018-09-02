@@ -176,5 +176,8 @@
     <ClCompile Include="src\serialize\MFSFSNodePoolSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\fs\MFSFSEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

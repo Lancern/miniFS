@@ -261,6 +261,11 @@ MFSPartition::ChainedBlockStream * MFSPartition::OpenBlockStream(DWORD firstBloc
     return new ChainedBlockStream(this, firstBlock, length);
 }
 
+MFSFSEntryMeta * MFSPartition::GetEntryMeta(uint32_t fsnodeId) const
+{
+    return &_fsnodePool[fsnodeId];
+}
+
 
 #define CBLOCK_STREAM_MAX_LEN        0xFFFFFFFFFFFFFFFF
 

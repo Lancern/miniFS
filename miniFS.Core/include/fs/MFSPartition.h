@@ -118,4 +118,8 @@ private:
 
     ChainedBlockStream * OpenBlockStream(DWORD firstBlock);
     ChainedBlockStream * OpenBlockStream(DWORD firstBlock, UINT64 length);
+
+    MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const;
+
+    friend class MFSFSEntry;
 };
