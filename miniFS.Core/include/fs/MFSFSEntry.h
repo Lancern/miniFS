@@ -5,6 +5,7 @@
 #include "../stream/MFSStream.h"
 #include "../MFSString.h"
 #include "../MFSDateTime.h"
+#include "../serialize/MFSDirectoryBlockSerializer.h"
 #include <vector>
 #include <memory>
 
@@ -119,7 +120,8 @@ public:
 
     MFSStream * OpenDataStream();
 
-    std::vector<std::unique_ptr<MFSFSEntry>> GetSubEntries();
+    auto GetSubEntries() -> std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>>;
+	bool ContainsSubEntry(const MFSString & name);
     MFSFSEntry * GetSubEntry(const MFSString & name);
     MFSFSEntry * AddSubEntry(const MFSString & name);
     MFSFSEntry * RemoveSubEntry(const MFSString & name);
@@ -128,4 +130,22 @@ private:
     MFSPartition * _partition;
     MFSFSEntryMeta * _meta;
     uint32_t _fsnodeId;
+
+	template <typename Callback>
+	void WalkDirectoryBlocks(Callback callback);
 };
+
+template<typename Callback>
+inline void MFSFSEntry::WalkDirectoryBlocks(Callback callback)
+{
+	std::unique_ptr<MFSStream> stream(OpenDataStream());
+	MFSDirectoryBlockSerializer serializer(_partition->GetDevice()->GetBlockSize());
+	while (stream->HasNext())
+	{
+		std::unique_ptr<MFSDirectoryBlock> block(serializer.Deserialize(stream.get()));
+		if (!callback(block.get()))
+			break;
+	}
+	stream->Close();
+	return ret;
+}

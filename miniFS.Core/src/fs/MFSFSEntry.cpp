@@ -1,4 +1,5 @@
 #include "../../include/fs/MFSFSEntry.h"
+#include "../../include/serialize/MFSDirectoryBlockSerializer.h"
 
 MFSFSEntry::MFSFSEntry(MFSPartition * partition, uint32_t fsnodeId)
     : _partition(partition), _meta(partition->GetEntryMeta(fsnodeId)), _fsnodeId(fsnodeId)
@@ -94,4 +95,64 @@ uint64_t MFSFSEntry::GetFileSize() const
         return MFSGetPackedUnsignedValue(&_meta->spec.fileMeta.size);
     else
         return 0;
+}
+
+auto MFSFSEntry::GetSubEntries() -> std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>>
+{
+	std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>> ret;
+	auto callback = [&](MFSDirectoryBlock * block) -> bool
+	{
+		for (auto&& it : *block)
+			ret.emplace_back(it.first, new MFSFSEntry(_partition, it.second.fsnodeId));
+		return true;
+	};
+	WalkDirectoryBlocks(callback);
+	return ret;
+}
+
+bool MFSFSEntry::ContainsSubEntry(const MFSString & name)
+{
+	bool exist = false;
+	auto callback = [&](MFSDirectoryBlock * block) -> bool 
+	{
+		if (block->FindDir(name))
+		{
+			exist = true;
+			return false;
+		}
+		return true;
+	};
+	WalkDirectoryBlocks(callback);
+	return exist;
+}
+
+MFSFSEntry * MFSFSEntry::GetSubEntry(const MFSString & name)
+{
+	MFSFSEntry* ret = nullptr;
+	auto callback = [&](MFSDirectoryBlock* block) -> bool
+	{
+		for (auto&& it : *block)
+			if (it.first == name)
+			{
+				ret = new MFSFSEntry(_partition, it.second.fsnodeId);
+				return false;
+			}
+		return true;
+	};
+	WalkDirectoryBlocks(callback);
+	return ret;
+}
+
+MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name)
+{
+	if (ContainsSubEntry(name)) return nullptr;
+	MFSFSEntry* ret = nullptr;
+	auto callback = [&](MFSDirectoryBlock* block)->bool
+	{
+		auto item = block->AddDir(name);
+		if (item)
+		{
+			//..........
+		}
+	};
 }
