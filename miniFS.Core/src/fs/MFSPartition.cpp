@@ -91,7 +91,15 @@ void MFSPartition::BuildFileSystem()
     // Initialize fsnode pool.
     _fsnodePool.reset(new MFSFSEntryMeta[static_cast<DWORD>(_device->GetBlocksCount())]);
     // Initialize the first fsnode as the node for the root directory.
-    
+    _fsnodePool[0].common.flags = 0 | MFS_FSENTRY_FLAG_PROTECTED;
+    _fsnodePool[0].common.firstBlockId = BLOCK_CHAIN_TAIL;
+
+    uint64_t timestamp = MFSGetCurrentTimestamp();
+    MFSGetInteger64Struct(&_fsnodePool[0].common.creationTimestamp, timestamp);
+    MFSGetInteger64Struct(&_fsnodePool[0].common.lastAccessTimestamp, timestamp);
+    MFSGetInteger64Struct(&_fsnodePool[0].common.lastModTimestamp, timestamp);
+
+    _fsnodePool[0].common.refCount = 1;
 
     // TODO: Implement MFSPartition::BuildFileSystem.
 }

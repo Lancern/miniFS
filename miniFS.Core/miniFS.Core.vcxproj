@@ -22,6 +22,7 @@
     <ClInclude Include="include\device\MFSBlockDevice.h" />
     <ClInclude Include="include\device\MFSBufferedBlockDevice.h" />
     <ClInclude Include="include\fs\MFSDirectoryBlock.h" />
+    <ClInclude Include="include\fs\MFSFSNodePool.h" />
     <ClInclude Include="include\fs\MFSPartition.h" />
     <ClInclude Include="include\fs\MFSFileAllocationTable.h" />
     <ClInclude Include="include\fs\MFSBlockAllocationBitmap.h" />
@@ -47,9 +48,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\fs\MFSFSEntry.h" />
+    <ClCompile Include="include\serialize\MFSFSNodePoolSerializer.h" />
+    <ClCompile Include="src\fs\MFSFSNodePool.cpp" />
     <ClCompile Include="src\MFSDateTime.cpp" />
     <ClCompile Include="src\serialize\MFSBlockAllocationBitmapSerializer.cpp" />
     <ClCompile Include="src\serialize\MFSDirectoryBlockSerializer.cpp" />
+    <ClCompile Include="src\serialize\MFSFSNodePoolSerializer.cpp" />
     <ClCompile Include="src\stream\MFSStreamTextReader.cpp" />
     <ClCompile Include="src\device\MFSBlockDevice.cpp" />
     <ClCompile Include="src\device\MFSBufferedBlockDevice.cpp" />
