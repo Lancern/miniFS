@@ -50,6 +50,65 @@ class MFSPartition
     void MFSPartition::Close()
         将所有修改写入基础设备并关闭当前的分区。
 
+class MFSPartition::Internals
+    对外部友元代码提供 MFSPartition 内部访问接口。
+
+    构造器：
+
+    MFSPartition::Internals::Internals(MFSPartition * host)
+        从指定的 MFSPartition 对象创建其内部接口的包装。
+
+    成员函数：
+
+    MFSPartition * MFSPartition::Internals::GetPartition() const
+        获取内部的 MFSPartition 对象。
+
+    DWORD MFSPartition::Internals::AllocateDeviceBlock()
+        在内部的 MFSPartition 对象上分配一个设备块并返回分配的设备块编号。
+        若分配失败，返回 MFSBlockAllocationBitmap::InvalidBlockId。
+
+    bool MFSPartition::Internals::AllocateDeviceBlock(DWORD blockId)
+        在内部的 MFSPartition 对象上尝试分配指定编号的设备块。
+        @return 一个 bool 值指示分配操作是否成功。
+
+    bool MFSPartition::Internals::FreeDeviceBlock(DWORD blockId)
+        在内部的 MFSPartition 对象上释放给定编号的设备块。
+        @return 一个 bool 值指示释放操作是否成功。
+
+    DWORD MFSPartition::Internals::AllocateTailBlock(DWORD firstBlockId)
+        在内部的 MFSPartition 对象上分配一个设备块并将其添加至一个块链的尾部。
+        @param firstBlockId 要在尾部分配设备块的块链的第一个块编号。
+        @return 新分配的块编号。若分配失败，返回 MFSBlockAllocationBitmap::InvalidBlockId。
+
+    DWORD MFSPartition::Internals::AllocateFrontBlock(DWORD firstBlockId)
+        在内部的 MFSPartition 对象上分配一个设备块并将其添加至一个块链的头部。
+        @param firstBlockId 要在头部分配设备块的块链的第一个块编号。
+        @retrun 新分配的块编号。若分配失败，返回 MFSBlockAllocationBitmap::InvalidBlockId。
+
+    DWORD MFSPartition::Internals::FreeChainedBlock(DWORD firstBlockId, DWORD blockId)
+        在内部的 MFSPartition 对象上释放块链上的一个数据块。
+        @param firstBlockId 块链的第一个设备块编号。
+        @param blockId 要释放的块的编号。
+        @return 释放操作完成后块链的首块编号。
+
+    DWORD MFSPartition::Internals::AllocateEntryMeta()
+        在内部的 MFSPartition 对象上分配一个文件系统节点元数据结构并返回其在节点池中的编号。
+        若分配失败，返回 MFSFSNodePool::InvalidFSNodeId。
+
+    bool MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId)
+        在内部的 MFSPartition 对象上尝试分配一个文件系统节点元数据结构。
+        @param fsnodeId 要分配的节点在节点池中的编号。
+        @return 一个 bool 值指示分配是否成功。
+
+    MFSStream * OpenBlockStream(DWORD firstBlock)
+        在内部的 MFSPartition 对象上打开一个按块链组织的流对象。流对象的长度将会被对齐到块边界。
+        @param firstBlock 打开的流对象的基础块链的第一块编号。
+
+    MFSStream * OpenBlockStream(DWORD firstBlock, UINT64 length)
+        在内部的 MFSPartition 对象上打开一个按块链组织的流对象。
+        @param firstBlock 打开的流对象的基础块链的第一块编号。
+        @param length 打开的流对象的长度。
+
 */
 
 class MFSFSEntry;
@@ -108,7 +167,6 @@ public:
 
         DWORD AllocateTailBlock(DWORD firstBlockId);
         DWORD AllocateFrontBlock(DWORD firstBlockId);
-
 		DWORD FreeChainedBlock(DWORD firstBlockId, DWORD blockId);
 
         DWORD AllocateEntryMeta();

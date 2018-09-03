@@ -98,6 +98,15 @@ uint64_t MFSFSEntry::GetFileSize() const
         return 0;
 }
 
+MFSBlockStream * MFSFSEntry::OpenDataStream()
+{
+    // TODO: Implement MFSFSEntry::OpenDataStream().
+}
+
+// 
+// TODO: All logic below here need to be reviewed.
+//
+
 auto MFSFSEntry::GetSubEntries() -> std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>>
 {
 	std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>> ret;
@@ -146,17 +155,21 @@ MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name)
 {
 	if (ContainsSubEntry(name)) 
         return nullptr;
+
+    uint32_t fsnodeId = _partition.AllocateEntryMeta();
+    if (fsnodeId == MFSFSNodePool::InvalidFSNodeId)
+        return nullptr;
+
 	MFSFSEntry* ret = nullptr;
 	auto callback = [&](WalkDirectoryBlockParameters & params)
 	{
 		auto item = params.blockObject->AddDir(name);
-        // TODO: FIX ME: MFSFSEntry::AddSubEntry(const MFSString &)
-        // TODO: Allocate a new fsnode and assign this node to directory block.
-		if (item)
-		{
-			ret = new MFSFSEntry(_partition, item->fsnodeId);
+        if (item)
+        {
+            item->fsnodeId = fsnodeId;
+            ret = new MFSFSEntry(_partition, fsnodeId);
             params.stopIteration = true;
-		}
+        }
 	};
 	WalkDirectoryBlocks(callback);
 	if (ret == nullptr)
@@ -165,14 +178,21 @@ MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name)
 		if (blockId == MFSBlockAllocationBitmap::InvalidBlockId) 
             return nullptr;
 		_meta->common.firstBlockId = blockId;
+
 		WalkDirectoryBlocks(callback);
+
+        if (ret == nullptr)
+        {
+            // Failed to allocate directory item.
+            _partition.FreeEntryMeta(fsnodeId);
+        }
 	}
 	return ret;
 }
 
 MFSFSEntry * MFSFSEntry::RemoveSubEntry(const MFSString & name)
 {
-	if (!ContainsSubEntry(name)) 
+	if (!ContainsSubEntry(name))
         return nullptr;
 	MFSFSEntry* ret = nullptr;
 	auto callback = [&](WalkDirectoryBlockParameters & params)

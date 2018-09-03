@@ -163,26 +163,6 @@ MFSPartition::Internals::Internals(MFSPartition * host)
 {
 }
 
-MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock)
-{
-    return new ChainedBlockStream(_partition, firstBlock);
-}
-
-MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 length)
-{
-    return new ChainedBlockStream(_partition, firstBlock, length);
-}
-
-MFSFSEntryMeta * MFSPartition::Internals::GetEntryMeta(uint32_t fsnodeId) const
-{
-    return &_partition->_fsnodePool->Get(fsnodeId);
-}
-
-bool MFSPartition::Internals::FreeEntryMeta(uint32_t fsnodeId)
-{
-    return _partition->_blockAllocation->AllocBlock(fsnodeId);
-}
-
 MFSPartition * MFSPartition::Internals::GetPartition() const
 {
     return _partition;
@@ -232,6 +212,26 @@ DWORD MFSPartition::Internals::AllocateEntryMeta()
 bool MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId)
 {
     return _partition->_fsnodePool->Allocate(fsnodeId);
+}
+
+MFSFSEntryMeta * MFSPartition::Internals::GetEntryMeta(uint32_t fsnodeId) const
+{
+    return &_partition->_fsnodePool->Get(fsnodeId);
+}
+
+bool MFSPartition::Internals::FreeEntryMeta(uint32_t fsnodeId)
+{
+    return _partition->_blockAllocation->AllocBlock(fsnodeId);
+}
+
+MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock)
+{
+    return new ChainedBlockStream(_partition, firstBlock);
+}
+
+MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 length)
+{
+    return new ChainedBlockStream(_partition, firstBlock, length);
 }
 
 
@@ -327,7 +327,7 @@ void MFSPartition::BuildFileSystem()
     rootDirMeta.common.refCount = 1;
     rootDirMeta.spec.directoryMeta.childCount = 0;
 
-    // TODO: Implement MFSPartition::BuildFileSystem.
+    // UNDONE: Implement MFSPartition::BuildFileSystem.
 }
 
 MFSFSEntry * MFSPartition::GetRoot()
