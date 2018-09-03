@@ -110,6 +110,18 @@ uint32_t MFSBlockAllocationBitmap::AllocBlock()
 	return ret;
 }
 
+bool MFSBlockAllocationBitmap::AllocBlock(uint32_t blockId)
+{
+    if (_bitmap->Test(blockId))
+        return false;
+
+    _bitmap->Set(blockId);
+    if (blockId == _alloc)
+        LocateNextFreeBlock();
+
+    return true;
+}
+
 void MFSBlockAllocationBitmap::FreeBlock(uint32_t pos)
 {
     Reset(pos);

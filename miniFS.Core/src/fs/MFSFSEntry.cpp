@@ -150,6 +150,8 @@ MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name)
 	auto callback = [&](WalkDirectoryBlockParameters & params)
 	{
 		auto item = params.blockObject->AddDir(name);
+        // TODO: FIX ME: MFSFSEntry::AddSubEntry(const MFSString &)
+        // TODO: Allocate a new fsnode and assign this node to directory block.
 		if (item)
 		{
 			ret = new MFSFSEntry(_partition, item->fsnodeId);

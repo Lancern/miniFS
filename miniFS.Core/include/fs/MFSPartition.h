@@ -104,7 +104,10 @@ public:
 
 		DWORD FreeChainedBlock(DWORD firstBlockId, DWORD blockId);
 
+        DWORD AllocateEntryMeta();
+        bool AllocateEntryMeta(DWORD fsnodeId);
         MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const;
+        bool FreeEntryMeta(uint32_t fsnodeId);
 
         MFSStream * OpenBlockStream(DWORD firstBlock);
         MFSStream * OpenBlockStream(DWORD firstBlock, UINT64 length);

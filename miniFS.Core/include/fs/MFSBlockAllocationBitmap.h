@@ -13,6 +13,7 @@ public:
 	~MFSBlockAllocationBitmap();
 
 	uint32_t AllocBlock();
+    bool AllocBlock(uint32_t blockId);
 	void FreeBlock(uint32_t pos);
 
     void Set(uint32_t pos);

@@ -9,7 +9,6 @@
 
 #define CEIL_DIV(a, b)      ((a) / (b) + (a) % (b) ? 1 : 0)
 
-#define BLOCK_CHAIN_TAIL      0xFFFFFFFF
 #define CBLOCK_STREAM_MAX_LEN        0xFFFFFFFFFFFFFFFF
 
 
@@ -33,7 +32,7 @@ MFSPartition * MFSPartition::ChainedBlockStream::GetPartition() const
 
 bool MFSPartition::ChainedBlockStream::HasNext() const
 {
-    return _currentBlock != BLOCK_CHAIN_TAIL;
+    return _currentBlock != MFSFileAllocationTable::InvalidBlockId;
 }
 
 UINT64 MFSPartition::ChainedBlockStream::GetLength() const
@@ -45,7 +44,7 @@ UINT64 MFSPartition::ChainedBlockStream::GetLength() const
         UINT64 result = 0;
         DWORD blockSize = GetDeviceBlockSize();
         DWORD blockId = _firstBlock;
-        while (blockId != BLOCK_CHAIN_TAIL)
+        while (blockId != MFSFileAllocationTable::InvalidBlockId)
         {
             result += blockSize;
             blockId = GetNextBlockId(blockId);
@@ -89,7 +88,7 @@ bool MFSPartition::ChainedBlockStream::Seek(MFSStreamSeekOrigin origin, INT64 of
 UINT64 MFSPartition::ChainedBlockStream::OnBlockSwap(UINT64 currentBlock)
 {
     DWORD nextBlock = GetNextBlockId(static_cast<DWORD>(currentBlock));
-    return nextBlock == BLOCK_CHAIN_TAIL
+    return nextBlock == MFSFileAllocationTable::InvalidBlockId
         ? _partition->_device->GetBlocksCount()
         : nextBlock;
 }
@@ -111,19 +110,19 @@ bool MFSPartition::ChainedBlockStream::SeekBegin(INT64 offset)
 
     DWORD blockSize = GetDeviceBlockSize();
     DWORD blockId = _firstBlock;
-    while (offset >= blockSize && blockId != BLOCK_CHAIN_TAIL)
+    while (offset >= blockSize && blockId != MFSFileAllocationTable::InvalidBlockId)
     {
         offset -= blockSize;
         blockId = GetNextBlockId(blockId);
     }
 
-    if (blockId == BLOCK_CHAIN_TAIL)
+    if (blockId == MFSFileAllocationTable::InvalidBlockId)
     {
         if (offset != 0)
             return false;
         else
         {
-            _currentBlock = BLOCK_CHAIN_TAIL;
+            _currentBlock = MFSFileAllocationTable::InvalidBlockId;
             _blockOffset = 0;
             return true;
         }
@@ -147,7 +146,7 @@ bool MFSPartition::ChainedBlockStream::SeekEnd(INT64 offset)
         return false;
     else if (offset == 0)
     {
-        _currentBlock = BLOCK_CHAIN_TAIL;
+        _currentBlock = MFSFileAllocationTable::InvalidBlockId;
         _blockOffset = 0;
         return true;
     }
@@ -171,6 +170,11 @@ MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 le
 MFSFSEntryMeta * MFSPartition::Internals::GetEntryMeta(uint32_t fsnodeId) const
 {
     return &_partition->_fsnodePool[fsnodeId];
+}
+
+bool MFSPartition::Internals::FreeEntryMeta(uint32_t fsnodeId)
+{
+    // TODO: Implement MFSPartition::Internals::FreeEntryMeta(uint32_t fsnodeId).
 }
 
 
@@ -236,25 +240,25 @@ void MFSPartition::BuildFileSystem()
     DWORD fatBlockOffset = babBlockOffset + babBlocksCount;
     DWORD fsnodePoolBlockOffset = fatBlockOffset + fatBlocksCount;
 
-    _blockChain->Set(0, BLOCK_CHAIN_TAIL);
+    _blockChain->Set(0, MFSFileAllocationTable::InvalidBlockId);
 
     for (DWORD i = 0; i < babBlocksCount; ++i)
         _blockChain->Set(babBlockOffset + i, babBlockOffset + i + 1);
-    _blockChain->Set(babBlockOffset + babBlocksCount - 1, BLOCK_CHAIN_TAIL);
+    _blockChain->Set(babBlockOffset + babBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
     for (DWORD i = 0; i < fatBlocksCount; ++i)
         _blockChain->Set(fatBlockOffset + i, fatBlockOffset + i + 1);
-    _blockChain->Set(fatBlockOffset + fatBlocksCount - 1, BLOCK_CHAIN_TAIL);
+    _blockChain->Set(fatBlockOffset + fatBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
     for (DWORD i = 0; i < fsnodePoolBlocksCount; ++i)
         _blockChain->Set(fsnodePoolBlockOffset + i, fsnodePoolBlockOffset + i + 1);
-    _blockChain->Set(fsnodePoolBlockOffset + fsnodePoolBlocksCount - 1, BLOCK_CHAIN_TAIL);
+    _blockChain->Set(fsnodePoolBlockOffset + fsnodePoolBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
     // Initialize fsnode pool.
     _fsnodePool.reset(new MFSFSEntryMeta[static_cast<DWORD>(_device->GetBlocksCount())]);
     // Initialize the first fsnode as the node for the root directory.
     _fsnodePool[0].common.flags = 0 | MFS_FSENTRY_FLAG_PROTECTED;
-    _fsnodePool[0].common.firstBlockId = BLOCK_CHAIN_TAIL;
+    _fsnodePool[0].common.firstBlockId = MFSFileAllocationTable::InvalidBlockId;
 
     uint64_t timestamp = MFSGetCurrentTimestamp();
     MFSGetInteger64Struct(&_fsnodePool[0].common.creationTimestamp, timestamp);
@@ -418,7 +422,56 @@ bool MFSPartition::LoadFSNodePool(MFSBlockStream * deviceStream)
     return ret;
 }
 
+MFSPartition::Internals::Internals(MFSPartition * host)
+    : _partition(host)
+{
+}
+
 MFSPartition * MFSPartition::Internals::GetPartition() const
 {
     return _partition;
+}
+
+DWORD MFSPartition::Internals::AllocateDeviceBlock()
+{
+    DWORD blockId = _partition->_blockAllocation->AllocBlock();
+    return blockId;
+}
+
+bool MFSPartition::Internals::AllocateDeviceBlock(DWORD blockId)
+{
+    return _partition->_blockAllocation->AllocBlock(blockId);
+}
+
+bool MFSPartition::Internals::FreeDeviceBlock(DWORD blockId)
+{
+    _partition->_blockAllocation->FreeBlock(blockId);
+    return true;
+}
+
+DWORD MFSPartition::Internals::AllocateTailBlock(DWORD firstBlockId)
+{
+    DWORD blockId = AllocateDeviceBlock();
+    // TODO: Implement MFSPartition::Internals::AllocateTailBlock(DWORD).
+}
+
+DWORD MFSPartition::Internals::AllocateFrontBlock(DWORD firstBlockId)
+{
+    DWORD blockId = AllocateDeviceBlock();
+    // TODO: Implement MFSPartition::Internals::AllocateFrontBlock(DWORD).
+}
+
+DWORD MFSPartition::Internals::FreeChainedBlock(DWORD firstBlockId, DWORD blockId)
+{
+    // TODO: Implement MFSPartition::Internals::FreeChainedBlock(DWORD, DWORD);
+}
+
+DWORD MFSPartition::Internals::AllocateEntryMeta()
+{
+    // TODO: Implement MFSPartition::Internals::AllocateEntryMeta().
+}
+
+bool MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId)
+{
+    // TODO: Implement MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId).
 }
