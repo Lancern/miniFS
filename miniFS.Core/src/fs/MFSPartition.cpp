@@ -2,6 +2,7 @@
 #include "../../include/stream/MFSMemoryStream.h"
 #include "../../include/serialize/MFSBlockAllocationBitmapSerializer.h"
 #include "../../include/serialize/MFSFileAllocationTableSerializer.h"
+#include "../../include/serialize/MFSFSNodePoolSerializer.h"
 #include "../../include/stream/MFSStreamWriter.h"
 #include "../../include/MFSDateTime.h"
 
@@ -157,6 +158,11 @@ bool MFSPartition::ChainedBlockStream::SeekEnd(INT64 offset)
 }
 
 
+MFSPartition::Internals::Internals(MFSPartition * host)
+    : _partition(host)
+{
+}
+
 MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock)
 {
     return new ChainedBlockStream(_partition, firstBlock);
@@ -169,12 +175,63 @@ MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 le
 
 MFSFSEntryMeta * MFSPartition::Internals::GetEntryMeta(uint32_t fsnodeId) const
 {
-    return &_partition->_fsnodePool[fsnodeId];
+    return &_partition->_fsnodePool->Get(fsnodeId);
 }
 
 bool MFSPartition::Internals::FreeEntryMeta(uint32_t fsnodeId)
 {
-    // TODO: Implement MFSPartition::Internals::FreeEntryMeta(uint32_t fsnodeId).
+    return _partition->_blockAllocation->AllocBlock(fsnodeId);
+}
+
+MFSPartition * MFSPartition::Internals::GetPartition() const
+{
+    return _partition;
+}
+
+DWORD MFSPartition::Internals::AllocateDeviceBlock()
+{
+    DWORD blockId = _partition->_blockAllocation->AllocBlock();
+    return blockId;
+}
+
+bool MFSPartition::Internals::AllocateDeviceBlock(DWORD blockId)
+{
+    return _partition->_blockAllocation->AllocBlock(blockId);
+}
+
+bool MFSPartition::Internals::FreeDeviceBlock(DWORD blockId)
+{
+    _partition->_blockAllocation->FreeBlock(blockId);
+    return true;
+}
+
+DWORD MFSPartition::Internals::AllocateTailBlock(DWORD firstBlockId)
+{
+    DWORD blockId = AllocateDeviceBlock();
+    _partition->_blockChain->AddTail(firstBlockId, blockId);
+    return blockId;
+}
+
+DWORD MFSPartition::Internals::AllocateFrontBlock(DWORD firstBlockId)
+{
+    DWORD blockId = AllocateDeviceBlock();
+    _partition->_blockChain->AddFront(firstBlockId, blockId);
+    return blockId;
+}
+
+DWORD MFSPartition::Internals::FreeChainedBlock(DWORD firstBlockId, DWORD blockId)
+{
+    return _partition->_blockChain->Remove(firstBlockId, blockId);
+}
+
+DWORD MFSPartition::Internals::AllocateEntryMeta()
+{
+    return _partition->_fsnodePool->Allocate();
+}
+
+bool MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId)
+{
+    return _partition->_fsnodePool->Allocate(fsnodeId);
 }
 
 
@@ -230,12 +287,12 @@ void MFSPartition::BuildFileSystem()
     _master.freeBlocks = _master.totalBlocks - fsblocksCount;
 
     // Build block allocation bitmap.
-    _blockAllocation.reset(new MFSBlockAllocationBitmap(_device->GetBlocksCount()));
+    _blockAllocation.reset(new MFSBlockAllocationBitmap(static_cast<DWORD>(_device->GetBlocksCount())));
     for (DWORD blockId = 0; blockId < fsblocksCount; ++blockId)
         _blockAllocation->Set(blockId);
 
     // Build file allocation table.
-    _blockChain.reset(new MFSFileAllocationTable(_device->GetBlocksCount()));
+    _blockChain.reset(new MFSFileAllocationTable(static_cast<DWORD>(_device->GetBlocksCount())));
     DWORD babBlockOffset = 1;
     DWORD fatBlockOffset = babBlockOffset + babBlocksCount;
     DWORD fsnodePoolBlockOffset = fatBlockOffset + fatBlocksCount;
@@ -255,29 +312,31 @@ void MFSPartition::BuildFileSystem()
     _blockChain->Set(fsnodePoolBlockOffset + fsnodePoolBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
     // Initialize fsnode pool.
-    _fsnodePool.reset(new MFSFSEntryMeta[static_cast<DWORD>(_device->GetBlocksCount())]);
+    _fsnodePool.reset(new MFSFSNodePool(static_cast<DWORD>(_device->GetBlocksCount())));
     // Initialize the first fsnode as the node for the root directory.
-    _fsnodePool[0].common.flags = 0 | MFS_FSENTRY_FLAG_PROTECTED;
-    _fsnodePool[0].common.firstBlockId = MFSFileAllocationTable::InvalidBlockId;
+    _fsnodePool->Allocate(0);       // Force allocate the first fsnode as the fsnode for the root directory.
+    MFSFSEntryMeta & rootDirMeta = _fsnodePool->Get(0);
+    rootDirMeta.common.flags = 0 | MFS_FSENTRY_FLAG_PROTECTED;
+    rootDirMeta.common.firstBlockId = MFSFileAllocationTable::InvalidBlockId;
 
     uint64_t timestamp = MFSGetCurrentTimestamp();
-    MFSGetInteger64Struct(&_fsnodePool[0].common.creationTimestamp, timestamp);
-    MFSGetInteger64Struct(&_fsnodePool[0].common.lastAccessTimestamp, timestamp);
-    MFSGetInteger64Struct(&_fsnodePool[0].common.lastModTimestamp, timestamp);
+    MFSGetInteger64Struct(&rootDirMeta.common.creationTimestamp, timestamp);
+    MFSGetInteger64Struct(&rootDirMeta.common.lastAccessTimestamp, timestamp);
+    MFSGetInteger64Struct(&rootDirMeta.common.lastModTimestamp, timestamp);
 
-    _fsnodePool[0].common.refCount = 1;
+    rootDirMeta.common.refCount = 1;
+    rootDirMeta.spec.directoryMeta.childCount = 0;
 
     // TODO: Implement MFSPartition::BuildFileSystem.
 }
 
-MFSFSEntry * MFSPartition::GetRoot() const
+MFSFSEntry * MFSPartition::GetRoot()
 {
     if (!_validDevice || IsRaw())
         return nullptr;
 
-    // TODO: Implement MFSPartition::GetRoot().
-
-    return nullptr;
+    MFSFSEntry * entry = new MFSFSEntry(GetInternalObject(), 0);
+    return entry;
 }
 
 MFSPartition::Internals MFSPartition::GetInternalObject()
@@ -371,6 +430,7 @@ bool MFSPartition::LoadBlockAllocationManager(MFSBlockStream * deviceStream)
     {
         MFSMemoryStream memStream(buffer, dwBabByteSize);
         _blockAllocation.reset(MFSBlockAllocationBitmapSerializer().Deserialize(&memStream));
+        memStream.Close();
     }
 
     VirtualFree(buffer, 0, MEM_RELEASE);
@@ -393,6 +453,7 @@ bool MFSPartition::LoadAllocationTable(MFSBlockStream * deviceStream)
     {
         MFSMemoryStream memStream(buffer, dwFatByteSize);
         _blockChain.reset(MFSFileAllocationTableSerializer().Deserialize(&memStream));
+        memStream.Close();
     }
 
     VirtualFree(buffer, 0, MEM_RELEASE);
@@ -406,72 +467,22 @@ bool MFSPartition::LoadAllocationTable(MFSBlockStream * deviceStream)
 bool MFSPartition::LoadFSNodePool(MFSBlockStream * deviceStream)
 {
     DWORD dwFsnodepoolByteSize = static_cast<DWORD>(deviceStream->GetDeviceBlocksCount()) * sizeof(MFSFSEntryMeta);
-    MFSFSEntryMeta * buffer = new MFSFSEntryMeta[static_cast<size_t>(deviceStream->GetDeviceBlocksCount())];
+    LPVOID buffer = VirtualAlloc(NULL, dwFsnodepoolByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
     DWORD read = deviceStream->Read(buffer, dwFsnodepoolByteSize, dwFsnodepoolByteSize);
     bool ret = (read == dwFsnodepoolByteSize);
-    
+
     if (ret)
-        _fsnodePool.reset(buffer);
-    else
     {
-        _validDevice = false;
-        delete[] buffer;
+        MFSMemoryStream memStream(buffer, dwFsnodepoolByteSize);
+        _fsnodePool.reset(MFSFSNodePoolSerializer().Deserialize(&memStream));
+        memStream.Close();
     }
 
+    VirtualFree(buffer, 0, MEM_RELEASE);
+
+    if (!ret)
+        _validDevice = false;
+
     return ret;
-}
-
-MFSPartition::Internals::Internals(MFSPartition * host)
-    : _partition(host)
-{
-}
-
-MFSPartition * MFSPartition::Internals::GetPartition() const
-{
-    return _partition;
-}
-
-DWORD MFSPartition::Internals::AllocateDeviceBlock()
-{
-    DWORD blockId = _partition->_blockAllocation->AllocBlock();
-    return blockId;
-}
-
-bool MFSPartition::Internals::AllocateDeviceBlock(DWORD blockId)
-{
-    return _partition->_blockAllocation->AllocBlock(blockId);
-}
-
-bool MFSPartition::Internals::FreeDeviceBlock(DWORD blockId)
-{
-    _partition->_blockAllocation->FreeBlock(blockId);
-    return true;
-}
-
-DWORD MFSPartition::Internals::AllocateTailBlock(DWORD firstBlockId)
-{
-    DWORD blockId = AllocateDeviceBlock();
-    // TODO: Implement MFSPartition::Internals::AllocateTailBlock(DWORD).
-}
-
-DWORD MFSPartition::Internals::AllocateFrontBlock(DWORD firstBlockId)
-{
-    DWORD blockId = AllocateDeviceBlock();
-    // TODO: Implement MFSPartition::Internals::AllocateFrontBlock(DWORD).
-}
-
-DWORD MFSPartition::Internals::FreeChainedBlock(DWORD firstBlockId, DWORD blockId)
-{
-    // TODO: Implement MFSPartition::Internals::FreeChainedBlock(DWORD, DWORD);
-}
-
-DWORD MFSPartition::Internals::AllocateEntryMeta()
-{
-    // TODO: Implement MFSPartition::Internals::AllocateEntryMeta().
-}
-
-bool MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId)
-{
-    // TODO: Implement MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId).
 }

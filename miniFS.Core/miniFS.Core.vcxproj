@@ -47,7 +47,6 @@
     <ClInclude Include="include\stream\MFSStreamWriter.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\fs\MFSFSEntry.h" />
     <ClCompile Include="include\serialize\MFSFSNodePoolSerializer.h" />
     <ClCompile Include="src\fs\MFSFSEntry.cpp" />
     <ClCompile Include="src\fs\MFSFSNodePool.cpp" />

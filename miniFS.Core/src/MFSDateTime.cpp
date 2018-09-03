@@ -127,7 +127,7 @@ uint64_t MFSDateTime::GetTimestamp() const
     FILETIME fileTime;
     SystemTimeToFileTime(&sysTimeUtc, &fileTime);
 
-    uint64_t result = (fileTime.dwHighDateTime << 32) | fileTime.dwLowDateTime;
+    uint64_t result = (static_cast<uint64_t>(fileTime.dwHighDateTime) << 32) | fileTime.dwLowDateTime;
     return result;
 }
 

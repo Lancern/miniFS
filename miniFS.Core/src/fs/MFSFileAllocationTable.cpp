@@ -82,12 +82,21 @@ uint32_t MFSFileAllocationTable::RemoveAfter(uint32_t position)
     return next;
 }
 
-void MFSFileAllocationTable::Remove(uint32_t first, uint32_t blockId)
+uint32_t MFSFileAllocationTable::Remove(uint32_t first, uint32_t blockId)
 {
-    uint32_t before = GetBlockBefore(first, blockId);
-    if (before == InvalidBlockId)
-        return;
-    RemoveAfter(before);
+    if (first == blockId)
+    {
+        uint32_t second = _next[first];
+        _next[first] = InvalidBlockId;
+        return second;
+    }
+    else
+    {
+        uint32_t before = GetBlockBefore(first, blockId);
+        if (before != InvalidBlockId)
+            RemoveAfter(before);
+        return first;
+    }
 }
 
 uint32_t MFSFileAllocationTable::RemoveFront(uint32_t first)

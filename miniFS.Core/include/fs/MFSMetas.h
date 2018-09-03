@@ -28,15 +28,15 @@ struct MFS_INTEGER64
     uint32_t high;
 };
 
-inline int64_t MFSGetPackedSignedValue(const MFS_INTEGER64 * i64)
+inline uint64_t MFSGetPackedUnsignedValue(const MFS_INTEGER64 * i64)
 {
-    int64_t result = static_cast<int64_t>(MFSGetPackedUnsignedValue(i64));
+    uint64_t result = (static_cast<uint64_t>(i64->high) << 32) | i64->low;
     return result;
 }
 
-inline uint64_t MFSGetPackedUnsignedValue(const MFS_INTEGER64 * i64)
+inline int64_t MFSGetPackedSignedValue(const MFS_INTEGER64 * i64)
 {
-    uint64_t result = (i64->high << 32) | i64->low;
+    int64_t result = static_cast<int64_t>(MFSGetPackedUnsignedValue(i64));
     return result;
 }
 

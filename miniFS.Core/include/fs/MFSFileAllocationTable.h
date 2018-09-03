@@ -54,10 +54,11 @@ class MFSFileAllocationTable
         将给定的块的后一个块从块链中移除。
         @return 被移除的块编号。
     
-    void MFSFileAllocationTable::Remove(uint32_t first, uint32_t blockId)
+    uint32_t MFSFileAllocationTable::Remove(uint32_t first, uint32_t blockId)
         移除给定的块链中的某一块。
         @param first 要删除的块所属的块链的第一块编号。
         @param blockId 要删除的块的编号。
+        @return 完成移除操作后的块链的第一块编号。
 
     uint32_t MFSFileAllocationTable::RemoveFront(uint32_t first)
         移除给定的块链的第一块。
@@ -90,7 +91,7 @@ public:
     void AddFront(uint32_t first, uint32_t blockId);
 
     uint32_t RemoveAfter(uint32_t position);
-    void Remove(uint32_t first, uint32_t blockId);
+    uint32_t Remove(uint32_t first, uint32_t blockId);
     uint32_t RemoveFront(uint32_t first);
 
 	friend class MFSFileAllocationTableSerializer;

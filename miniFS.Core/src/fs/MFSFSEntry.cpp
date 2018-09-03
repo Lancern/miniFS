@@ -1,4 +1,4 @@
-#include "../../include/fs/MFSFSEntry.h"
+#include "../../include/fs/MFSPartition.h"
 #include "../../include/serialize/MFSDirectoryBlockSerializer.h"
 #include "../../include/fs/MFSFSNodePool.h"
 
@@ -182,7 +182,7 @@ MFSFSEntry * MFSFSEntry::RemoveSubEntry(const MFSString & name)
 		{
 			ret = new MFSFSEntry(_partition, fsnodeId);
 			if (params.blockObject->Empty())
-                _partition.FreeChainedBlock(_meta->common.firstBlockId, params.blockId);
+                _partition.FreeChainedBlock(_meta->common.firstBlockId, static_cast<DWORD>(params.blockId));
             params.stopIteration = true;
 		}
     };
