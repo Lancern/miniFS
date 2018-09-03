@@ -41,6 +41,9 @@ public:
     UINT64 GetLength() const override;
     UINT64 GetPosition() const override;
 
+    UINT64 GetCurrentBlockId() const;
+    UINT64 GetBlockInternalOffset() const;
+
     MFSBlockDevice * GetDevice() const;
     DWORD GetDeviceBlockSize() const;
     UINT64 GetDeviceBlocksCount() const;
@@ -54,9 +57,6 @@ public:
 
 protected:
     bool SeekBlock(UINT64 blockId);
-
-    UINT64 GetCurrentBlockId() const;
-    UINT64 GetBlockInternalOffset() const;
 
     virtual UINT64 OnBlockSwap(UINT64 currentBlock);
 

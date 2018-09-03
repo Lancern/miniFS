@@ -118,7 +118,7 @@ public:
 
     uint64_t GetFileSize() const;
 
-    MFSStream * OpenDataStream();
+    MFSBlockStream * OpenDataStream();
 
     auto GetSubEntries() -> std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>>;
 	bool ContainsSubEntry(const MFSString & name);
@@ -127,6 +127,14 @@ public:
     MFSFSEntry * RemoveSubEntry(const MFSString & name);
 
 private:
+    struct WalkDirectoryBlockParameters
+    {
+        uint32_t blockId;
+        MFSBlockStream * blockStream;
+        MFSDirectoryBlock * blockObject;
+        bool stopIteration;
+    };
+
     MFSPartition::Internals _partition;
     MFSFSEntryMeta * _meta;
     uint32_t _fsnodeId;
@@ -138,13 +146,21 @@ private:
 template<typename Callback>
 inline void MFSFSEntry::WalkDirectoryBlocks(Callback callback)
 {
-	std::unique_ptr<MFSStream> stream(OpenDataStream());
+	std::unique_ptr<MFSBlockStream> stream(OpenDataStream());
 	MFSDirectoryBlockSerializer serializer(_partition->GetDevice()->GetBlockSize());
 	while (stream->HasNext())
 	{
 		std::unique_ptr<MFSDirectoryBlock> block(serializer.Deserialize(stream.get()));
-		if (!callback(block.get()))
-			break;
+
+        WalkDirectoryBlockParameters params;
+        params.blockId = stream->GetCurrentBlockId();
+        params.blockStream = stream.get();
+        params.blockObject = block.get();
+        params.stopIteration = false;
+        callback(params);
+
+        if (params.stopIteration)
+            break;
 	}
 	stream->Close();
 	return ret;
