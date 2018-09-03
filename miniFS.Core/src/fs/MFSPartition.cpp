@@ -10,6 +10,168 @@
 #define CEIL_DIV(a, b)      ((a) / (b) + (a) % (b) ? 1 : 0)
 
 #define BLOCK_CHAIN_TAIL      0xFFFFFFFF
+#define CBLOCK_STREAM_MAX_LEN        0xFFFFFFFFFFFFFFFF
+
+
+MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId)
+    : ChainedBlockStream(partition, firstBlockId, CBLOCK_STREAM_MAX_LEN)
+{
+    _length = GetLength();
+}
+
+MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId, UINT64 length)
+    : MFSBlockStream(partition->_device.get()), _partition(partition), _firstBlock(firstBlockId),
+    _currentBlock(firstBlockId), _blockOffset(0), _length(length)
+{
+    MFSBlockStream::Seek(MFSStreamSeekOrigin::Begin, GetDeviceBlockSize() * _firstBlock);
+}
+
+MFSPartition * MFSPartition::ChainedBlockStream::GetPartition() const
+{
+    return _partition;
+}
+
+bool MFSPartition::ChainedBlockStream::HasNext() const
+{
+    return _currentBlock != BLOCK_CHAIN_TAIL;
+}
+
+UINT64 MFSPartition::ChainedBlockStream::GetLength() const
+{
+    if (_length != CBLOCK_STREAM_MAX_LEN)
+        return _length;
+    else
+    {
+        UINT64 result = 0;
+        DWORD blockSize = GetDeviceBlockSize();
+        DWORD blockId = _firstBlock;
+        while (blockId != BLOCK_CHAIN_TAIL)
+        {
+            result += blockSize;
+            blockId = GetNextBlockId(blockId);
+        }
+
+        return result;
+    }
+}
+
+UINT64 MFSPartition::ChainedBlockStream::GetPosition() const
+{
+    UINT64 result = 0;
+    DWORD blockSize = GetDeviceBlockSize();
+    DWORD blockId = _firstBlock;
+
+    while (blockId != _currentBlock)
+    {
+        result += blockSize;
+        blockId = GetNextBlockId(blockId);
+    }
+
+    result += _blockOffset;
+    return result;
+}
+
+bool MFSPartition::ChainedBlockStream::Seek(MFSStreamSeekOrigin origin, INT64 offset)
+{
+    switch (origin)
+    {
+    case MFSStreamSeekOrigin::Begin:
+        return SeekBegin(offset);
+    case MFSStreamSeekOrigin::Relative:
+        return SeekRelative(offset);
+    case MFSStreamSeekOrigin::End:
+        return SeekEnd(offset);
+    default:
+        return false;
+    }
+}
+
+UINT64 MFSPartition::ChainedBlockStream::OnBlockSwap(UINT64 currentBlock)
+{
+    DWORD nextBlock = GetNextBlockId(static_cast<DWORD>(currentBlock));
+    return nextBlock == BLOCK_CHAIN_TAIL
+        ? _partition->_device->GetBlocksCount()
+        : nextBlock;
+}
+
+DWORD MFSPartition::ChainedBlockStream::GetNextBlockId(DWORD current) const
+{
+    return _partition->_blockChain->Get(current);
+}
+
+DWORD MFSPartition::ChainedBlockStream::GetNextBlockId() const
+{
+    return GetNextBlockId(_currentBlock);
+}
+
+bool MFSPartition::ChainedBlockStream::SeekBegin(INT64 offset)
+{
+    if (offset < 0)
+        return false;
+
+    DWORD blockSize = GetDeviceBlockSize();
+    DWORD blockId = _firstBlock;
+    while (offset >= blockSize && blockId != BLOCK_CHAIN_TAIL)
+    {
+        offset -= blockSize;
+        blockId = GetNextBlockId(blockId);
+    }
+
+    if (blockId == BLOCK_CHAIN_TAIL)
+    {
+        if (offset != 0)
+            return false;
+        else
+        {
+            _currentBlock = BLOCK_CHAIN_TAIL;
+            _blockOffset = 0;
+            return true;
+        }
+    }
+    else
+    {
+        _currentBlock = blockId;
+        _blockOffset = static_cast<DWORD>(offset);
+        return true;
+    }
+}
+
+bool MFSPartition::ChainedBlockStream::SeekRelative(INT64 offset)
+{
+    return SeekBegin(GetPosition() + offset);
+}
+
+bool MFSPartition::ChainedBlockStream::SeekEnd(INT64 offset)
+{
+    if (offset > 0)
+        return false;
+    else if (offset == 0)
+    {
+        _currentBlock = BLOCK_CHAIN_TAIL;
+        _blockOffset = 0;
+        return true;
+    }
+    else
+    {
+        return SeekBegin(GetLength() + offset);
+    }
+}
+
+
+MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock)
+{
+    return new ChainedBlockStream(_partition, firstBlock);
+}
+
+MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 length)
+{
+    return new ChainedBlockStream(_partition, firstBlock, length);
+}
+
+MFSFSEntryMeta * MFSPartition::Internals::GetEntryMeta(uint32_t fsnodeId) const
+{
+    return &_partition->_fsnodePool[fsnodeId];
+}
 
 
 MFSPartition::MFSPartition(MFSBlockDevice * device)
@@ -112,6 +274,11 @@ MFSFSEntry * MFSPartition::GetRoot() const
     // TODO: Implement MFSPartition::GetRoot().
 
     return nullptr;
+}
+
+MFSPartition::Internals MFSPartition::GetInternalObject()
+{
+    return Internals(this);
 }
 
 void MFSPartition::Flush()
@@ -251,164 +418,7 @@ bool MFSPartition::LoadFSNodePool(MFSBlockStream * deviceStream)
     return ret;
 }
 
-MFSPartition::ChainedBlockStream * MFSPartition::OpenBlockStream(DWORD firstBlock)
-{
-    return new ChainedBlockStream(this, firstBlock);
-}
-
-MFSPartition::ChainedBlockStream * MFSPartition::OpenBlockStream(DWORD firstBlock, UINT64 length)
-{
-    return new ChainedBlockStream(this, firstBlock, length);
-}
-
-MFSFSEntryMeta * MFSPartition::GetEntryMeta(uint32_t fsnodeId) const
-{
-    return &_fsnodePool[fsnodeId];
-}
-
-
-#define CBLOCK_STREAM_MAX_LEN        0xFFFFFFFFFFFFFFFF
-
-MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId)
-    : ChainedBlockStream(partition, firstBlockId, CBLOCK_STREAM_MAX_LEN)
-{
-    _length = GetLength();
-}
-
-MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId, UINT64 length)
-    : MFSBlockStream(partition->_device.get()), _partition(partition), _firstBlock(firstBlockId),
-      _currentBlock(firstBlockId), _blockOffset(0), _length(length)
-{
-    MFSBlockStream::Seek(MFSStreamSeekOrigin::Begin, GetDeviceBlockSize() * _firstBlock);
-}
-
-MFSPartition * MFSPartition::ChainedBlockStream::GetPartition() const
+MFSPartition * MFSPartition::Internals::GetPartition() const
 {
     return _partition;
-}
-
-bool MFSPartition::ChainedBlockStream::HasNext() const
-{
-    return _currentBlock != BLOCK_CHAIN_TAIL;
-}
-
-UINT64 MFSPartition::ChainedBlockStream::GetLength() const
-{
-    if (_length != CBLOCK_STREAM_MAX_LEN)
-        return _length;
-    else
-    {
-        UINT64 result = 0;
-        DWORD blockSize = GetDeviceBlockSize();
-        DWORD blockId = _firstBlock;
-        while (blockId != BLOCK_CHAIN_TAIL)
-        {
-            result += blockSize;
-            blockId = GetNextBlockId(blockId);
-        }
-
-        return result;
-    }
-}
-
-UINT64 MFSPartition::ChainedBlockStream::GetPosition() const
-{
-    UINT64 result = 0;
-    DWORD blockSize = GetDeviceBlockSize();
-    DWORD blockId = _firstBlock;
-
-    while (blockId != _currentBlock)
-    {
-        result += blockSize;
-        blockId = GetNextBlockId(blockId);
-    }
-
-    result += _blockOffset;
-    return result;
-}
-
-bool MFSPartition::ChainedBlockStream::Seek(MFSStreamSeekOrigin origin, INT64 offset)
-{
-    switch (origin)
-    {
-    case MFSStreamSeekOrigin::Begin:
-        return SeekBegin(offset);
-    case MFSStreamSeekOrigin::Relative:
-        return SeekRelative(offset);
-    case MFSStreamSeekOrigin::End:
-        return SeekEnd(offset);
-    default:
-        return false;
-    }
-}
-
-UINT64 MFSPartition::ChainedBlockStream::OnBlockSwap(UINT64 currentBlock)
-{
-    DWORD nextBlock = GetNextBlockId(static_cast<DWORD>(currentBlock));
-    return nextBlock == BLOCK_CHAIN_TAIL 
-        ? _partition->_device->GetBlocksCount() 
-        : nextBlock;
-}
-
-DWORD MFSPartition::ChainedBlockStream::GetNextBlockId(DWORD current) const
-{
-    return _partition->_blockChain->Get(current);
-}
-
-DWORD MFSPartition::ChainedBlockStream::GetNextBlockId() const
-{
-    return GetNextBlockId(_currentBlock);
-}
-
-bool MFSPartition::ChainedBlockStream::SeekBegin(INT64 offset)
-{
-    if (offset < 0)
-        return false;
-
-    DWORD blockSize = GetDeviceBlockSize();
-    DWORD blockId = _firstBlock;
-    while (offset >= blockSize && blockId != BLOCK_CHAIN_TAIL)
-    {
-        offset -= blockSize;
-        blockId = GetNextBlockId(blockId);
-    }
-
-    if (blockId == BLOCK_CHAIN_TAIL)
-    {
-        if (offset != 0)
-            return false;
-        else
-        {
-            _currentBlock = BLOCK_CHAIN_TAIL;
-            _blockOffset = 0;
-            return true;
-        }
-    }
-    else
-    {
-        _currentBlock = blockId;
-        _blockOffset = static_cast<DWORD>(offset);
-        return true;
-    }
-}
-
-bool MFSPartition::ChainedBlockStream::SeekRelative(INT64 offset)
-{
-    return SeekBegin(GetPosition() + offset);
-}
-
-bool MFSPartition::ChainedBlockStream::SeekEnd(INT64 offset)
-{
-    if (offset > 0)
-        return false;
-    else if (offset == 0)
-    {
-        _currentBlock = BLOCK_CHAIN_TAIL;
-        _blockOffset = 0;
-        return true;
-    }
-    else
-    {
-        return SeekBegin(GetLength() + offset);
-    }
 }
