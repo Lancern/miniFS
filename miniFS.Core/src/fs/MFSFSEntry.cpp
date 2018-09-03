@@ -152,7 +152,14 @@ MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name)
 		auto item = block->AddDir(name);
 		if (item)
 		{
-			//..........
+			ret = new MFSFSEntry(_partition, item->fsnodeId);
+			return false;
 		}
+		return true;
 	};
+	WalkDirectoryBlocks(callback);
+	if (ret == nullptr)
+	{
+		//TODO:
+	}
 }
