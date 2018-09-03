@@ -100,10 +100,9 @@ public:
         bool FreeDeviceBlock(DWORD blockId);
 
         DWORD AllocateTailBlock(DWORD firstBlockId);
-        bool FreeTailBlock();
-
         DWORD AllocateFrontBlock(DWORD firstBlockId);
-        bool FreeFrontBlock();
+
+		DWORD FreeChainedBlock(DWORD firstBlockId, DWORD blockId);
 
         MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const;
 

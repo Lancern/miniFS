@@ -1,5 +1,6 @@
 #include "../../include/fs/MFSFSEntry.h"
 #include "../../include/serialize/MFSDirectoryBlockSerializer.h"
+#include "../../include/fs/MFSFSNodePool.h"
 
 MFSFSEntry::MFSFSEntry(MFSPartition::Internals partition, uint32_t fsnodeId)
     : _partition(partition), _meta(partition.GetEntryMeta(fsnodeId)), _fsnodeId(fsnodeId)
@@ -160,6 +161,30 @@ MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name)
 	WalkDirectoryBlocks(callback);
 	if (ret == nullptr)
 	{
-		//TODO:
+		DWORD blockId = _partition.AllocateFrontBlock(_meta->common.firstBlockId);
+		if (blockId == MFSBlockAllocationBitmap::InvalidBlockId) return nullptr;
+		_meta->common.firstBlockId = blockId;
+		WalkDirectoryBlocks(callback);
+	}
+	return ret;
+}
+
+MFSFSEntry * MFSFSEntry::RemoveSubEntry(const MFSString & name)
+{
+	if (!ContainsSubEntry(name)) return nullptr;
+	MFSFSEntry* ret = nullptr;
+	auto callback = [&](MFSDirectoryBlock* block)->bool
+	{
+		uint32_t fsnodeId = block->EraseDir(name);
+		if (fsnodeId != MFSFSNodePool::InvalidFSNodeId)
+		{
+			ret = new MFSFSEntry(_partition, fsnodeId);
+			if (block->Empty())
+			{
+				//TODO:
+			}
+			return false;
+		}
+		return true;
 	}
 }

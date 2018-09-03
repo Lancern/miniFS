@@ -40,7 +40,9 @@ public:
 
 	MFSFSDirectoryItem* FindDir(const MFSString& name) const;
 	MFSFSDirectoryItem* AddDir(const MFSString& name);
-	bool EraseDir(const MFSString& name);
+	uint32_t EraseDir(const MFSString& name);
+
+	bool Empty() const;
 
 private:
 	size_t _usedSize, _blockSize;

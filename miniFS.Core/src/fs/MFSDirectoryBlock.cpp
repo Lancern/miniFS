@@ -1,4 +1,5 @@
-#include "..\..\include\fs\MFSDirectoryBlock.h"
+#include "../../include/fs/MFSDirectoryBlock.h"
+#include "../../include/fs/MFSFSNodePool.h"
 
 MFSDirectoryBlock::Iterator::Iterator(base_iter iter)
 	: _iter(iter)
@@ -73,13 +74,19 @@ MFSFSDirectoryItem * MFSDirectoryBlock::AddDir(const MFSString & name)
 	return &_dir[name];
 }
 
-bool MFSDirectoryBlock::EraseDir(const MFSString & name)
+uint32_t MFSDirectoryBlock::EraseDir(const MFSString & name)
 {
-	if (FindDir(name) == nullptr) 
-        return false;
+	if (FindDir(name) == nullptr)
+        return MFSFSNodePool::InvalidFSNodeId;
 
+	uint32_t ret = _dir[name].fsnodeId;
 	_dir.erase(name);
 	size_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(WCHAR);
 	_usedSize -= size;
-	return true;
+	return ret;
+}
+
+bool MFSDirectoryBlock::Empty() const
+{
+	return _dir.empty();
 }
