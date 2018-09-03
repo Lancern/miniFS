@@ -1,14 +1,14 @@
 #include "../../include/fs/MFSFSEntry.h"
 #include "../../include/serialize/MFSDirectoryBlockSerializer.h"
 
-MFSFSEntry::MFSFSEntry(MFSPartition * partition, uint32_t fsnodeId)
-    : _partition(partition), _meta(partition->GetEntryMeta(fsnodeId)), _fsnodeId(fsnodeId)
+MFSFSEntry::MFSFSEntry(MFSPartition::Internals partition, uint32_t fsnodeId)
+    : _partition(partition), _meta(partition.GetEntryMeta(fsnodeId)), _fsnodeId(fsnodeId)
 {
 }
 
 MFSPartition * MFSFSEntry::GetPartition() const
 {
-    return _partition;
+    return _partition.GetPartition();
 }
 
 uint32_t MFSFSEntry::GetFSNodeId() const

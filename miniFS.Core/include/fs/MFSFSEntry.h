@@ -96,7 +96,7 @@ enum MFSFSEntryAccess
 class MFSFSEntry
 {
 public:
-    MFSFSEntry(MFSPartition * partition, uint32_t fsnodeId);
+    MFSFSEntry(MFSPartition::Internals partition, uint32_t fsnodeId);
 
     MFSPartition * GetPartition() const;
     uint32_t GetFSNodeId() const;
@@ -127,7 +127,7 @@ public:
     MFSFSEntry * RemoveSubEntry(const MFSString & name);
 
 private:
-    MFSPartition * _partition;
+    MFSPartition::Internals _partition;
     MFSFSEntryMeta * _meta;
     uint32_t _fsnodeId;
 

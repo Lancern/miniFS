@@ -49,24 +49,6 @@ class MFSPartition
 
 class MFSPartition
 {
-public:
-    MFSPartition(MFSBlockDevice * device);
-    ~MFSPartition();
-
-    MFSBlockDevice * GetDevice() const;
-    bool IsValidDevice() const;
-
-    bool IsRaw() const;
-    UINT64 GetTotalSpaceInBytes() const;
-    UINT64 GetFreeSpaceInBytes() const;
-    
-    void BuildFileSystem();
-
-    MFSFSEntry * GetRoot() const;
-
-    void Flush();
-    void Close();
-
 private:
     class ChainedBlockStream
         : public MFSBlockStream
@@ -74,7 +56,7 @@ private:
     public:
         ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId);
         ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId, UINT64 length);
-        
+
         MFSPartition * GetPartition() const;
 
         bool HasNext() const override;
@@ -102,6 +84,55 @@ private:
         bool SeekEnd(INT64 offset);
     };
 
+public:
+    class Internals
+    {
+    public:
+        Internals(MFSPartition * host);
+
+    private:
+        MFSPartition * _partition;
+
+        MFSPartition * GetPartition() const;
+
+        DWORD AllocateDeviceBlock();
+        bool AllocateDeviceBlock(DWORD blockId);
+        bool FreeDeviceBlock(DWORD blockId);
+
+        DWORD AllocateTailBlock(DWORD firstBlockId);
+        bool FreeTailBlock();
+
+        DWORD AllocateFrontBlock(DWORD firstBlockId);
+        bool FreeFrontBlock();
+
+        MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const;
+
+        MFSStream * OpenBlockStream(DWORD firstBlock);
+        MFSStream * OpenBlockStream(DWORD firstBlock, UINT64 length);
+
+        friend class MFSFSEntry;
+    };
+
+    MFSPartition(MFSBlockDevice * device);
+    ~MFSPartition();
+
+    MFSBlockDevice * GetDevice() const;
+    bool IsValidDevice() const;
+
+    bool IsRaw() const;
+    UINT64 GetTotalSpaceInBytes() const;
+    UINT64 GetFreeSpaceInBytes() const;
+    
+    void BuildFileSystem();
+
+    MFSFSEntry * GetRoot() const;
+
+    Internals GetInternalObject();
+
+    void Flush();
+    void Close();
+
+private:
     std::unique_ptr<MFSBlockDevice> _device;
     MFSFSMasterInfo _master;
     std::unique_ptr<MFSBlockAllocationBitmap> _blockAllocation;
@@ -115,11 +146,4 @@ private:
     bool LoadBlockAllocationManager(MFSBlockStream * deviceStream);
     bool LoadAllocationTable(MFSBlockStream * deviceStream);
     bool LoadFSNodePool(MFSBlockStream * deviceStream);
-
-    ChainedBlockStream * OpenBlockStream(DWORD firstBlock);
-    ChainedBlockStream * OpenBlockStream(DWORD firstBlock, UINT64 length);
-
-    MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const;
-
-    friend class MFSFSEntry;
 };
