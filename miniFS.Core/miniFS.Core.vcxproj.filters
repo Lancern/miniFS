@@ -176,5 +176,11 @@
     <ClCompile Include="src\fs\MFSFSEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\fs\MFSPartitionInternals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fs\MFSPartitionChainedBlockStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

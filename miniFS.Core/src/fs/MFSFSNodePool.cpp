@@ -1,4 +1,6 @@
 #include "../../include/fs/MFSFSNodePool.h"
+#include "../../include/fs/MFSFileAllocationTable.h"
+#include "../../include/MFSDateTime.h"
 
 
 MFSFSNodePool::MFSFSNodePool(size_t numberOfNodes)
@@ -7,23 +9,25 @@ MFSFSNodePool::MFSFSNodePool(size_t numberOfNodes)
     memset(_pool.get(), 0, numberOfNodes * sizeof(MFSFSEntryMeta));
 }
 
-uint32_t MFSFSNodePool::Allocate()
+uint32_t MFSFSNodePool::GetAvailableFSNodeId()
 {
     if (_alloc == InvalidFSNodeId)
         return _alloc;
 
-    uint32_t fsnodeId = _alloc;
+    uint32_t result = _alloc;
     _alloc = LocateNextFreeNode();
 
-    return fsnodeId;
+    return result;
 }
 
 bool MFSFSNodePool::Allocate(uint32_t fsnodeId)
 {
-    if (_pool[fsnodeId].common.refCount)
-        return false;
-    else
-        return true;
+    bool first = (_pool[fsnodeId].common.refCount == 0);
+    if (first)
+        InitializeFSNode(fsnodeId);
+    
+    ++_pool[fsnodeId].common.refCount;
+    return first;
 }
 
 bool MFSFSNodePool::Release(uint32_t fsnodeId)
@@ -51,7 +55,7 @@ MFSFSEntryMeta MFSFSNodePool::Get(uint32_t fsnodeId) const
     return this->operator[](fsnodeId);
 }
 
-size_t MFSFSNodePool::LocateNextFreeNode()
+uint32_t MFSFSNodePool::LocateNextFreeNode()
 {
     for (uint32_t next = _alloc + 1;
         next != _alloc;
@@ -61,4 +65,19 @@ size_t MFSFSNodePool::LocateNextFreeNode()
             return next;
     }
     return InvalidFSNodeId;
+}
+
+void MFSFSNodePool::InitializeFSNode(uint32_t fsnodeId)
+{
+    MFSFSEntryMeta & meta = _pool[fsnodeId];
+    meta.common.flags = MFS_FSENTRY_ACCESS_READ | MFS_FSENTRY_ACCESS_WRITE | MFS_FSENTRY_ACCESS_EXECUTE;
+    meta.common.firstBlockId = MFSFileAllocationTable::InvalidBlockId;
+    
+    uint64_t timestamp = MFSGetCurrentTimestamp();
+    MFSGetInteger64Struct(&meta.common.creationTimestamp, timestamp);
+    MFSGetInteger64Struct(&meta.common.lastAccessTimestamp, timestamp);
+    MFSGetInteger64Struct(&meta.common.lastModTimestamp, timestamp);
+
+    meta.common.refCount = 0;
+    meta.spec.directoryMeta.childCount = 0;
 }

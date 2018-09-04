@@ -153,59 +153,59 @@ MFSFSEntry * MFSFSEntry::GetSubEntry(const MFSString & name)
 
 MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name)
 {
-	if (ContainsSubEntry(name)) 
-        return nullptr;
-
-    uint32_t fsnodeId = _partition.AllocateEntryMeta();
+    uint32_t fsnodeId = _partition.GetAvailableFSNodeId();
     if (fsnodeId == MFSFSNodePool::InvalidFSNodeId)
         return nullptr;
 
-	MFSFSEntry* ret = nullptr;
-	auto callback = [&](WalkDirectoryBlockParameters & params)
-	{
-		auto item = params.blockObject->AddDir(name);
+    return AddSubEntry(name, fsnodeId);
+}
+
+MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name, uint32_t fsnodeId)
+{
+    if (ContainsSubEntry(name))
+        return nullptr;
+
+    MFSFSEntry* ret = nullptr;
+    auto callback = [&](WalkDirectoryBlockParameters & params)
+    {
+        auto item = params.blockObject->AddDir(name);
         if (item)
         {
+            _partition.AllocateEntryMeta(fsnodeId);
             item->fsnodeId = fsnodeId;
             ret = new MFSFSEntry(_partition, fsnodeId);
             params.stopIteration = true;
         }
-	};
-	WalkDirectoryBlocks(callback);
-	if (ret == nullptr)
-	{
-		DWORD blockId = _partition.AllocateFrontBlock(_meta->common.firstBlockId);
-		if (blockId == MFSBlockAllocationBitmap::InvalidBlockId) 
+    };
+    WalkDirectoryBlocks(callback);
+    if (ret == nullptr)
+    {
+        DWORD blockId = _partition.AllocateFrontBlock(_meta->common.firstBlockId);
+        if (blockId == MFSBlockAllocationBitmap::InvalidBlockId)
             return nullptr;
-		_meta->common.firstBlockId = blockId;
+        _meta->common.firstBlockId = blockId;
 
-		WalkDirectoryBlocks(callback);
-
-        if (ret == nullptr)
-        {
-            // Failed to allocate directory item.
-            _partition.FreeEntryMeta(fsnodeId);
-        }
-	}
-	return ret;
+        WalkDirectoryBlocks(callback);
+    }
+    return ret;
 }
 
-MFSFSEntry * MFSFSEntry::RemoveSubEntry(const MFSString & name)
+bool MFSFSEntry::RemoveSubEntry(const MFSString & name)
 {
 	if (!ContainsSubEntry(name))
-        return nullptr;
-	MFSFSEntry* ret = nullptr;
+        return false;
+
 	auto callback = [&](WalkDirectoryBlockParameters & params)
 	{
-		uint32_t fsnodeId = params.blockObject->EraseDir(name);
-		if (fsnodeId != MFSFSNodePool::InvalidFSNodeId)
+		if (params.blockObject->EraseDir(name) != MFSFSNodePool::InvalidFSNodeId)
 		{
-			ret = new MFSFSEntry(_partition, fsnodeId);
+            _partition.FreeEntryMeta(_fsnodeId);
 			if (params.blockObject->Empty())
-                _partition.FreeChainedBlock(_meta->common.firstBlockId, static_cast<DWORD>(params.blockId));
+                _partition.FreeChainedBlock(_meta->common.firstBlockId, 
+                    static_cast<DWORD>(params.blockId));
             params.stopIteration = true;
 		}
     };
 
-    return ret;
+    return true;
 }

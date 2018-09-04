@@ -91,20 +91,27 @@ class MFSPartition::Internals
         @param blockId 要释放的块的编号。
         @return 释放操作完成后块链的首块编号。
 
-    DWORD MFSPartition::Internals::AllocateEntryMeta()
-        在内部的 MFSPartition 对象上分配一个文件系统节点元数据结构并返回其在节点池中的编号。
-        若分配失败，返回 MFSFSNodePool::InvalidFSNodeId。
+    DWORD MFSPartition::Internals::GetAvailableFSNodeId()
+        在内部的 MFSPartition 对象上获取下一个可用的文件系统节点的编号。
+        若没有可用的文件系统节点，返回 MFSFSNodePool::InvalidFSNodeId。
 
     bool MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId)
-        在内部的 MFSPartition 对象上尝试分配一个文件系统节点元数据结构。
+        在内部的 MFSPartition 对象上递增一个文件系统节点元数据结构的引用计数。
+        返回的节点已经被保证初始化。
         @param fsnodeId 要分配的节点在节点池中的编号。
-        @return 一个 bool 值指示分配是否成功。
+        @return 一个 bool 值指示目标节点在操作之前的引用计数是否为 0。
 
-    MFSStream * OpenBlockStream(DWORD firstBlock)
+    MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const
+        获取编号为给定值的节点元数据。
+
+    bool FreeEntryMeta(uint32_t fsnodeId)
+        递减给定的文件系统节点的引用计数并在引用计数降至零时释放其链接到的块链。
+
+    MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock)
         在内部的 MFSPartition 对象上打开一个按块链组织的流对象。流对象的长度将会被对齐到块边界。
         @param firstBlock 打开的流对象的基础块链的第一块编号。
 
-    MFSStream * OpenBlockStream(DWORD firstBlock, UINT64 length)
+    MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 length)
         在内部的 MFSPartition 对象上打开一个按块链组织的流对象。
         @param firstBlock 打开的流对象的基础块链的第一块编号。
         @param length 打开的流对象的长度。
@@ -169,7 +176,7 @@ public:
         DWORD AllocateFrontBlock(DWORD firstBlockId);
 		DWORD FreeChainedBlock(DWORD firstBlockId, DWORD blockId);
 
-        DWORD AllocateEntryMeta();
+        DWORD GetAvailableFSNodeId();
         bool AllocateEntryMeta(DWORD fsnodeId);
         MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const;
         bool FreeEntryMeta(uint32_t fsnodeId);
@@ -271,21 +278,26 @@ class MFSFSEntry
     uint64_t MFSFSEntry::GetFileSize() const
         当文件系统节点所表示的文件系统项为一个文件时，返回该文件的字节大小；否则返回 0。
 
-    MFSStream * OpenDataStream()
+    MFSStream * MFSFSEntry::OpenDataStream()
         打开文件系统项目数据流对象。
 
-    std::vector<std::unique_ptr<MFSFSEntry>> GetSubEntries()
+    std::vector<std::unique_ptr<MFSFSEntry>> MFSFSEntry::GetSubEntries()
         当文件系统节点所表示的文件系统项为一个目录时，获取该目录下所有子文件系统项对象。
 
-    MFSFSEntry * GetSubEntry(const MFSString & name)
+    MFSFSEntry * MFSFSEntry::GetSubEntry(const MFSString & name)
         当文件系统节点所表示的文件系统项为一个目录时，获取该目录下指定名称的子文件系统项对象。若目录下没有指定的名称，返回 nullptr。
 
-    MFSFSEntry * AddSubEntry(const MFSString & name)
-        当文件系统节点所表示的文件系统项为一个目录时，尝试在目录下创建指定名称的子文件系统项对象。若创建失败或指定的名称已经存在，返回 nullptr。
+    MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name)
+        当文件系统节点所表示的文件系统项为一个目录时，尝试在目录下创建指定名称的子文件系统项对象。
+        若创建失败或指定的名称已经存在，返回 nullptr。
 
-    MFSFSEntry * RemoveSubEntry(const MFSString & name)
-        当文件系统节点所表示的文件系统项为一个目录时，尝试在目录下删除指定名称的子文件系统项对象。若删除成功，返回删除的项的文件系统项实例对象；
-        否则返回 nullptr。
+    MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name, uint32_t fsnodeId)
+        当文件系统节点所表示的文件系统项为一个目录时，尝试在目录下创建给定名称的目录项并将其硬链接到
+        给定的文件系统节点上。
+
+    MFSFSEntry * MFSFSEntry::RemoveSubEntry(const MFSString & name)
+        当文件系统节点所表示的文件系统项为一个目录时，尝试在目录下删除指定名称的子文件系统项对象。
+        @return 返回一个 bool 值指示删除是否成功。
 
 */
 
@@ -333,7 +345,8 @@ public:
     bool ContainsSubEntry(const MFSString & name);
     MFSFSEntry * GetSubEntry(const MFSString & name);
     MFSFSEntry * AddSubEntry(const MFSString & name);
-    MFSFSEntry * RemoveSubEntry(const MFSString & name);
+    MFSFSEntry * AddSubEntry(const MFSString & name, uint32_t fsnodeId);
+    bool RemoveSubEntry(const MFSString & name);
 
 private:
     struct WalkDirectoryBlockParameters
