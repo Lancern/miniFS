@@ -12,16 +12,22 @@ class MFSBlockStream
 
     成员函数：
 
-    bool SeekBlock(UINT64 blockId)
+    bool MFSBlockStream::SeekBlock(UINT64 blockId)
         移动流指针到指定设备块的起始位置。
 
-    UINT64 GetCurrentBlockId() const
+    UINT64 MFSBlockStream::GetCurrentBlockId() const
         获取当前流指针所位于的块编号。
 
-    UINT64 GetBlockInternalOffset() const
+    UINT64 MFSBlockStream::GetBlockInternalOffset() const
         获取当前流指针所位于的块内偏移量。
 
-    UINT64 OnBlockSwap(UINT64 currentBlock)
+    bool MFSBlockStream::IsDirty() const
+        获取一个值指示是否在当前活动块上进行过写操作。
+
+    void MFSBlockStream::SetDirtyFlag(bool dirty)
+        设置当前活动块的脏标记。
+
+    UINT64 MFSBlockStream::OnBlockSwap(UINT64 currentBlock)
         当发生块交换时触发该函数。当在子类中重写时，根据当前块编号确定要换入的块编号。
 
 */
@@ -58,6 +64,9 @@ public:
 protected:
     bool SeekBlock(UINT64 blockId);
 
+    bool IsDirty() const;
+    void SetDirtyFlag(bool dirty);
+
     virtual UINT64 OnBlockSwap(UINT64 currentBlock);
 
 private:
@@ -65,8 +74,9 @@ private:
     std::unique_ptr<BYTE[]> _buffer;
     DWORD _insideOffset;
     UINT64 _blockOffset;
+    bool _dirty;
 
-    bool SeekBegin(INT64 offset);
+    bool SeekFromBegin(INT64 offset);
 
     bool TryReadByte(BYTE * buffer);
     bool TryWriteByte(BYTE data);

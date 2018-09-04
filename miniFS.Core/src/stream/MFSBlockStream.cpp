@@ -1,10 +1,13 @@
 #include "../../include/stream/MFSBlockStream.h"
 
 MFSBlockStream::MFSBlockStream(MFSBlockDevice * device)
-    : _device(device), _insideOffset(0), _blockOffset(0)
+    : _device(device), _insideOffset(0), _blockOffset(0), _dirty(false)
 {
     BYTE * buffer = new BYTE[device->GetBlockSize()];
     _buffer.reset(buffer);
+
+    // Load first block.
+    SeekBlock(0);
 }
 
 bool MFSBlockStream::CanRead() const
@@ -90,14 +93,14 @@ bool MFSBlockStream::Seek(MFSStreamSeekOrigin origin, INT64 offset)
         if (offset < 0)
             return false;
         else
-            return SeekBegin(offset);
+            return SeekFromBegin(offset);
     case MFSStreamSeekOrigin::Relative:
-        return SeekBegin(GetPosition() + offset);
+        return SeekFromBegin(GetPosition() + offset);
     case MFSStreamSeekOrigin::End:
         if (offset > 0)
             return false;
         else
-            return SeekBegin(GetLength() + offset);
+            return SeekFromBegin(GetLength() + offset);
     default:
         return false;
     }
@@ -105,9 +108,10 @@ bool MFSBlockStream::Seek(MFSStreamSeekOrigin origin, INT64 offset)
 
 void MFSBlockStream::Flush()
 {
-    if (_buffer && _blockOffset < _device->GetBlocksCount())
+    if (_buffer && _blockOffset < _device->GetBlocksCount() && _dirty)
     {
         _device->WriteBlock(_blockOffset, _buffer.get());
+        _dirty = false;
     }
 }
 
@@ -146,6 +150,16 @@ bool MFSBlockStream::SeekBlock(UINT64 blockId)
     }
 }
 
+bool MFSBlockStream::IsDirty() const
+{
+    return _dirty;
+}
+
+void MFSBlockStream::SetDirtyFlag(bool dirty)
+{
+    _dirty = dirty;
+}
+
 UINT64 MFSBlockStream::GetCurrentBlockId() const
 {
     return _blockOffset;
@@ -161,7 +175,7 @@ UINT64 MFSBlockStream::OnBlockSwap(UINT64 currentBlock)
     return currentBlock + 1;
 }
 
-bool MFSBlockStream::SeekBegin(INT64 offset)
+bool MFSBlockStream::SeekFromBegin(INT64 offset)
 {
     DWORD blockSize = _device->GetBlockSize();
     UINT64 blockId = offset / blockSize;
@@ -183,10 +197,13 @@ bool MFSBlockStream::TryReadByte(BYTE * buffer)
         return false;
     
     *buffer = _buffer[_insideOffset++];
-    if (_insideOffset == _device->GetBlockSize())
-        return SeekBlock(OnBlockSwap(_blockOffset));
-    else
+    if (_insideOffset != _device->GetBlockSize())
         return true;
+    else
+    {
+        Flush();
+        return SeekBlock(OnBlockSwap(_blockOffset));
+    }
 }
 
 bool MFSBlockStream::TryWriteByte(BYTE data)
@@ -195,8 +212,13 @@ bool MFSBlockStream::TryWriteByte(BYTE data)
         return false;
 
     _buffer[_insideOffset++] = data;
-    if (_insideOffset == _device->GetBlockSize())
-        return SeekBlock(OnBlockSwap(_blockOffset));
-    else
+    _dirty = true;
+
+    if (_insideOffset != _device->GetBlockSize())
         return true;
+    else
+    {
+        Flush();
+        return SeekBlock(OnBlockSwap(_blockOffset));
+    }
 }
