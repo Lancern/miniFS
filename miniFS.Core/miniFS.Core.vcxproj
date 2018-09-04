@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\fs\MFSFSEntry.cpp" />
+    <ClCompile Include="src\fs\MFSFSEntryDataStream.cpp" />
     <ClCompile Include="src\fs\MFSFSNodePool.cpp" />
     <ClCompile Include="src\fs\MFSPartitionChainedBlockStream.cpp" />
     <ClCompile Include="src\fs\MFSPartitionInternals.cpp" />

@@ -383,6 +383,20 @@ public:
     bool RemoveSubEntry(const MFSString & name);
 
 private:
+    class DataStream
+        : public MFSPartition::Internals::ChainedBlockStream
+    {
+    public:
+        DataStream(MFSFSEntry * entry, DWORD firstBlockId);
+        DataStream(MFSFSEntry * entry, DWORD firstBlockId, UINT64 length);
+
+        DWORD Read(LPVOID lpBuffer, DWORD dwBufferSize, DWORD dwNumberOfBytesToRead) override;
+        DWORD Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite) override;
+
+    private:
+        MFSFSEntry * _entry;
+    };
+
     struct WalkDirectoryBlockParameters
     {
         uint64_t blockId;

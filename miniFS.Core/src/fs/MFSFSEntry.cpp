@@ -121,12 +121,10 @@ bool MFSFSEntry::SetFileSize(uint64_t size)
 
 MFSBlockStream * MFSFSEntry::OpenDataStream()
 {
-    MFSGetInteger64Struct(&_meta->common.lastAccessTimestamp, MFSGetCurrentTimestamp());
-
     if (GetEntryType() == MFSFSEntryType::Directory)
-        return _partition.OpenBlockStream(_meta->common.firstBlockId);
+        return new DataStream(this, _meta->common.firstBlockId);
     else
-        return _partition.OpenBlockStream(_meta->common.firstBlockId, 
+        return new DataStream(this, _meta->common.firstBlockId, 
             MFSGetPackedUnsignedValue(&_meta->spec.fileMeta.size));
 }
 

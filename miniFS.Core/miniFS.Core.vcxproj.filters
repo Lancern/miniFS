@@ -93,6 +93,9 @@
     <ClInclude Include="include\fs\MFSFSNodePool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\serialize\MFSFSNodePoolSerializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp">
@@ -167,9 +170,6 @@
     <ClCompile Include="src\fs\MFSFSNodePool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\serialize\MFSFSNodePoolSerializer.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\serialize\MFSFSNodePoolSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -180,6 +180,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\fs\MFSPartitionChainedBlockStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fs\MFSFSEntryDataStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
