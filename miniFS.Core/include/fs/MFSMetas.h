@@ -9,7 +9,6 @@ struct MFSFSMasterInfo
 {
     uint64_t magicSeq;      // mini-FS文件系统魔数。
     uint32_t mfsVer;        // mini-FS文件系统版本号
-    uint32_t reversed;
     uint32_t totalBlocks;   // 总的数据块数量
     uint32_t freeBlocks;    // 处于空闲状态的数据块数量。
 };
@@ -84,7 +83,6 @@ static_assert(alignof(MFSFSDirectoryEntryMeta) == 4, "Unexpected alignment of st
 struct MFSFSEntryMeta
 {
     MFSFSEntryCommonMeta common;
-    uint32_t reserved;
     union
     {
         MFSFSFileEntryMeta fileMeta;
@@ -92,7 +90,7 @@ struct MFSFSEntryMeta
     } spec;
 };
 
-static_assert(sizeof(MFSFSEntryMeta) == 48, "Unexpected size of struct MFSFSEntryMeta.");
+static_assert(sizeof(MFSFSEntryMeta) == 44, "Unexpected size of struct MFSFSEntryMeta.");
 static_assert(alignof(MFSFSEntryMeta) == 4, "Unexpected alignment of struct MFSFSEntryMeta.");
 
 struct MFSFSDirectoryBlockMasterInfo

@@ -36,6 +36,7 @@
     <ClInclude Include="include\serialize\MFSFileAllocationTableSerializer.h" />
     <ClInclude Include="include\serialize\MFSBlockAllocationBitmapSerializer.h" />
     <ClInclude Include="include\serialize\MFSDirectoryBlockSerializer.h" />
+    <ClInclude Include="include\serialize\MFSFSNodePoolSerializer.h" />
     <ClInclude Include="include\serialize\MFSSerializer.h" />
     <ClInclude Include="include\stream\MFSBlockStream.h" />
     <ClInclude Include="include\stream\MFSMemoryStream.h" />
@@ -47,7 +48,6 @@
     <ClInclude Include="include\stream\MFSStreamWriter.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\serialize\MFSFSNodePoolSerializer.h" />
     <ClCompile Include="src\fs\MFSFSEntry.cpp" />
     <ClCompile Include="src\fs\MFSFSNodePool.cpp" />
     <ClCompile Include="src\fs\MFSPartitionChainedBlockStream.cpp" />

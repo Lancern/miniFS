@@ -64,11 +64,11 @@ class MFSPartition::Internals
         获取内部的 MFSPartition 对象。
 
     DWORD MFSPartition::Internals::AllocateDeviceBlock()
-        在内部的 MFSPartition 对象上分配一个设备块并返回分配的设备块编号。
+        在内部的 MFSPartition 对象上分配一个设备块并返回分配的设备块编号并建立其 FAT 块链。
         若分配失败，返回 MFSBlockAllocationBitmap::InvalidBlockId。
 
     bool MFSPartition::Internals::AllocateDeviceBlock(DWORD blockId)
-        在内部的 MFSPartition 对象上尝试分配指定编号的设备块。
+        在内部的 MFSPartition 对象上尝试分配指定编号的设备块并建立其 FAT 块链。
         @return 一个 bool 值指示分配操作是否成功。
 
     bool MFSPartition::Internals::FreeDeviceBlock(DWORD blockId)
@@ -85,11 +85,31 @@ class MFSPartition::Internals
         @param firstBlockId 要在头部分配设备块的块链的第一个块编号。
         @retrun 新分配的块编号。若分配失败，返回 MFSBlockAllocationBitmap::InvalidBlockId。
 
+    DWORD MFSPartition::Internals::AllocateBlockChain(DWORD numberOfBlocks)
+        在内部的 MFSPartition 对象上分配一个包含指定块个数的块链。
+        @param numberOfBlocks 要分配的块链中块的个数。
+        @return 分配出的块链的第一块编号。
+        若无法分配指定个数个设备块，返回 MFSBlockAllocationBitmap::InvalidBlockId。
+
     DWORD MFSPartition::Internals::FreeChainedBlock(DWORD firstBlockId, DWORD blockId)
         在内部的 MFSPartition 对象上释放块链上的一个数据块。
         @param firstBlockId 块链的第一个设备块编号。
         @param blockId 要释放的块的编号。
         @return 释放操作完成后块链的首块编号。
+
+    DWORD MFSPartition::Internals::FreeBlockAfter(DWORD position)
+        在内部的 MFSPartition 对象上释放给定块在块链上的下一个设备块。
+        @param position 块 position 在块链上的下一个设备块将被释放。
+        @return 被释放的块编号。
+
+    DWORD MFSPartition::Internals::AppendTailBlock(DWORD firstBlockId, DWORD blockId)
+        将给定的块添加至给定的块链末尾。
+        @param firstBlockId 块链的第一块编号。
+        @param blockId 要添加到块链末尾的块编号。
+        @return 操作结束后块链的第一块编号。
+
+    DWORD GetNextChainedBlock(DWORD blockId) const
+        获取内部 MFSPartition 对象上指定设备块在块链上的下一块编号。
 
     DWORD MFSPartition::Internals::GetAvailableFSNodeId()
         在内部的 MFSPartition 对象上获取下一个可用的文件系统节点的编号。
@@ -107,11 +127,11 @@ class MFSPartition::Internals
     bool FreeEntryMeta(uint32_t fsnodeId)
         递减给定的文件系统节点的引用计数并在引用计数降至零时释放其链接到的块链。
 
-    MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock)
+    MFSBlockStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock)
         在内部的 MFSPartition 对象上打开一个按块链组织的流对象。流对象的长度将会被对齐到块边界。
         @param firstBlock 打开的流对象的基础块链的第一块编号。
 
-    MFSStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 length)
+    MFSBlockStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 length)
         在内部的 MFSPartition 对象上打开一个按块链组织的流对象。
         @param firstBlock 打开的流对象的基础块链的第一块编号。
         @param length 打开的流对象的长度。
@@ -164,6 +184,8 @@ public:
         Internals(MFSPartition * host);
 
     private:
+        using ChainedBlockStream = MFSPartition::ChainedBlockStream;
+
         MFSPartition * _partition;
 
         MFSPartition * GetPartition() const;
@@ -174,15 +196,21 @@ public:
 
         DWORD AllocateTailBlock(DWORD firstBlockId);
         DWORD AllocateFrontBlock(DWORD firstBlockId);
+        DWORD AllocateBlockChain(DWORD numberOfBlocks);
 		DWORD FreeChainedBlock(DWORD firstBlockId, DWORD blockId);
+        DWORD FreeBlockAfter(DWORD position);
+
+        DWORD AppendTailBlock(DWORD firstBlockId, DWORD blockId);
+
+        DWORD GetNextChainedBlock(DWORD blockId) const;
 
         DWORD GetAvailableFSNodeId();
         bool AllocateEntryMeta(DWORD fsnodeId);
         MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const;
         bool FreeEntryMeta(uint32_t fsnodeId);
 
-        MFSStream * OpenBlockStream(DWORD firstBlock);
-        MFSStream * OpenBlockStream(DWORD firstBlock, UINT64 length);
+        MFSBlockStream * OpenBlockStream(DWORD firstBlock);
+        MFSBlockStream * OpenBlockStream(DWORD firstBlock, UINT64 length);
 
         friend class MFSFSEntry;
     };
@@ -278,6 +306,11 @@ class MFSFSEntry
     uint64_t MFSFSEntry::GetFileSize() const
         当文件系统节点所表示的文件系统项为一个文件时，返回该文件的字节大小；否则返回 0。
 
+    bool MFSFSEntry::SetFileSize(uint64_t size)
+        当文件系统节点所表示的文件系统项为一个文件时，设置该文件的字节大小。若设置的值大于文件的现有大小，
+        所需的新空间会被分配给该文件；若设置的值小于文件的现有大小，文件会被截断。
+        @return 一个 bool 值指示操作是否成功。
+
     MFSStream * MFSFSEntry::OpenDataStream()
         打开文件系统项目数据流对象。
 
@@ -338,6 +371,7 @@ public:
     void SetAccessAttributes(MFSFSEntryAccess access);
 
     uint64_t GetFileSize() const;
+    bool SetFileSize(uint64_t size);
 
     MFSBlockStream * OpenDataStream();
 
@@ -363,6 +397,9 @@ private:
 
     template <typename Callback>
     void WalkDirectoryBlocks(Callback callback);
+
+    bool TruncateFileSize(uint64_t size);
+    bool ExtendFileSize(uint64_t size);
 };
 
 template<typename Callback>

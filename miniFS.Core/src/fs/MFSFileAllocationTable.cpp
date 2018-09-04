@@ -35,6 +35,17 @@ uint32_t MFSFileAllocationTable::GetCount() const
     return static_cast<uint32_t>(_next.size());
 }
 
+uint32_t MFSFileAllocationTable::GetLength(uint32_t first) const
+{
+    uint32_t length = 0;
+    while (first != InvalidBlockId)
+    {
+        ++length;
+        first = _next[first];
+    }
+    return length;
+}
+
 uint32_t MFSFileAllocationTable::GetTailBlock(uint32_t first) const
 {
     if (first == InvalidBlockId)

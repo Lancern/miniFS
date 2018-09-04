@@ -26,6 +26,10 @@ class MFSFileAllocationTable
     uint32_t MFSFileAllocationTable::GetCount() const
         获取 FAT 中的块数量。
 
+    uint32_t MFSFileAllocationTable::GetLength(uint32_t first) const
+        获取某个块链的长度。
+        @param 块链的第一块编号。
+
     uint32_t MFSFileAllocationTable::GetTailBlock(uint32_t first) const
         获取给定的块链的最后一个块编号。
         @param first 块链的第一个块编号。
@@ -82,6 +86,7 @@ public:
     void Set(uint32_t pos, uint32_t value);
 
     uint32_t GetCount() const;
+    uint32_t GetLength(uint32_t first) const;
 
     uint32_t GetTailBlock(uint32_t first) const;
     uint32_t GetBlockBefore(uint32_t first, uint32_t blockId) const;

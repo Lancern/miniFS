@@ -2,6 +2,11 @@
 #include "../../include/serialize/MFSDirectoryBlockSerializer.h"
 #include "../../include/fs/MFSFSNodePool.h"
 
+
+
+#define CEIL_DIV(a, b)      ((a) / (b) + ((a) % (b) ? 1 : 0))
+
+
 MFSFSEntry::MFSFSEntry(MFSPartition::Internals partition, uint32_t fsnodeId)
     : _partition(partition), _meta(partition.GetEntryMeta(fsnodeId)), _fsnodeId(fsnodeId)
 {
@@ -98,9 +103,31 @@ uint64_t MFSFSEntry::GetFileSize() const
         return 0;
 }
 
+bool MFSFSEntry::SetFileSize(uint64_t size)
+{
+    uint64_t timestamp = MFSGetCurrentTimestamp();
+    MFSGetInteger64Struct(&_meta->common.lastAccessTimestamp, timestamp);
+    MFSGetInteger64Struct(&_meta->common.lastModTimestamp, timestamp);
+
+    uint64_t currentSize = GetFileSize();
+
+    if (size == currentSize)
+        return true;
+    else if (size < currentSize)
+        return TruncateFileSize(size);
+    else    // size > currentSize
+        return ExtendFileSize(size);
+}
+
 MFSBlockStream * MFSFSEntry::OpenDataStream()
 {
-    // TODO: Implement MFSFSEntry::OpenDataStream().
+    MFSGetInteger64Struct(&_meta->common.lastAccessTimestamp, MFSGetCurrentTimestamp());
+
+    if (GetEntryType() == MFSFSEntryType::Directory)
+        return _partition.OpenBlockStream(_meta->common.firstBlockId);
+    else
+        return _partition.OpenBlockStream(_meta->common.firstBlockId, 
+            MFSGetPackedUnsignedValue(&_meta->spec.fileMeta.size));
 }
 
 // 
@@ -208,4 +235,71 @@ bool MFSFSEntry::RemoveSubEntry(const MFSString & name)
     };
 
     return true;
+}
+
+bool MFSFSEntry::TruncateFileSize(uint64_t size)
+{
+    uint32_t blockSize = _partition.GetPartition()->GetDevice()->GetBlockSize();
+    uint64_t truncatedBlocksCount = CEIL_DIV(size, blockSize);
+
+    uint32_t blockPtr = _meta->common.firstBlockId;
+    while (truncatedBlocksCount > 0 && blockPtr != MFSFileAllocationTable::InvalidBlockId)
+    {
+        --truncatedBlocksCount;
+        blockPtr = _partition.GetNextChainedBlock(blockPtr);
+    }
+
+    if (truncatedBlocksCount > 0)
+    {
+        // Unexpected block pointer hit end of block chain.
+        return true;
+    }
+    else
+    {
+        while (_partition.GetNextChainedBlock(blockPtr) != MFSFileAllocationTable::InvalidBlockId)
+        {
+            _partition.FreeBlockAfter(blockPtr);
+        }
+        MFSGetInteger64Struct(&_meta->spec.fileMeta.size, size);
+        return true;
+    }
+}
+
+bool MFSFSEntry::ExtendFileSize(uint64_t size)
+{
+    uint32_t blockSize = _partition.GetPartition()->GetDevice()->GetBlockSize();
+    uint32_t extendedBlocksCount = static_cast<uint32_t>(CEIL_DIV(size, blockSize));
+
+    uint32_t blockPtr = _meta->common.firstBlockId;
+    uint32_t currentBlocksCount = 0;
+    if (blockPtr != MFSFileAllocationTable::InvalidBlockId)
+    {
+        currentBlocksCount = 1;
+        while (_partition.GetNextChainedBlock(blockPtr) != MFSFileAllocationTable::InvalidBlockId)
+        {
+            blockPtr = _partition.GetNextChainedBlock(blockPtr);
+            ++currentBlocksCount;
+        }
+    }
+
+    uint32_t required = extendedBlocksCount > currentBlocksCount
+        ? extendedBlocksCount - currentBlocksCount
+        : 0;
+    
+    if (required == 0)
+        return true;
+    else
+    {
+        // Try allocate $required chained blocks.
+        uint32_t allocatedFirst = _partition.AllocateBlockChain(required);
+        if (allocatedFirst == MFSBlockAllocationBitmap::InvalidBlockId)
+            return false;
+
+        if (currentBlocksCount == 0)
+            _meta->common.firstBlockId = allocatedFirst;
+        else
+            _partition.AppendTailBlock(blockPtr, allocatedFirst);
+        
+        return true;
+    }
 }
