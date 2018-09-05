@@ -5,17 +5,17 @@
 void MFSFileAllocationTableSerializer::Serialize(MFSStream * stream, MFSFileAllocationTable * object)
 {
 	MFSStreamWriter writer(stream);
-	for (size_t i = 0; i < object->GetCount(); i++)
+	for (uint32_t i = 0; i < object->GetCount(); i++)
 		writer.Write(object->_next[i]);
 }
 
 MFSFileAllocationTable * MFSFileAllocationTableSerializer::Deserialize(MFSStream * stream)
 {
-    size_t atsize = static_cast<size_t>(
+    uint32_t atsize = static_cast<uint32_t>(
         (stream->GetLength() - stream->GetPosition()) / sizeof(uint32_t));
 	MFSFileAllocationTable* ret = new MFSFileAllocationTable(atsize);
 	MFSStreamReader reader(stream);
-	for (size_t i = 0; i < ret->GetCount(); i++)
+	for (uint32_t i = 0; i < ret->GetCount(); i++)
 		ret->_next[i] = reader.ReadPODObject<uint32_t>();
 	return ret;
 }

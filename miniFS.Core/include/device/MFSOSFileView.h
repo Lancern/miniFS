@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MFSRawDeviceView.h"
+#include <Windows.h>
 
 /*
 
@@ -16,10 +17,10 @@ public:
     ~MFSOSFileView();
 
     bool CanWrite() const override;
-    DWORD GetSize() const override;
+    uint32_t GetSize() const override;
 
-    DWORD Read(LPVOID lpBuffer, DWORD offset, DWORD length) override;
-    DWORD Write(DWORD offset, DWORD length, LPCVOID lpBuffer) override;
+    uint32_t Read(void * lpBuffer, uint32_t offset, uint32_t length) override;
+    uint32_t Write(uint32_t offset, uint32_t length, const void * lpBuffer) override;
 
     void Flush() override;
     void Close() override;
@@ -27,10 +28,10 @@ public:
     friend class MFSOSFileDevice;
 
 private:
-    MFSOSFileView(HANDLE hFileMapping, UINT64 offset, DWORD size, bool readonly);
+    MFSOSFileView(HANDLE hFileMapping, uint64_t offset, uint32_t size, bool readonly);
 
-    LPVOID _lpFileMappingAddress;
-    DWORD _viewSize;
+    void * _lpFileMappingAddress;
+    uint32_t _viewSize;
     bool _canWrite;
 };
 

@@ -39,14 +39,14 @@ bool MFSPartition::IsRaw() const
     return _master.magicSeq != MFS_MAGIC_SEQ;
 }
 
-UINT64 MFSPartition::GetTotalSpaceInBytes() const
+uint64_t MFSPartition::GetTotalSpaceInBytes() const
 {
-    return static_cast<UINT64>(_master.totalBlocks) * _device->GetBlockSize();
+    return static_cast<uint64_t>(_master.totalBlocks) * _device->GetBlockSize();
 }
 
-UINT64 MFSPartition::GetFreeSpaceInBytes() const
+uint64_t MFSPartition::GetFreeSpaceInBytes() const
 {
-    return static_cast<UINT64>(_master.freeBlocks) * _device->GetBlockSize();
+    return static_cast<uint64_t>(_master.freeBlocks) * _device->GetBlockSize();
 }
 
 void MFSPartition::BuildFileSystem()
@@ -54,43 +54,43 @@ void MFSPartition::BuildFileSystem()
     // Build partition master record.
     _master.magicSeq = MFS_MAGIC_SEQ;
     _master.mfsVer = MFS_VER;
-    _master.totalBlocks = static_cast<DWORD>(_device->GetBlocksCount());
+    _master.totalBlocks = static_cast<uint32_t>(_device->GetBlocksCount());
 
-    DWORD blockSize = _device->GetBlockSize();
-    DWORD babBlocksCount = _master.totalBlocks / CHAR_BIT / blockSize;
-    DWORD fatBlocksCount = _master.totalBlocks * sizeof(DWORD) / blockSize;
-    DWORD fsnodePoolBlocksCount = _master.totalBlocks * sizeof(MFSFSEntryMeta) / blockSize;
-    DWORD fsblocksCount = 1 + babBlocksCount + fatBlocksCount + fsnodePoolBlocksCount;    // mini-FS 占用的块数量
+    uint32_t blockSize = _device->GetBlockSize();
+    uint32_t babBlocksCount = _master.totalBlocks / CHAR_BIT / blockSize;
+    uint32_t fatBlocksCount = _master.totalBlocks * sizeof(uint32_t) / blockSize;
+    uint32_t fsnodePoolBlocksCount = _master.totalBlocks * sizeof(MFSFSEntryMeta) / blockSize;
+    uint32_t fsblocksCount = 1 + babBlocksCount + fatBlocksCount + fsnodePoolBlocksCount;    // mini-FS 占用的块数量
 
     _master.freeBlocks = _master.totalBlocks - fsblocksCount;
 
     // Build block allocation bitmap.
-    _blockAllocation.reset(new MFSBlockAllocationBitmap(static_cast<DWORD>(_device->GetBlocksCount())));
-    for (DWORD blockId = 0; blockId < fsblocksCount; ++blockId)
+    _blockAllocation.reset(new MFSBlockAllocationBitmap(static_cast<uint32_t>(_device->GetBlocksCount())));
+    for (uint32_t blockId = 0; blockId < fsblocksCount; ++blockId)
         _blockAllocation->Set(blockId);
 
     // Build file allocation table.
-    _blockChain.reset(new MFSFileAllocationTable(static_cast<DWORD>(_device->GetBlocksCount())));
-    DWORD babBlockOffset = 1;
-    DWORD fatBlockOffset = babBlockOffset + babBlocksCount;
-    DWORD fsnodePoolBlockOffset = fatBlockOffset + fatBlocksCount;
+    _blockChain.reset(new MFSFileAllocationTable(static_cast<uint32_t>(_device->GetBlocksCount())));
+    uint32_t babBlockOffset = 1;
+    uint32_t fatBlockOffset = babBlockOffset + babBlocksCount;
+    uint32_t fsnodePoolBlockOffset = fatBlockOffset + fatBlocksCount;
 
     _blockChain->Set(0, MFSFileAllocationTable::InvalidBlockId);
 
-    for (DWORD i = 0; i < babBlocksCount; ++i)
+    for (uint32_t i = 0; i < babBlocksCount; ++i)
         _blockChain->Set(babBlockOffset + i, babBlockOffset + i + 1);
     _blockChain->Set(babBlockOffset + babBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
-    for (DWORD i = 0; i < fatBlocksCount; ++i)
+    for (uint32_t i = 0; i < fatBlocksCount; ++i)
         _blockChain->Set(fatBlockOffset + i, fatBlockOffset + i + 1);
     _blockChain->Set(fatBlockOffset + fatBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
-    for (DWORD i = 0; i < fsnodePoolBlocksCount; ++i)
+    for (uint32_t i = 0; i < fsnodePoolBlocksCount; ++i)
         _blockChain->Set(fsnodePoolBlockOffset + i, fsnodePoolBlockOffset + i + 1);
     _blockChain->Set(fsnodePoolBlockOffset + fsnodePoolBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
     // Initialize fsnode pool.
-    _fsnodePool.reset(new MFSFSNodePool(static_cast<DWORD>(_device->GetBlocksCount())));
+    _fsnodePool.reset(new MFSFSNodePool(static_cast<uint32_t>(_device->GetBlocksCount())));
     // Initialize the first fsnode as the node for the root directory.
     // Force allocate the first fsnode as the fsnode for the root directory.
     _fsnodePool->Allocate(0);
@@ -129,7 +129,8 @@ void MFSPartition::Flush()
     MFSFileAllocationTableSerializer().Serialize(&stream, _blockChain.get());
 
     // Write fsnode pool.
-    stream.Write(_fsnodePool.get(), static_cast<DWORD>(_device->GetBlocksCount() * sizeof(MFSFSEntryMeta)));
+    stream.Write(_fsnodePool.get(), 
+        static_cast<uint32_t>(_device->GetBlocksCount() * sizeof(MFSFSEntryMeta)));
 
     stream.Flush();
     stream.Close();
@@ -170,7 +171,7 @@ bool MFSPartition::LoadMasterInfo(MFSBlockStream * deviceStream)
 {
     LPVOID buffer = VirtualAlloc(NULL, deviceStream->GetDeviceBlockSize(), 
         MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-    DWORD read = deviceStream->Read(buffer, 0, deviceStream->GetDeviceBlockSize());
+    uint32_t read = deviceStream->Read(buffer, 0, deviceStream->GetDeviceBlockSize());
 
     bool ret = (read == deviceStream->GetDeviceBlockSize());
     if (ret)
@@ -186,10 +187,10 @@ bool MFSPartition::LoadMasterInfo(MFSBlockStream * deviceStream)
 
 bool MFSPartition::LoadBlockAllocationManager(MFSBlockStream * deviceStream)
 {
-    DWORD dwBabByteSize = CEIL_DIV(deviceStream->GetDeviceBlockSize(), CHAR_BIT);
-    LPVOID buffer = VirtualAlloc(NULL, dwBabByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    uint32_t dwBabByteSize = CEIL_DIV(deviceStream->GetDeviceBlockSize(), CHAR_BIT);
+    void * buffer = VirtualAlloc(NULL, dwBabByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-    DWORD read = deviceStream->Read(buffer, dwBabByteSize, dwBabByteSize);
+    uint32_t read = deviceStream->Read(buffer, dwBabByteSize, dwBabByteSize);
     bool ret = (read == dwBabByteSize);
 
     if (ret)
@@ -209,10 +210,10 @@ bool MFSPartition::LoadBlockAllocationManager(MFSBlockStream * deviceStream)
 
 bool MFSPartition::LoadAllocationTable(MFSBlockStream * deviceStream)
 {
-    DWORD dwFatByteSize = static_cast<DWORD>(deviceStream->GetDeviceBlocksCount()) * sizeof(UINT32);
-    LPVOID buffer = VirtualAlloc(NULL, dwFatByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    uint32_t dwFatByteSize = static_cast<uint32_t>(deviceStream->GetDeviceBlocksCount()) * sizeof(UINT32);
+    void * buffer = VirtualAlloc(NULL, dwFatByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-    DWORD read = deviceStream->Read(buffer, dwFatByteSize, dwFatByteSize);
+    uint32_t read = deviceStream->Read(buffer, dwFatByteSize, dwFatByteSize);
     bool ret = (read == dwFatByteSize);
 
     if (ret)
@@ -232,10 +233,10 @@ bool MFSPartition::LoadAllocationTable(MFSBlockStream * deviceStream)
 
 bool MFSPartition::LoadFSNodePool(MFSBlockStream * deviceStream)
 {
-    DWORD dwFsnodepoolByteSize = static_cast<DWORD>(deviceStream->GetDeviceBlocksCount()) * sizeof(MFSFSEntryMeta);
-    LPVOID buffer = VirtualAlloc(NULL, dwFsnodepoolByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    uint32_t dwFsnodepoolByteSize = static_cast<uint32_t>(deviceStream->GetDeviceBlocksCount()) * sizeof(MFSFSEntryMeta);
+    void * buffer = VirtualAlloc(NULL, dwFsnodepoolByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-    DWORD read = deviceStream->Read(buffer, dwFsnodepoolByteSize, dwFsnodepoolByteSize);
+    uint32_t read = deviceStream->Read(buffer, dwFsnodepoolByteSize, dwFsnodepoolByteSize);
     bool ret = (read == dwFsnodepoolByteSize);
 
     if (ret)

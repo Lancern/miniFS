@@ -5,20 +5,20 @@ MFSString::MFSString()
 {
 }
 
-MFSString::MFSString(LPCWSTR psRaw)
+MFSString::MFSString(const wchar_t * psRaw)
 {
     _len = wcslen(psRaw);
-    WCHAR * pBuffer = new WCHAR[_len + 1];
+    wchar_t * pBuffer = new wchar_t[_len + 1];
     wcscpy_s(pBuffer, _len + 1, psRaw);
 
     _data.reset(pBuffer);
 }
 
-MFSString::MFSString(LPCWSTR psBuffer, DWORD length) 
+MFSString::MFSString(const wchar_t * psBuffer, uint32_t length) 
     : _len(length)
 {
-    WCHAR * pBuffer = new WCHAR[_len + 1];
-    memcpy_s(pBuffer, (_len + 1) * sizeof(WCHAR), psBuffer, _len * sizeof(WCHAR));
+    wchar_t * pBuffer = new wchar_t[_len + 1];
+    memcpy_s(pBuffer, (_len + 1) * sizeof(wchar_t), psBuffer, _len * sizeof(wchar_t));
 	pBuffer[_len] = 0;
 
     _data.reset(pBuffer);
@@ -27,8 +27,8 @@ MFSString::MFSString(LPCWSTR psBuffer, DWORD length)
 MFSString::MFSString(const MFSString & another)
     : _len(another._len)
 {
-    WCHAR * pBuffer = new WCHAR[_len + 1];
-    memcpy_s(pBuffer, (_len + 1) * sizeof(WCHAR), another._data.get(), (_len + 1) * sizeof(WCHAR));
+    wchar_t * pBuffer = new wchar_t[_len + 1];
+    memcpy_s(pBuffer, (_len + 1) * sizeof(wchar_t), another._data.get(), (_len + 1) * sizeof(wchar_t));
 
     _data.reset(pBuffer);
 }
@@ -44,24 +44,24 @@ MFSString::~MFSString()
 }
 
 
-DWORD MFSString::GetLength() const
+uint32_t MFSString::GetLength() const
 {
     return _len;
 }
 
-const WCHAR * MFSString::GetRawString() const
+const wchar_t * MFSString::GetRawString() const
 {
     return _data.get();
 }
 
 int MFSString::CompareTo(const MFSString & another) const
 {
-    DWORD p1 = 0;
-    DWORD p2 = 0;
+    uint32_t p1 = 0;
+    uint32_t p2 = 0;
     while (p1 < this->_len && p2 < another._len)
     {
-        WCHAR ch1 = this->_data[p1];
-        WCHAR ch2 = another._data[p2];
+        wchar_t ch1 = this->_data[p1];
+        wchar_t ch2 = another._data[p2];
         if (ch1 != ch2)
             return (static_cast<int>(ch1) - static_cast<int>(ch2));
         
@@ -77,8 +77,8 @@ int MFSString::IndexOf(const MFSString & substring) const
     if (substring._len > this->_len)
         return -1;
 
-    DWORD bound = this->_len - substring._len;
-    for (DWORD offset = 0; offset <= bound; ++offset)
+    uint32_t bound = this->_len - substring._len;
+    for (uint32_t offset = 0; offset <= bound; ++offset)
     {
         if (ContainsAt(substring, offset))
             return offset;
@@ -92,7 +92,7 @@ int MFSString::LastIndexOf(const MFSString & substring) const
     if (substring._len > this->_len)
         return -1;
 
-    DWORD bound = this->_len - substring._len;
+    uint32_t bound = this->_len - substring._len;
     for (int offset = bound; offset >= 0; --offset)
     {
         if (ContainsAt(substring, offset))
@@ -122,39 +122,39 @@ bool MFSString::EndsWith(const MFSString & suffix) const
 
 MFSString MFSString::Concat(const MFSString & another) const
 {
-    DWORD dwBufferLen = this->_len + another._len + 1;
-    WCHAR * pBuffer = new WCHAR[dwBufferLen * sizeof(WCHAR)];
+    uint32_t dwBufferLen = this->_len + another._len + 1;
+    wchar_t * pBuffer = new wchar_t[dwBufferLen * sizeof(wchar_t)];
 
     memcpy_s(pBuffer, 
-        dwBufferLen * sizeof(WCHAR), 
+        dwBufferLen * sizeof(wchar_t), 
         this->_data.get(), 
-        this->_len * sizeof(WCHAR));
+        this->_len * sizeof(wchar_t));
     memcpy_s(pBuffer + this->_len,
-        (dwBufferLen - this->_len) * sizeof(WCHAR),
+        (dwBufferLen - this->_len) * sizeof(wchar_t),
         another._data.get(),
-        (another._len + 1) * sizeof(WCHAR));
+        (another._len + 1) * sizeof(wchar_t));
 
     return MFSString(pBuffer);
 }
 
-MFSString MFSString::Substring(DWORD startOffset) const
+MFSString MFSString::Substring(uint32_t startOffset) const
 {
     return MFSString(this->_data.get() + startOffset);
 }
 
-MFSString MFSString::Substring(DWORD startOffset, DWORD length) const
+MFSString MFSString::Substring(uint32_t startOffset, uint32_t length) const
 {
     return MFSString(this->_data.get() + startOffset, length);
 }
 
-std::vector<MFSString> MFSString::Split(const std::vector<WCHAR>& separators) const
+std::vector<MFSString> MFSString::Split(const std::vector<wchar_t>& separators) const
 {
     std::vector<MFSString> result;
     
-    DWORD windowLeft = 0;
+    uint32_t windowLeft = 0;
     while (windowLeft < this->_len)
     {
-        DWORD windowRight = windowLeft;
+        uint32_t windowRight = windowLeft;
 		while (windowRight < this->_len &&
 			std::find(separators.begin(), separators.end(), _data[windowRight]) == separators.end())
 			++windowRight;
@@ -166,18 +166,18 @@ std::vector<MFSString> MFSString::Split(const std::vector<WCHAR>& separators) co
     return result;
 }
 
-std::vector<MFSString> MFSString::Split(const std::vector<WCHAR>& separators, bool type) const
+std::vector<MFSString> MFSString::Split(const std::vector<wchar_t>& separators, bool type) const
 {
 	std::vector<MFSString> result;
 
-	DWORD windowLeft = 0;
+	uint32_t windowLeft = 0;
 	while (windowLeft < this->_len)
 	{
-		DWORD windowRight = windowLeft;
+		uint32_t windowRight = windowLeft;
 		while (windowRight < this->_len &&
 			std::find(separators.begin(), separators.end(), _data[windowRight]) == separators.end())
 			++windowRight;
-		if (type == TRUE)
+		if (type)
 		{
 			if (windowRight - windowLeft != 0)
 				result.emplace_back(_data.get() + windowLeft, windowRight - windowLeft);
@@ -188,15 +188,15 @@ std::vector<MFSString> MFSString::Split(const std::vector<WCHAR>& separators, bo
 	return result;
 }
 
-std::vector<MFSString> MFSString::SplitName(const std::vector<WCHAR>& separators) const
+std::vector<MFSString> MFSString::SplitName(const std::vector<wchar_t>& separators) const
 {
 	std::vector<MFSString> result;
 	bool flag = 0;
 
-	DWORD windowLeft = 0;
+	uint32_t windowLeft = 0;
 	while (windowLeft < this->_len)
 	{
-		DWORD windowRight = windowLeft;
+		uint32_t windowRight = windowLeft;
 		while (windowRight < this->_len &&
 			(std::find(separators.begin(), separators.end(), _data[windowRight]) == separators.end()) || flag)
 		{
@@ -212,15 +212,15 @@ std::vector<MFSString> MFSString::SplitName(const std::vector<WCHAR>& separators
 	return result;
 }
 
-UINT32 MFSString::GetHashCode() const
+uint32_t MFSString::GetHashCode() const
 {
     // Use Jenkins hash function.
     // Wikipedia: https://en.wikipedia.org/wiki/Jenkins_hash_function
 
-    UINT32 hash = 0;
-    for (DWORD i = 0; i < _len; ++i)
+    uint32_t hash = 0;
+    for (uint32_t i = 0; i < _len; ++i)
     {
-        hash += static_cast<UINT32>(_data[i]);
+        hash += static_cast<uint32_t>(_data[i]);
         hash += hash << 10;
         hash ^= hash >> 6;
     }
@@ -235,7 +235,7 @@ bool MFSString::IsInteger() const
     if (_len == 0)
         return false;
 
-    DWORD i = 0;
+    uint32_t i = 0;
     if (_data[0] == L'-')
         ++i;
 
@@ -262,8 +262,8 @@ MFSString & MFSString::operator=(const MFSString & another)
 {
     this->_len = another._len;
 
-    WCHAR * pBuffer = new WCHAR[_len + 1];
-    memcpy_s(pBuffer, (_len + 1) * sizeof(WCHAR), another._data.get(), (_len + 1) * sizeof(WCHAR));
+    wchar_t * pBuffer = new wchar_t[_len + 1];
+    memcpy_s(pBuffer, (_len + 1) * sizeof(wchar_t), another._data.get(), (_len + 1) * sizeof(wchar_t));
     this->_data.reset(pBuffer);
 
     return *this;
@@ -276,19 +276,19 @@ MFSString & MFSString::operator=(MFSString && another)
     return *this;
 }
 
-WCHAR MFSString::operator[](DWORD offset) const
+wchar_t MFSString::operator[](uint32_t offset) const
 {
     return _data[offset];
 }
 
-bool MFSString::ContainsAt(const MFSString & substring, DWORD offset) const
+bool MFSString::ContainsAt(const MFSString & substring, uint32_t offset) const
 {
-    DWORD cap = _len - offset;
+    uint32_t cap = _len - offset;
     if (substring._len > cap)
         return false;
 
-    const WCHAR * p1 = this->_data.get() + offset;
-    const WCHAR * p2 = substring._data.get();
+    const wchar_t * p1 = this->_data.get() + offset;
+    const wchar_t * p2 = substring._data.get();
     while (*p2)
     {
         if (*p1++ != *p2++)
@@ -338,17 +338,17 @@ MFSString::Iterator::Iterator(const MFSString & string)
 {
 }
 
-MFSString::Iterator::Iterator(const WCHAR * ptr)
+MFSString::Iterator::Iterator(const wchar_t * ptr)
     : _iter(ptr)
 {
 }
 
-WCHAR MFSString::Iterator::operator*() const
+wchar_t MFSString::Iterator::operator*() const
 {
     return *_iter;
 }
 
-WCHAR MFSString::Iterator::operator[](int offset) const
+wchar_t MFSString::Iterator::operator[](int offset) const
 {
     return _iter[offset];
 }

@@ -65,7 +65,6 @@
     <ClCompile Include="src\fs\MFSFileAllocationTable.cpp" />
     <ClCompile Include="src\fs\MFSBlockAllocationBitmap.cpp" />
     <ClCompile Include="src\device\MFSRawDevice.cpp" />
-    <ClCompile Include="src\device\MFSRawDeviceView.cpp" />
     <ClCompile Include="src\device\MFSOSFileDevice.cpp" />
     <ClCompile Include="src\device\MFSOSFileView.cpp" />
     <ClCompile Include="src\MFSString.cpp" />
@@ -73,7 +72,6 @@
     <ClCompile Include="src\stream\MFSBlockStream.cpp" />
     <ClCompile Include="src\stream\MFSMemoryStream.cpp" />
     <ClCompile Include="src\stream\MFSNativeFileStream.cpp" />
-    <ClCompile Include="src\stream\MFSStream.cpp" />
     <ClCompile Include="src\stream\MFSStreamReader.cpp" />
     <ClCompile Include="src\stream\MFSStreamTextWriter.cpp" />
     <ClCompile Include="src\stream\MFSStreamWriter.cpp" />

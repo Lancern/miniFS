@@ -12,6 +12,6 @@ MFSStream * MFSStreamWriter::GetStream() const
 
 void MFSStreamWriter::Write(const MFSString & string)
 {
-    _stream->Write(string.GetRawString(), string.GetLength() * sizeof(WCHAR));
-    this->Write<WCHAR>(0);
+    _stream->Write(string.GetRawString(), string.GetLength() * sizeof(wchar_t));
+    this->Write<wchar_t>(0);
 }

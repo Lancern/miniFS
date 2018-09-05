@@ -32,10 +32,10 @@ class MFSPartition
     bool MFSPartition::IsRaw() const
         获取一个 bool 值，该值指示当前的文件系统分区是否未格式化。
 
-    UINT64 GetTotalSpaceInBytes() const
+    uint64_t GetTotalSpaceInBytes() const
         获取当前分区的总空间大小。
 
-    UINT64 GetFreeSpaceInBytes() const
+    uint64_t GetFreeSpaceInBytes() const
         获取当前分区的空闲空间大小。
 
     void MFSPartition::BuildFileSystem()
@@ -63,59 +63,59 @@ class MFSPartition::Internals
     MFSPartition * MFSPartition::Internals::GetPartition() const
         获取内部的 MFSPartition 对象。
 
-    DWORD MFSPartition::Internals::AllocateDeviceBlock()
+    uint32_t MFSPartition::Internals::AllocateDeviceBlock()
         在内部的 MFSPartition 对象上分配一个设备块并返回分配的设备块编号并建立其 FAT 块链。
         若分配失败，返回 MFSBlockAllocationBitmap::InvalidBlockId。
 
-    bool MFSPartition::Internals::AllocateDeviceBlock(DWORD blockId)
+    bool MFSPartition::Internals::AllocateDeviceBlock(uint32_t blockId)
         在内部的 MFSPartition 对象上尝试分配指定编号的设备块并建立其 FAT 块链。
         @return 一个 bool 值指示分配操作是否成功。
 
-    bool MFSPartition::Internals::FreeDeviceBlock(DWORD blockId)
+    bool MFSPartition::Internals::FreeDeviceBlock(uint32_t blockId)
         在内部的 MFSPartition 对象上释放给定编号的设备块。
         @return 一个 bool 值指示释放操作是否成功。
 
-    DWORD MFSPartition::Internals::AllocateTailBlock(DWORD firstBlockId)
+    uint32_t MFSPartition::Internals::AllocateTailBlock(uint32_t firstBlockId)
         在内部的 MFSPartition 对象上分配一个设备块并将其添加至一个块链的尾部。
         @param firstBlockId 要在尾部分配设备块的块链的第一个块编号。
         @return 新分配的块编号。若分配失败，返回 MFSBlockAllocationBitmap::InvalidBlockId。
 
-    DWORD MFSPartition::Internals::AllocateFrontBlock(DWORD firstBlockId)
+    uint32_t MFSPartition::Internals::AllocateFrontBlock(uint32_t firstBlockId)
         在内部的 MFSPartition 对象上分配一个设备块并将其添加至一个块链的头部。
         @param firstBlockId 要在头部分配设备块的块链的第一个块编号。
         @retrun 新分配的块编号。若分配失败，返回 MFSBlockAllocationBitmap::InvalidBlockId。
 
-    DWORD MFSPartition::Internals::AllocateBlockChain(DWORD numberOfBlocks)
+    uint32_t MFSPartition::Internals::AllocateBlockChain(uint32_t numberOfBlocks)
         在内部的 MFSPartition 对象上分配一个包含指定块个数的块链。
         @param numberOfBlocks 要分配的块链中块的个数。
         @return 分配出的块链的第一块编号。
         若无法分配指定个数个设备块，返回 MFSBlockAllocationBitmap::InvalidBlockId。
 
-    DWORD MFSPartition::Internals::FreeChainedBlock(DWORD firstBlockId, DWORD blockId)
+    uint32_t MFSPartition::Internals::FreeChainedBlock(uint32_t firstBlockId, uint32_t blockId)
         在内部的 MFSPartition 对象上释放块链上的一个数据块。
         @param firstBlockId 块链的第一个设备块编号。
         @param blockId 要释放的块的编号。
         @return 释放操作完成后块链的首块编号。
 
-    DWORD MFSPartition::Internals::FreeBlockAfter(DWORD position)
+    uint32_t MFSPartition::Internals::FreeBlockAfter(uint32_t position)
         在内部的 MFSPartition 对象上释放给定块在块链上的下一个设备块。
         @param position 块 position 在块链上的下一个设备块将被释放。
         @return 被释放的块编号。
 
-    DWORD MFSPartition::Internals::AppendTailBlock(DWORD firstBlockId, DWORD blockId)
+    uint32_t MFSPartition::Internals::AppendTailBlock(uint32_t firstBlockId, uint32_t blockId)
         将给定的块添加至给定的块链末尾。
         @param firstBlockId 块链的第一块编号。
         @param blockId 要添加到块链末尾的块编号。
         @return 操作结束后块链的第一块编号。
 
-    DWORD GetNextChainedBlock(DWORD blockId) const
+    uint32_t GetNextChainedBlock(uint32_t blockId) const
         获取内部 MFSPartition 对象上指定设备块在块链上的下一块编号。
 
-    DWORD MFSPartition::Internals::GetAvailableFSNodeId()
+    uint32_t MFSPartition::Internals::GetAvailableFSNodeId()
         在内部的 MFSPartition 对象上获取下一个可用的文件系统节点的编号。
         若没有可用的文件系统节点，返回 MFSFSNodePool::InvalidFSNodeId。
 
-    bool MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId)
+    bool MFSPartition::Internals::AllocateEntryMeta(uint32_t fsnodeId)
         在内部的 MFSPartition 对象上递增一个文件系统节点元数据结构的引用计数。
         返回的节点已经被保证初始化。
         @param fsnodeId 要分配的节点在节点池中的编号。
@@ -127,11 +127,11 @@ class MFSPartition::Internals
     bool FreeEntryMeta(uint32_t fsnodeId)
         递减给定的文件系统节点的引用计数并在引用计数降至零时释放其链接到的块链。
 
-    MFSBlockStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock)
+    MFSBlockStream * MFSPartition::Internals::OpenBlockStream(uint32_t firstBlock)
         在内部的 MFSPartition 对象上打开一个按块链组织的流对象。流对象的长度将会被对齐到块边界。
         @param firstBlock 打开的流对象的基础块链的第一块编号。
 
-    MFSBlockStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 length)
+    MFSBlockStream * MFSPartition::Internals::OpenBlockStream(uint32_t firstBlock, uint64_t length)
         在内部的 MFSPartition 对象上打开一个按块链组织的流对象。
         @param firstBlock 打开的流对象的基础块链的第一块编号。
         @param length 打开的流对象的长度。
@@ -147,30 +147,30 @@ private:
         : public MFSBlockStream
     {
     public:
-        ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId);
-        ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId, UINT64 length);
+        ChainedBlockStream(MFSPartition * partition, uint32_t firstBlockId);
+        ChainedBlockStream(MFSPartition * partition, uint32_t firstBlockId, uint64_t length);
 
         MFSPartition * GetPartition() const;
 
         bool HasNext() const override;
 
-        UINT64 GetLength() const override;
-        UINT64 GetPosition() const override;
+        uint64_t GetLength() const override;
+        uint64_t GetPosition() const override;
 
         bool Seek(MFSStreamSeekOrigin origin, INT64 offset) override;
 
     protected:
-        UINT64 OnBlockSwap(UINT64 currentBlock) override;
+        uint64_t OnBlockSwap(uint64_t currentBlock) override;
 
     private:
         MFSPartition * _partition;
-        DWORD _firstBlock;
-        DWORD _currentBlock;
-        DWORD _blockOffset;
-        UINT64 _length;
+        uint32_t _firstBlock;
+        uint32_t _currentBlock;
+        uint32_t _blockOffset;
+        uint64_t _length;
 
-        DWORD GetNextBlockId(DWORD current) const;
-        DWORD GetNextBlockId() const;
+        uint32_t GetNextBlockId(uint32_t current) const;
+        uint32_t GetNextBlockId() const;
 
         bool SeekBegin(INT64 offset);
         bool SeekRelative(INT64 offset);
@@ -190,27 +190,27 @@ public:
 
         MFSPartition * GetPartition() const;
 
-        DWORD AllocateDeviceBlock();
-        bool AllocateDeviceBlock(DWORD blockId);
-        bool FreeDeviceBlock(DWORD blockId);
+        uint32_t AllocateDeviceBlock();
+        bool AllocateDeviceBlock(uint32_t blockId);
+        bool FreeDeviceBlock(uint32_t blockId);
 
-        DWORD AllocateTailBlock(DWORD firstBlockId);
-        DWORD AllocateFrontBlock(DWORD firstBlockId);
-        DWORD AllocateBlockChain(DWORD numberOfBlocks);
-		DWORD FreeChainedBlock(DWORD firstBlockId, DWORD blockId);
-        DWORD FreeBlockAfter(DWORD position);
+        uint32_t AllocateTailBlock(uint32_t firstBlockId);
+        uint32_t AllocateFrontBlock(uint32_t firstBlockId);
+        uint32_t AllocateBlockChain(uint32_t numberOfBlocks);
+		uint32_t FreeChainedBlock(uint32_t firstBlockId, uint32_t blockId);
+        uint32_t FreeBlockAfter(uint32_t position);
 
-        DWORD AppendTailBlock(DWORD firstBlockId, DWORD blockId);
+        uint32_t AppendTailBlock(uint32_t firstBlockId, uint32_t blockId);
 
-        DWORD GetNextChainedBlock(DWORD blockId) const;
+        uint32_t GetNextChainedBlock(uint32_t blockId) const;
 
-        DWORD GetAvailableFSNodeId();
-        bool AllocateEntryMeta(DWORD fsnodeId);
+        uint32_t GetAvailableFSNodeId();
+        bool AllocateEntryMeta(uint32_t fsnodeId);
         MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const;
         bool FreeEntryMeta(uint32_t fsnodeId);
 
-        MFSBlockStream * OpenBlockStream(DWORD firstBlock);
-        MFSBlockStream * OpenBlockStream(DWORD firstBlock, UINT64 length);
+        MFSBlockStream * OpenBlockStream(uint32_t firstBlock);
+        MFSBlockStream * OpenBlockStream(uint32_t firstBlock, uint64_t length);
 
         friend class MFSFSEntry;
     };
@@ -222,8 +222,8 @@ public:
     bool IsValidDevice() const;
 
     bool IsRaw() const;
-    UINT64 GetTotalSpaceInBytes() const;
-    UINT64 GetFreeSpaceInBytes() const;
+    uint64_t GetTotalSpaceInBytes() const;
+    uint64_t GetFreeSpaceInBytes() const;
     
     void BuildFileSystem();
 
@@ -387,11 +387,11 @@ private:
         : public MFSPartition::Internals::ChainedBlockStream
     {
     public:
-        DataStream(MFSFSEntry * entry, DWORD firstBlockId);
-        DataStream(MFSFSEntry * entry, DWORD firstBlockId, UINT64 length);
+        DataStream(MFSFSEntry * entry, uint32_t firstBlockId);
+        DataStream(MFSFSEntry * entry, uint32_t firstBlockId, uint64_t length);
 
-        DWORD Read(LPVOID lpBuffer, DWORD dwBufferSize, DWORD dwNumberOfBytesToRead) override;
-        DWORD Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite) override;
+        uint32_t Read(void * lpBuffer, uint32_t dwBufferSize, uint32_t dwNumberOfBytesToRead) override;
+        uint32_t Write(const void * lpBuffer, uint32_t dwNumberOfBytesToWrite) override;
 
     private:
         MFSFSEntry * _entry;

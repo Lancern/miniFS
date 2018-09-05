@@ -2,7 +2,7 @@
 
 
 
-MFSBufferedBlockDevice::MFSBufferedBlockDevice(MFSRawDevice * rawDevice, DWORD bufferedBlockCount)
+MFSBufferedBlockDevice::MFSBufferedBlockDevice(MFSRawDevice * rawDevice, uint32_t bufferedBlockCount)
     : MFSBlockDevice(rawDevice), _wreq(), _bufferedBlockCount(bufferedBlockCount)
 {
 }
@@ -14,7 +14,7 @@ MFSBufferedBlockDevice::~MFSBufferedBlockDevice()
 }
 
 
-bool MFSBufferedBlockDevice::ReadBlock(LPVOID lpBuffer, UINT64 blockId)
+bool MFSBufferedBlockDevice::ReadBlock(void * lpBuffer, uint64_t blockId)
 {
     if (blockId < 0 || blockId >= GetBlocksCount())
         return false;
@@ -30,7 +30,7 @@ bool MFSBufferedBlockDevice::ReadBlock(LPVOID lpBuffer, UINT64 blockId)
     if (!blockView)
         return false;
 
-    DWORD read = blockView->Read(lpBuffer, 0, GetBlockSize());
+    uint32_t read = blockView->Read(lpBuffer, 0, GetBlockSize());
 
     if (!fromBuffer) 
     {
@@ -41,7 +41,7 @@ bool MFSBufferedBlockDevice::ReadBlock(LPVOID lpBuffer, UINT64 blockId)
     return read;
 }
 
-bool MFSBufferedBlockDevice::WriteBlock(UINT64 blockId, LPCVOID lpBuffer)
+bool MFSBufferedBlockDevice::WriteBlock(uint64_t blockId, const void * lpBuffer)
 {
     if (blockId < 0 || blockId >= GetBlocksCount())
         return false;
@@ -50,7 +50,7 @@ bool MFSBufferedBlockDevice::WriteBlock(UINT64 blockId, LPCVOID lpBuffer)
     if (!blockView)
         return false;
 
-    DWORD write = blockView->Write(0, GetBlockSize(), lpBuffer);
+    uint32_t write = blockView->Write(0, GetBlockSize(), lpBuffer);
     return write;
 }
 
@@ -71,7 +71,7 @@ void MFSBufferedBlockDevice::Close()
     MFSBlockDevice::Close();
 }
 
-MFSRawDeviceView * MFSBufferedBlockDevice::LoadBlockIntoBuffer(UINT64 blockId)
+MFSRawDeviceView * MFSBufferedBlockDevice::LoadBlockIntoBuffer(uint64_t blockId)
 {
     if (_wreq.find(blockId) == _wreq.end())
     {

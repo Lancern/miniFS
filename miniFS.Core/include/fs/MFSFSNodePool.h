@@ -13,7 +13,7 @@ class MFSFSNodePool
     
     构造器：
 
-    MFSFSNodePool::MFSFSNodePool(size_t numberOfNodes)
+    MFSFSNodePool::MFSFSNodePool(uint32_t numberOfNodes)
         从节点池中的节点数量初始化 MFSFSNodePool 类的新实例。
 
     uint32_t GetAvailableFSNodeId()
@@ -30,9 +30,9 @@ class MFSFSNodePool
 class MFSFSNodePool
 {
 public:
-    static constexpr size_t InvalidFSNodeId = 0xFFFFFFFF;
+    static constexpr uint32_t InvalidFSNodeId = 0xFFFFFFFF;
 
-    MFSFSNodePool(size_t numberOfNodes);
+    MFSFSNodePool(uint32_t numberOfNodes);
 
     uint32_t GetAvailableFSNodeId();
     bool Allocate(uint32_t fsnodeId);
@@ -46,8 +46,8 @@ public:
 
 private:
     std::unique_ptr<MFSFSEntryMeta[]> _pool;
-    size_t _nodesCount;
-    size_t _alloc;
+    uint32_t _nodesCount;
+    uint32_t _alloc;
 
     uint32_t LocateNextFreeNode();
     void InitializeFSNode(uint32_t fsnodeId);

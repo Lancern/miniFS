@@ -3,7 +3,7 @@
 MFSBlockStream::MFSBlockStream(MFSBlockDevice * device)
     : _device(device), _insideOffset(0), _blockOffset(0), _dirty(false)
 {
-    BYTE * buffer = new BYTE[device->GetBlockSize()];
+    uint8_t * buffer = new uint8_t[device->GetBlockSize()];
     _buffer.reset(buffer);
 
     // Load first block.
@@ -30,14 +30,14 @@ bool MFSBlockStream::HasNext() const
     return _blockOffset < _device->GetBlocksCount();
 }
 
-UINT64 MFSBlockStream::GetLength() const
+uint64_t MFSBlockStream::GetLength() const
 {
     return _device->GetBlocksCount() * _device->GetBlockSize();
 }
 
-UINT64 MFSBlockStream::GetPosition() const
+uint64_t MFSBlockStream::GetPosition() const
 {
-    return static_cast<UINT64>(_blockOffset) * _device->GetBlockSize() + _insideOffset;
+    return static_cast<uint64_t>(_blockOffset) * _device->GetBlockSize() + _insideOffset;
 }
 
 MFSBlockDevice * MFSBlockStream::GetDevice() const
@@ -45,23 +45,23 @@ MFSBlockDevice * MFSBlockStream::GetDevice() const
     return _device;
 }
 
-DWORD MFSBlockStream::GetDeviceBlockSize() const
+uint32_t MFSBlockStream::GetDeviceBlockSize() const
 {
     return _device->GetBlockSize();
 }
 
-UINT64 MFSBlockStream::GetDeviceBlocksCount() const
+uint64_t MFSBlockStream::GetDeviceBlocksCount() const
 {
     return _device->GetBlocksCount();
 }
 
-DWORD MFSBlockStream::Read(LPVOID lpBuffer, DWORD dwBufferSize, DWORD dwNumberOfBytesToRead)
+uint32_t MFSBlockStream::Read(void * lpBuffer, uint32_t dwBufferSize, uint32_t dwNumberOfBytesToRead)
 {
     if (dwNumberOfBytesToRead > dwBufferSize)
         dwNumberOfBytesToRead = dwBufferSize;
 
-    DWORD read = 0;
-    BYTE * dest = reinterpret_cast<BYTE *>(lpBuffer);
+    uint32_t read = 0;
+    uint8_t * dest = reinterpret_cast<uint8_t *>(lpBuffer);
     while (read < dwNumberOfBytesToRead && TryReadByte(dest))
     {
         ++dest;
@@ -71,10 +71,10 @@ DWORD MFSBlockStream::Read(LPVOID lpBuffer, DWORD dwBufferSize, DWORD dwNumberOf
     return read;
 }
 
-DWORD MFSBlockStream::Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite)
+uint32_t MFSBlockStream::Write(const void * lpBuffer, uint32_t dwNumberOfBytesToWrite)
 {
-    DWORD write = 0;
-    const BYTE * src = reinterpret_cast<const BYTE *>(lpBuffer);
+    uint32_t write = 0;
+    const uint8_t * src = reinterpret_cast<const uint8_t *>(lpBuffer);
 
     while (write < dwNumberOfBytesToWrite && TryWriteByte(*src))
     {
@@ -85,7 +85,7 @@ DWORD MFSBlockStream::Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite)
     return 0;
 }
 
-bool MFSBlockStream::Seek(MFSStreamSeekOrigin origin, INT64 offset)
+bool MFSBlockStream::Seek(MFSStreamSeekOrigin origin, int64_t offset)
 {
     switch (origin)
     {
@@ -125,7 +125,7 @@ void MFSBlockStream::Close()
     }
 }
 
-bool MFSBlockStream::SeekBlock(UINT64 blockId)
+bool MFSBlockStream::SeekBlock(uint64_t blockId)
 {
     if (blockId > _device->GetBlocksCount())
         return false;
@@ -160,38 +160,38 @@ void MFSBlockStream::SetDirtyFlag(bool dirty)
     _dirty = dirty;
 }
 
-UINT64 MFSBlockStream::GetCurrentBlockId() const
+uint64_t MFSBlockStream::GetCurrentBlockId() const
 {
     return _blockOffset;
 }
 
-UINT64 MFSBlockStream::GetBlockInternalOffset() const
+uint64_t MFSBlockStream::GetBlockInternalOffset() const
 {
     return _insideOffset;
 }
 
-UINT64 MFSBlockStream::OnBlockSwap(UINT64 currentBlock)
+uint64_t MFSBlockStream::OnBlockSwap(uint64_t currentBlock)
 {
     return currentBlock + 1;
 }
 
-bool MFSBlockStream::SeekFromBegin(INT64 offset)
+bool MFSBlockStream::SeekFromBegin(int64_t offset)
 {
-    DWORD blockSize = _device->GetBlockSize();
-    UINT64 blockId = offset / blockSize;
+    uint32_t blockSize = _device->GetBlockSize();
+    uint64_t blockId = offset / blockSize;
     
     if (!SeekBlock(blockId))
         return false;
     else
     {
-        DWORD insideOffset = static_cast<DWORD>(offset % blockSize);
+        uint32_t insideOffset = static_cast<uint32_t>(offset % blockSize);
         _insideOffset = insideOffset;
 
         return true;
     }
 }
 
-bool MFSBlockStream::TryReadByte(BYTE * buffer)
+bool MFSBlockStream::TryReadByte(uint8_t * buffer)
 {
     if (!HasNext())
         return false;
@@ -206,7 +206,7 @@ bool MFSBlockStream::TryReadByte(BYTE * buffer)
     }
 }
 
-bool MFSBlockStream::TryWriteByte(BYTE data)
+bool MFSBlockStream::TryWriteByte(uint8_t data)
 {
     if (!HasNext())
         return false;

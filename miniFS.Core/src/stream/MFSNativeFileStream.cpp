@@ -1,5 +1,6 @@
 #include "../../include/stream/MFSNativeFileStream.h"
 
+
 MFSNativeFileStream::MFSNativeFileStream(HANDLE hFile)
     : _hFile(hFile)
 {
@@ -30,7 +31,7 @@ bool MFSNativeFileStream::HasNext() const
     return GetPosition() < GetLength();
 }
 
-UINT64 MFSNativeFileStream::GetLength() const
+uint64_t MFSNativeFileStream::GetLength() const
 {
     LARGE_INTEGER size;
     size.QuadPart = 0;
@@ -39,7 +40,7 @@ UINT64 MFSNativeFileStream::GetLength() const
     return size.QuadPart;
 }
 
-UINT64 MFSNativeFileStream::GetPosition() const
+uint64_t MFSNativeFileStream::GetPosition() const
 {
     LARGE_INTEGER ptr;
     ptr.QuadPart = 0;
@@ -51,25 +52,25 @@ UINT64 MFSNativeFileStream::GetPosition() const
     return ptr.QuadPart;
 }
 
-DWORD MFSNativeFileStream::Read(LPVOID lpBuffer, DWORD dwBufferSize, DWORD dwNumberOfBytesToRead)
+uint32_t MFSNativeFileStream::Read(void * lpBuffer, uint32_t dwBufferSize, uint32_t dwNumberOfBytesToRead)
 {
     DWORD read = 0;
     if (!ReadFile(_hFile, lpBuffer, dwNumberOfBytesToRead, &read, NULL))
         return 0;
-    return read;
+    return static_cast<uint32_t>(read);
 }
 
-DWORD MFSNativeFileStream::Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite)
+uint32_t MFSNativeFileStream::Write(const void * lpBuffer, uint32_t dwNumberOfBytesToWrite)
 {
     DWORD write = 0;
     if (!WriteFile(_hFile, lpBuffer, dwNumberOfBytesToWrite, &write, NULL))
         return 0;
-    return write;
+    return static_cast<uint32_t>(write);
 }
 
-bool MFSNativeFileStream::Seek(MFSStreamSeekOrigin origin, INT64 offset)
+bool MFSNativeFileStream::Seek(MFSStreamSeekOrigin origin, int64_t offset)
 {
-    DWORD relative;
+    uint32_t relative;
     switch (origin)
     {
     case MFSStreamSeekOrigin::Begin:

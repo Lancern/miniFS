@@ -12,16 +12,16 @@ MFSStream * MFSStreamTextReader::GetStream() const
     return _stream;
 }
 
-WCHAR MFSStreamTextReader::ReadChar()
+wchar_t MFSStreamTextReader::ReadChar()
 {
-    WCHAR ch;
-    _stream->Read(&ch, sizeof(WCHAR), sizeof(WCHAR));
+    wchar_t ch;
+    _stream->Read(&ch, sizeof(wchar_t), sizeof(wchar_t));
     return ch;
 }
 
-MFSString MFSStreamTextReader::Read(const std::vector<WCHAR>& terminators, bool includeTerminator)
+MFSString MFSStreamTextReader::Read(const std::vector<wchar_t> & terminators, bool includeTerminator)
 {
-    std::vector<WCHAR> buffer;
+    std::vector<wchar_t> buffer;
     while (_stream->HasNext())
     {
         buffer.push_back(ReadChar());

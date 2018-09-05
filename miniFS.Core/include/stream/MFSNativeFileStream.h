@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MFSStream.h"
+#include <Windows.h>
 
 
 class MFSNativeFileStream
@@ -8,7 +9,7 @@ class MFSNativeFileStream
 {
 public:
     MFSNativeFileStream(HANDLE hFile);
-    ~MFSNativeFileStream() override;
+    ~MFSNativeFileStream();
 
     bool CanRead() const override;
     bool CanWrite() const override;
@@ -16,12 +17,12 @@ public:
 
     bool HasNext() const override;
 
-    UINT64 GetLength() const override;
-    UINT64 GetPosition() const override;
+    uint64_t GetLength() const override;
+    uint64_t GetPosition() const override;
 
-    DWORD Read(LPVOID lpBuffer, DWORD dwBufferSize, DWORD dwNumberOfBytesToRead) override;
-    DWORD Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite) override;
-    bool Seek(MFSStreamSeekOrigin origin, INT64 offset) override;
+    uint32_t Read(void * lpBuffer, uint32_t dwBufferSize, uint32_t dwNumberOfBytesToRead) override;
+    uint32_t Write(const void * lpBuffer, uint32_t dwNumberOfBytesToWrite) override;
+    bool Seek(MFSStreamSeekOrigin origin, int64_t offset) override;
 
     void Flush() override;
     void Close() override;

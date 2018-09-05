@@ -2,10 +2,10 @@
 
 
 
-MFSOSFileView::MFSOSFileView(HANDLE hFileMapping, UINT64 offset, DWORD size, bool readonly)
+MFSOSFileView::MFSOSFileView(HANDLE hFileMapping, uint64_t offset, uint32_t size, bool readonly)
     : _viewSize(size), _canWrite(!readonly) 
 {
-    DWORD access = readonly ? FILE_MAP_READ : FILE_MAP_WRITE;
+    uint32_t access = readonly ? FILE_MAP_READ : FILE_MAP_WRITE;
     _lpFileMappingAddress = MapViewOfFile(hFileMapping, access, offset >> 32, offset & 0xFFFFFFFF, size);
 }
 
@@ -17,9 +17,9 @@ MFSOSFileView::~MFSOSFileView()
 
 
 bool MFSOSFileView::CanWrite() const { return _canWrite; }
-DWORD MFSOSFileView::GetSize() const { return _viewSize; }
+uint32_t MFSOSFileView::GetSize() const { return _viewSize; }
 
-DWORD MFSOSFileView::Read(LPVOID lpBuffer, DWORD offset, DWORD length) 
+uint32_t MFSOSFileView::Read(void * lpBuffer, uint32_t offset, uint32_t length) 
 {
     if (!lpBuffer)
         return 0;
@@ -30,7 +30,7 @@ DWORD MFSOSFileView::Read(LPVOID lpBuffer, DWORD offset, DWORD length)
     return length;
 }
 
-DWORD MFSOSFileView::Write(DWORD offset, DWORD length, LPCVOID lpBuffer) 
+uint32_t MFSOSFileView::Write(uint32_t offset, uint32_t length, const void * lpBuffer) 
 {
     if (!_canWrite)
         return 0;

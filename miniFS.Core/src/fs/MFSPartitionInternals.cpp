@@ -11,15 +11,15 @@ MFSPartition * MFSPartition::Internals::GetPartition() const
     return _partition;
 }
 
-DWORD MFSPartition::Internals::AllocateDeviceBlock()
+uint32_t MFSPartition::Internals::AllocateDeviceBlock()
 {
-    DWORD blockId = _partition->_blockAllocation->AllocBlock();
+    uint32_t blockId = _partition->_blockAllocation->AllocBlock();
     if (blockId != MFSBlockAllocationBitmap::InvalidBlockId)
         _partition->_blockChain->Set(blockId, MFSFileAllocationTable::InvalidBlockId);
     return blockId;
 }
 
-bool MFSPartition::Internals::AllocateDeviceBlock(DWORD blockId)
+bool MFSPartition::Internals::AllocateDeviceBlock(uint32_t blockId)
 {
     bool result = _partition->_blockAllocation->AllocBlock(blockId);
     if (result)
@@ -27,22 +27,22 @@ bool MFSPartition::Internals::AllocateDeviceBlock(DWORD blockId)
     return result;
 }
 
-bool MFSPartition::Internals::FreeDeviceBlock(DWORD blockId)
+bool MFSPartition::Internals::FreeDeviceBlock(uint32_t blockId)
 {
     _partition->_blockAllocation->FreeBlock(blockId);
     return true;
 }
 
-DWORD MFSPartition::Internals::AllocateTailBlock(DWORD firstBlockId)
+uint32_t MFSPartition::Internals::AllocateTailBlock(uint32_t firstBlockId)
 {
-    DWORD blockId = AllocateDeviceBlock();
+    uint32_t blockId = AllocateDeviceBlock();
     _partition->_blockChain->AddTail(firstBlockId, blockId);
     return blockId;
 }
 
-DWORD MFSPartition::Internals::AllocateFrontBlock(DWORD firstBlockId)
+uint32_t MFSPartition::Internals::AllocateFrontBlock(uint32_t firstBlockId)
 {
-    DWORD blockId = AllocateDeviceBlock();
+    uint32_t blockId = AllocateDeviceBlock();
     if (blockId == MFSBlockAllocationBitmap::InvalidBlockId)
         return MFSBlockAllocationBitmap::InvalidBlockId;
 
@@ -50,7 +50,7 @@ DWORD MFSPartition::Internals::AllocateFrontBlock(DWORD firstBlockId)
     return blockId;
 }
 
-DWORD MFSPartition::Internals::AllocateBlockChain(DWORD numberOfBlocks)
+uint32_t MFSPartition::Internals::AllocateBlockChain(uint32_t numberOfBlocks)
 {
     if (numberOfBlocks == 0)
         return MFSBlockAllocationBitmap::InvalidBlockId;
@@ -79,22 +79,22 @@ DWORD MFSPartition::Internals::AllocateBlockChain(DWORD numberOfBlocks)
     return firstBlockId;
 }
 
-DWORD MFSPartition::Internals::FreeChainedBlock(DWORD firstBlockId, DWORD blockId)
+uint32_t MFSPartition::Internals::FreeChainedBlock(uint32_t firstBlockId, uint32_t blockId)
 {
-    DWORD first = _partition->_blockChain->Remove(firstBlockId, blockId);
+    uint32_t first = _partition->_blockChain->Remove(firstBlockId, blockId);
     FreeDeviceBlock(blockId);
     return first;
 }
 
-DWORD MFSPartition::Internals::FreeBlockAfter(DWORD position)
+uint32_t MFSPartition::Internals::FreeBlockAfter(uint32_t position)
 {
-    DWORD block = _partition->_blockChain->RemoveAfter(position);
+    uint32_t block = _partition->_blockChain->RemoveAfter(position);
     if (block != MFSFileAllocationTable::InvalidBlockId)
         FreeDeviceBlock(block);
     return block;
 }
 
-DWORD MFSPartition::Internals::AppendTailBlock(DWORD firstBlockId, DWORD blockId)
+uint32_t MFSPartition::Internals::AppendTailBlock(uint32_t firstBlockId, uint32_t blockId)
 {
     if (firstBlockId == MFSFileAllocationTable::InvalidBlockId)
         return blockId;
@@ -105,17 +105,17 @@ DWORD MFSPartition::Internals::AppendTailBlock(DWORD firstBlockId, DWORD blockId
     }
 }
 
-DWORD MFSPartition::Internals::GetNextChainedBlock(DWORD blockId) const
+uint32_t MFSPartition::Internals::GetNextChainedBlock(uint32_t blockId) const
 {
     return _partition->_blockChain->Get(blockId);
 }
 
-DWORD MFSPartition::Internals::GetAvailableFSNodeId()
+uint32_t MFSPartition::Internals::GetAvailableFSNodeId()
 {
     return _partition->_fsnodePool->GetAvailableFSNodeId();
 }
 
-bool MFSPartition::Internals::AllocateEntryMeta(DWORD fsnodeId)
+bool MFSPartition::Internals::AllocateEntryMeta(uint32_t fsnodeId)
 {
     return _partition->_fsnodePool->Allocate(fsnodeId);
 }
@@ -139,12 +139,12 @@ bool MFSPartition::Internals::FreeEntryMeta(uint32_t fsnodeId)
     }
 }
 
-MFSBlockStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock)
+MFSBlockStream * MFSPartition::Internals::OpenBlockStream(uint32_t firstBlock)
 {
     return new ChainedBlockStream(_partition, firstBlock);
 }
 
-MFSBlockStream * MFSPartition::Internals::OpenBlockStream(DWORD firstBlock, UINT64 length)
+MFSBlockStream * MFSPartition::Internals::OpenBlockStream(uint32_t firstBlock, uint64_t length)
 {
     return new ChainedBlockStream(_partition, firstBlock, length);
 }

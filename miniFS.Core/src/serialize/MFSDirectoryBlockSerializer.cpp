@@ -1,6 +1,6 @@
 #include "..\..\include\serialize\MFSDirectoryBlockSerializer.h"
 
-MFSDirectoryBlockSerializer::MFSDirectoryBlockSerializer(size_t blockSize)
+MFSDirectoryBlockSerializer::MFSDirectoryBlockSerializer(uint32_t blockSize)
 	: _blockSize(blockSize)
 {
 }
@@ -11,7 +11,7 @@ void MFSDirectoryBlockSerializer::Serialize(MFSStream * stream, MFSDirectoryBloc
     MFSFSDirectoryBlockMasterInfo master = { object->_dir.size() };
     writer.Write(master);
 
-	for (auto& it : object->_dir)
+	for (auto & it : object->_dir)
 	{
 		writer.Write(it.first);
 		writer.Write(it.second);
@@ -22,9 +22,9 @@ void MFSDirectoryBlockSerializer::Serialize(MFSStream * stream, MFSDirectoryBloc
         stream->Seek(MFSStreamSeekOrigin::Relative, _blockSize - object->_usedSize);
     else
     {
-        for (DWORD tmp = object->_usedSize; tmp < _blockSize; ++tmp)
+        for (uint32_t tmp = object->_usedSize; tmp < _blockSize; ++tmp)
         {
-            UCHAR buffer = 0;
+            uint8_t buffer = 0;
             stream->Write(&buffer, sizeof(buffer));
         }
     }
@@ -32,7 +32,7 @@ void MFSDirectoryBlockSerializer::Serialize(MFSStream * stream, MFSDirectoryBloc
 
 MFSDirectoryBlock * MFSDirectoryBlockSerializer::Deserialize(MFSStream * stream)
 {
-	MFSDirectoryBlock* ret = new MFSDirectoryBlock(_blockSize - 8);
+	MFSDirectoryBlock * ret = new MFSDirectoryBlock(_blockSize - 8);
 	MFSStreamReader reader(stream);
 	MFSFSDirectoryBlockMasterInfo master = reader.ReadPODObject<MFSFSDirectoryBlockMasterInfo>();
 
@@ -50,9 +50,9 @@ MFSDirectoryBlock * MFSDirectoryBlockSerializer::Deserialize(MFSStream * stream)
         stream->Seek(MFSStreamSeekOrigin::Relative, _blockSize - ret->_usedSize);
     else
     {
-        for (DWORD tmp = ret->_usedSize; tmp < _blockSize; ++tmp)
+        for (uint32_t tmp = ret->_usedSize; tmp < _blockSize; ++tmp)
         {
-            UCHAR buffer;
+            uint8_t buffer;
             stream->Read(&buffer, sizeof(buffer), sizeof(buffer));
         }
     }

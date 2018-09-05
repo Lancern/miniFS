@@ -19,20 +19,20 @@ MFSRawDevice * MFSBlockDevice::GetRawDevice() const
     return _rawDevice;
 }
 
-DWORD MFSBlockDevice::GetBlockSize() const
+uint32_t MFSBlockDevice::GetBlockSize() const
 {
     return 4 * 1024;
 }
 
-UINT64 MFSBlockDevice::GetBlocksCount() const
+uint64_t MFSBlockDevice::GetBlocksCount() const
 {
-    UINT64 dwCbSize = _rawDevice->GetTotalSize();
-    DWORD dwBlockSize = GetBlockSize();
-    DWORD remainder = dwCbSize % dwBlockSize;
+    uint64_t dwCbSize = _rawDevice->GetTotalSize();
+    uint32_t dwBlockSize = GetBlockSize();
+    uint32_t remainder = dwCbSize % dwBlockSize;
     return dwCbSize / dwBlockSize + (remainder ? 1 : 0);
 }
 
-bool MFSBlockDevice::ReadBlock(LPVOID lpBuffer, UINT64 blockId)
+bool MFSBlockDevice::ReadBlock(void * lpBuffer, uint64_t blockId)
 {
     if (blockId < 0 || blockId >= GetBlocksCount())
         return false;
@@ -41,9 +41,9 @@ bool MFSBlockDevice::ReadBlock(LPVOID lpBuffer, UINT64 blockId)
     if (!blockView)
         return false;
 
-    DWORD blockSize = GetBlockSize();
+    uint32_t blockSize = GetBlockSize();
     memset(lpBuffer, 0, blockSize);
-    DWORD read = blockView->Read(lpBuffer, 0, blockSize);
+    uint32_t read = blockView->Read(lpBuffer, 0, blockSize);
 
     blockView->Close();
     delete blockView;
@@ -51,7 +51,7 @@ bool MFSBlockDevice::ReadBlock(LPVOID lpBuffer, UINT64 blockId)
     return read;
 }
 
-bool MFSBlockDevice::WriteBlock(UINT64 blockId, LPCVOID lpBuffer)
+bool MFSBlockDevice::WriteBlock(uint64_t blockId, const void * lpBuffer)
 {
     if (blockId < 0 || blockId >= GetBlocksCount())
         return false;
@@ -60,7 +60,7 @@ bool MFSBlockDevice::WriteBlock(UINT64 blockId, LPCVOID lpBuffer)
     if (!blockView)
         return false;
 
-    DWORD write = blockView->Write(0, GetBlockSize(), lpBuffer);
+    uint32_t write = blockView->Write(0, GetBlockSize(), lpBuffer);
     blockView->Flush();
     blockView->Close();
     delete blockView;
@@ -72,9 +72,9 @@ void MFSBlockDevice::Close()
 {
 }
 
-MFSRawDeviceView * MFSBlockDevice::OpenBlockView(UINT64 blockId, bool readonly)
+MFSRawDeviceView * MFSBlockDevice::OpenBlockView(uint64_t blockId, bool readonly)
 {
-    DWORD blockSize = GetBlockSize();
-    UINT64 offset = blockId * blockSize;
+    uint32_t blockSize = GetBlockSize();
+    uint64_t offset = blockId * blockSize;
     return _rawDevice->OpenView(offset, blockSize, readonly);
 }

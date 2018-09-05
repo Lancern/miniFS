@@ -79,7 +79,7 @@ public:
 	MFSFileAllocationTable(uint32_t itemsCount);
 	~MFSFileAllocationTable();
 
-	uint32_t& operator [] (uint32_t pos);
+	uint32_t & operator [] (uint32_t pos);
 	uint32_t operator [] (uint32_t pos) const;
 
     uint32_t Get(uint32_t pos) const;

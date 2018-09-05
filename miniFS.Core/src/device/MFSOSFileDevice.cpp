@@ -10,7 +10,7 @@ MFSOSFileDevice::MFSOSFileDevice(HANDLE hFile, bool readonly)
     // Get the size of the file.
     DWORD fileSizeLow, fileSizeHigh;
     fileSizeLow = GetFileSize(hFile, &fileSizeHigh);
-    _fileSize = (static_cast<UINT64>(fileSizeHigh) << 32) | fileSizeLow;
+    _fileSize = (static_cast<uint64_t>(fileSizeHigh) << 32) | fileSizeLow;
 }
 
 MFSOSFileDevice::~MFSOSFileDevice()
@@ -21,9 +21,9 @@ MFSOSFileDevice::~MFSOSFileDevice()
 
 
 bool MFSOSFileDevice::CanWrite() const { return _canWrite; }
-UINT64 MFSOSFileDevice::GetTotalSize() const { return _fileSize; }
+uint64_t MFSOSFileDevice::GetTotalSize() const { return _fileSize; }
 
-MFSRawDeviceView * MFSOSFileDevice::OpenView(UINT64 offset, DWORD length, bool readonly) 
+MFSRawDeviceView * MFSOSFileDevice::OpenView(uint64_t offset, uint32_t length, bool readonly) 
 {
     if (!readonly && !_canWrite)
         return nullptr;

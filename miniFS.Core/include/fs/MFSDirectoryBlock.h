@@ -35,7 +35,7 @@ public:
 	Iterator begin() const;
 	Iterator end() const;
 
-	MFSDirectoryBlock(size_t size);
+	MFSDirectoryBlock(uint32_t size);
 	~MFSDirectoryBlock();
 
 	MFSFSDirectoryItem* FindDir(const MFSString& name) const;
@@ -45,7 +45,7 @@ public:
 	bool Empty() const;
 
 private:
-	size_t _usedSize, _blockSize;
+	uint32_t _usedSize, _blockSize;
 	mutable std::unordered_map<MFSString, MFSFSDirectoryItem> _dir;
 
 	friend class MFSDirectoryBlockSerializer;

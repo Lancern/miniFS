@@ -3,7 +3,7 @@
 #include "../../include/MFSDateTime.h"
 
 
-MFSFSNodePool::MFSFSNodePool(size_t numberOfNodes)
+MFSFSNodePool::MFSFSNodePool(uint32_t numberOfNodes)
     : _pool(new MFSFSEntryMeta[numberOfNodes]), _nodesCount(numberOfNodes), _alloc(0)
 {
     memset(_pool.get(), 0, numberOfNodes * sizeof(MFSFSEntryMeta));
