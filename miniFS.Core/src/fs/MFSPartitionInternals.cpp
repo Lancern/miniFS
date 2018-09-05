@@ -15,7 +15,10 @@ uint32_t MFSPartition::Internals::AllocateDeviceBlock()
 {
     uint32_t blockId = _partition->_blockAllocation->AllocBlock();
     if (blockId != MFSBlockAllocationBitmap::InvalidBlockId)
+    {
         _partition->_blockChain->Set(blockId, MFSFileAllocationTable::InvalidBlockId);
+        --_partition->_master.freeBlocks;
+    }
     return blockId;
 }
 
@@ -23,13 +26,17 @@ bool MFSPartition::Internals::AllocateDeviceBlock(uint32_t blockId)
 {
     bool result = _partition->_blockAllocation->AllocBlock(blockId);
     if (result)
+    {
         _partition->_blockChain->Set(blockId, MFSFileAllocationTable::InvalidBlockId);
+        --_partition->_master.freeBlocks;
+    }
     return result;
 }
 
 bool MFSPartition::Internals::FreeDeviceBlock(uint32_t blockId)
 {
-    _partition->_blockAllocation->FreeBlock(blockId);
+    if (_partition->_blockAllocation->FreeBlock(blockId))
+        ++_partition->_master.freeBlocks;
     return true;
 }
 
