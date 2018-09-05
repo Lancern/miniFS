@@ -1,5 +1,7 @@
 #include "../include/MFSString.h"
 #include <cwctype>
+#include <memory>
+#include <wchar.h>
 
 MFSString::MFSString()
 {

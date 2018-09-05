@@ -7,7 +7,7 @@ MFSBlockStream::MFSBlockStream(MFSBlockDevice * device)
     _buffer.reset(buffer);
 
     // Load first block.
-    SeekBlock(0);
+    device->ReadBlock(buffer, 0);
 }
 
 bool MFSBlockStream::CanRead() const

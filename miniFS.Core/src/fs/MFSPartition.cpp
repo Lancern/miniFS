@@ -189,7 +189,7 @@ bool MFSPartition::LoadMasterInfo(MFSBlockStream * deviceStream)
 
 bool MFSPartition::LoadBlockAllocationManager(MFSBlockStream * deviceStream)
 {
-    uint32_t dwBabByteSize = CEIL_DIV(deviceStream->GetDeviceBlockSize(), CHAR_BIT);
+    uint32_t dwBabByteSize = static_cast<uint32_t>(CEIL_DIV(deviceStream->GetDeviceBlocksCount(), CHAR_BIT));
     void * buffer = VirtualAlloc(NULL, dwBabByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
     uint32_t read = deviceStream->Read(buffer, dwBabByteSize, dwBabByteSize);
@@ -212,7 +212,8 @@ bool MFSPartition::LoadBlockAllocationManager(MFSBlockStream * deviceStream)
 
 bool MFSPartition::LoadAllocationTable(MFSBlockStream * deviceStream)
 {
-    uint32_t dwFatByteSize = static_cast<uint32_t>(deviceStream->GetDeviceBlocksCount()) * sizeof(UINT32);
+    uint32_t dwFatByteSize = static_cast<uint32_t>(
+        deviceStream->GetDeviceBlocksCount()) * sizeof(uint32_t);
     void * buffer = VirtualAlloc(NULL, dwFatByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
     uint32_t read = deviceStream->Read(buffer, dwFatByteSize, dwFatByteSize);
@@ -235,7 +236,8 @@ bool MFSPartition::LoadAllocationTable(MFSBlockStream * deviceStream)
 
 bool MFSPartition::LoadFSNodePool(MFSBlockStream * deviceStream)
 {
-    uint32_t dwFsnodepoolByteSize = static_cast<uint32_t>(deviceStream->GetDeviceBlocksCount()) * sizeof(MFSFSEntryMeta);
+    uint32_t dwFsnodepoolByteSize = static_cast<uint32_t>(
+        deviceStream->GetDeviceBlocksCount()) * sizeof(MFSFSEntryMeta);
     void * buffer = VirtualAlloc(NULL, dwFsnodepoolByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
     uint32_t read = deviceStream->Read(buffer, dwFsnodepoolByteSize, dwFsnodepoolByteSize);

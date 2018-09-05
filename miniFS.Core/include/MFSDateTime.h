@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MFSString.h"
 #include <cstdint>
 #include <Windows.h>
 
@@ -73,6 +74,10 @@ public:
 
     uint64_t GetTimestamp() const;
     void SetTimestamp(uint64_t timestamp);
+
+    MFSString GetDateString() const;
+    MFSString GetTimeString() const;
+    MFSString GetDateTimeString() const;
 
 private:
     uint32_t _year, _month, _day, _hour, _minute, _second;

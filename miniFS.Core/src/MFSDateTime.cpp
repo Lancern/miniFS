@@ -19,8 +19,12 @@ MFSDateTime::MFSDateTime(uint64_t timestamp)
 
 MFSDateTime::MFSDateTime()
 {
+    SYSTEMTIME nowUtc;
+    GetSystemTime(&nowUtc);
+
     SYSTEMTIME now;
-    GetSystemTime(&now);
+    SystemTimeToTzSpecificLocalTime(NULL, &nowUtc, &now);
+
     SetSystemTimeStruct(&now);
 }
 
@@ -138,13 +142,36 @@ void MFSDateTime::SetTimestamp(uint64_t timestamp)
     fileTime.dwLowDateTime = static_cast<DWORD>(timestamp & 0xFFFFFFFF);
 
     SYSTEMTIME sysTimeUtc;
-    if (!FileTimeToSystemTime(&fileTime, &sysTimeUtc))
-        return;
+    FileTimeToSystemTime(&fileTime, &sysTimeUtc);
 
     SYSTEMTIME sysTime;
     SystemTimeToTzSpecificLocalTime(NULL, &sysTimeUtc, &sysTime);
 
     SetSystemTimeStruct(&sysTime);
+}
+
+MFSString MFSDateTime::GetDateString() const
+{
+    wchar_t buffer[16];
+    swprintf_s(buffer, 16, L"%04u-%02u-%02u", _year, _month, _day);
+
+    return MFSString(buffer);
+}
+
+MFSString MFSDateTime::GetTimeString() const
+{
+    wchar_t buffer[16];
+    swprintf_s(buffer, 16, L"%02u:%02u:%02u", _hour, _minute, _second);
+
+    return MFSString(buffer);
+}
+
+MFSString MFSDateTime::GetDateTimeString() const
+{
+    wchar_t buffer[32];
+    swprintf_s(buffer, 32, L"%04u-%02u-%02u %02u:%02u:%02u", _year, _month, _day, _hour, _minute, _second);
+
+    return MFSString(buffer);
 }
 
 void MFSDateTime::SetSystemTimeStruct(const SYSTEMTIME * sysTime)

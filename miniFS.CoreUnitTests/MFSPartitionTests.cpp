@@ -5,12 +5,9 @@
 #include "../miniFS.Core/include/device/MFSBlockDevice.h"
 
 #include "CppUnitTest.h"
-#include <Windows.h>
 #include <memory>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
-#define MFS_PARTITION_UNIT_TEST_FILENAME        L"MFSPartitionFormatTest.dat"
 
 TEST_CLASS(MFSPartitionTests)
 {
@@ -18,20 +15,10 @@ public:
 		
 	TEST_METHOD(FormatTest)
 	{
-        HANDLE hFile = CreateFileW(
-            MFS_PARTITION_UNIT_TEST_FILENAME,
-            GENERIC_READ | GENERIC_WRITE,
-            FILE_SHARE_READ | FILE_SHARE_DELETE,
-            NULL,
-            CREATE_ALWAYS,
-            // FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,
-            FILE_ATTRIBUTE_NORMAL,
-            NULL);
+        HANDLE hFile = MFSUnitTestOpenPartitionFileHandle(false);
         if (hFile == INVALID_HANDLE_VALUE)
         {
-            LogLastError(L"CreateFileW failed");
             Assert::Fail();
-
             return;
         }
 
@@ -53,7 +40,7 @@ public:
         LONG tmpFileSize = 128 * 1024 * 1024;
         if (SetFilePointer(hFile, tmpFileSize, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {
-            LogLastError(L"SetFilePointer #1 failed");
+            MFSUnitTestLogLastError(L"SetFilePointer #1 failed");
             CloseHandle(hFile);
             Assert::Fail();
 
@@ -61,7 +48,7 @@ public:
         }
         if (!SetEndOfFile(hFile))
         {
-            LogLastError(L"SetEndOfFile failed");
+            MFSUnitTestLogLastError(L"SetEndOfFile failed");
             CloseHandle(hFile);
             Assert::Fail();
 
@@ -69,7 +56,7 @@ public:
         }
         if (SetFilePointer(hFile, 0, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {
-            LogLastError(L"SetFilePointer #2 failed");
+            MFSUnitTestLogLastError(L"SetFilePointer #2 failed");
             CloseHandle(hFile);
             Assert::Fail();
 
@@ -118,30 +105,5 @@ public:
 
         CloseHandle(hFile);
 	}
-
-private:
-
-    void LogLastError(const wchar_t * msg)
-    {
-        DWORD errCode = GetLastError();
-
-        DWORD strBufferSize = MAX_PATH + 10;
-        std::unique_ptr<WCHAR[]> strBuffer(new WCHAR[strBufferSize]);
-
-        swprintf_s(strBuffer.get(),
-            strBufferSize,
-            L"ERR: %s. GetLastError() = %u: ",
-            msg,
-            static_cast<uint32_t>(errCode));
-        Logger::WriteMessage(strBuffer.get());
-
-        FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, NULL,
-            errCode,
-            0,
-            strBuffer.get(),
-            strBufferSize,
-            NULL);
-        Logger::WriteMessage(strBuffer.get());
-    }
 
 };

@@ -173,6 +173,9 @@ public:
     MFSString & operator = (MFSString && another);
     wchar_t operator [] (uint32_t offset) const;
 
+    template <typename ...T>
+    static MFSString Format(const wchar_t * format, T...args);
+
 private:
     uint32_t _len;
     std::unique_ptr<wchar_t[]> _data;
@@ -263,6 +266,19 @@ inline IntegerT MFSString::ParseInteger() const
     }
 
     return result * sign;
+}
+
+template <typename ...T>
+MFSString MFSString::Format(const wchar_t * format, T... arg)
+{
+    uint32_t bufferSize = 64;
+    while (true)
+    {
+        std::unique_ptr<wchar_t[]> buffer(new wchar_t[bufferSize]);
+        if (swprintf_s(buffer.get(), bufferSize, format, arg...) != -1)
+            return MFSString(buffer.get());
+    }
+    return MFSString();
 }
 
 namespace std
