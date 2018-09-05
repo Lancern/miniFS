@@ -128,10 +128,6 @@ MFSBlockStream * MFSFSEntry::OpenDataStream()
             MFSGetPackedUnsignedValue(&_meta->spec.fileMeta.size));
 }
 
-// 
-// TODO: All logic below here need to be reviewed.
-//
-
 auto MFSFSEntry::GetSubEntries() -> std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>>
 {
 	std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>> ret;
@@ -142,6 +138,11 @@ auto MFSFSEntry::GetSubEntries() -> std::vector<std::pair<MFSString, std::unique
 	};
 	WalkDirectoryBlocks(callback);
 	return ret;
+}
+
+uint32_t MFSFSEntry::GetSubEntriesCount() const
+{
+    return _meta->spec.directoryMeta.childCount;
 }
 
 bool MFSFSEntry::ContainsSubEntry(const MFSString & name)

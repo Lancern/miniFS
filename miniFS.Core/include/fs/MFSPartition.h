@@ -317,6 +317,9 @@ class MFSFSEntry
     std::vector<std::unique_ptr<MFSFSEntry>> MFSFSEntry::GetSubEntries()
         当文件系统节点所表示的文件系统项为一个目录时，获取该目录下所有子文件系统项对象。
 
+    uint32_t GetSubEntriesCount() const
+        当文件系统节点所表示的文件系统项为一个目录时，获取该目录下所有子目录项个数。
+
     MFSFSEntry * MFSFSEntry::GetSubEntry(const MFSString & name)
         当文件系统节点所表示的文件系统项为一个目录时，获取该目录下指定名称的子文件系统项对象。若目录下没有指定的名称，返回 nullptr。
 
@@ -376,6 +379,7 @@ public:
     MFSBlockStream * OpenDataStream();
 
     auto GetSubEntries()->std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>>;
+    uint32_t GetSubEntriesCount() const;
     bool ContainsSubEntry(const MFSString & name);
     MFSFSEntry * GetSubEntry(const MFSString & name);
     MFSFSEntry * AddSubEntry(const MFSString & name);

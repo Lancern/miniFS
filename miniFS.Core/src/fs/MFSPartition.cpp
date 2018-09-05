@@ -8,7 +8,7 @@
 
 
 
-#define CEIL_DIV(a, b)      ((a) / (b) + (a) % (b) ? 1 : 0)
+#define CEIL_DIV(a, b)      ((a) / (b) + ((a) % (b) ? 1 : 0))
 
 
 
