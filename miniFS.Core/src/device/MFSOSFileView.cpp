@@ -6,13 +6,23 @@ MFSOSFileView::MFSOSFileView(HANDLE hFileMapping, uint64_t offset, uint32_t size
     : _viewSize(size), _canWrite(!readonly) 
 {
     uint32_t access = readonly ? FILE_MAP_READ : FILE_MAP_WRITE;
-    _lpFileMappingAddress = MapViewOfFile(hFileMapping, access, offset >> 32, offset & 0xFFFFFFFF, size);
+
+    SYSTEM_INFO sysInfo;
+    GetSystemInfo(&sysInfo);
+    uint64_t mappingOffset = offset / sysInfo.dwAllocationGranularity * sysInfo.dwAllocationGranularity;
+
+    _lpFileMappingBaseAddr = MapViewOfFile(hFileMapping, 
+        access, 
+        mappingOffset >> 32, 
+        mappingOffset & 0xFFFFFFFF, 
+        size + static_cast<uint32_t>(offset - mappingOffset));
+    _lpFileMappingAddress = reinterpret_cast<uint8_t *>(_lpFileMappingBaseAddr) 
+        + (offset - mappingOffset);
 }
 
 MFSOSFileView::~MFSOSFileView() 
 {
     Close();
-    MFSRawDeviceView::~MFSRawDeviceView();
 }
 
 
@@ -45,17 +55,18 @@ uint32_t MFSOSFileView::Write(uint32_t offset, uint32_t length, const void * lpB
 
 void MFSOSFileView::Flush() 
 {
-    if (_canWrite && _lpFileMappingAddress)
-        FlushViewOfFile(_lpFileMappingAddress, _viewSize);
+    if (_canWrite && _lpFileMappingBaseAddr)
+        FlushViewOfFile(_lpFileMappingBaseAddr, _viewSize);
 }
 
 void MFSOSFileView::Close()
 {
-    if (_lpFileMappingAddress)
+    if (_lpFileMappingBaseAddr)
     {
         Flush();
-        UnmapViewOfFile(_lpFileMappingAddress);
+        UnmapViewOfFile(_lpFileMappingBaseAddr);
 
+        _lpFileMappingBaseAddr = NULL;
         _lpFileMappingAddress = NULL;
     }
 }

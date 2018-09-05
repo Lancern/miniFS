@@ -31,6 +31,7 @@ private:
     MFSOSFileView(HANDLE hFileMapping, uint64_t offset, uint32_t size, bool readonly);
 
     void * _lpFileMappingAddress;
+    void * _lpFileMappingBaseAddr;
     uint32_t _viewSize;
     bool _canWrite;
 };

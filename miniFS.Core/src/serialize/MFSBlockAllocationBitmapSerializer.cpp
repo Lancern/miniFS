@@ -5,8 +5,8 @@
 void MFSBlockAllocationBitmapSerializer::Serialize(MFSStream * stream, MFSBlockAllocationBitmap * object)
 {
 	MFSStreamWriter writer(stream);
-	for (uint32_t i = 0; i < object->_bitmap->Size(); i++)
-		writer.Write(object->_bitmap->_bitmap[i]);
+	for (auto pack : object->_bitmap->_bitmap)
+		writer.Write(pack);
 }
 
 MFSBlockAllocationBitmap * MFSBlockAllocationBitmapSerializer::Deserialize(MFSStream * stream)
@@ -14,7 +14,7 @@ MFSBlockAllocationBitmap * MFSBlockAllocationBitmapSerializer::Deserialize(MFSSt
 	MFSBlockAllocationBitmap* ret = new MFSBlockAllocationBitmap(
         static_cast<uint32_t>((stream->GetLength() - stream->GetPosition()) * CHAR_BIT));
 	MFSStreamReader reader(stream);
-	for (uint32_t i = 0; i < ret->_bitmap->Size(); i++)
-		ret->_bitmap->_bitmap[i] = reader.ReadPODObject<uint64_t>();
+	for (auto & pack : ret->_bitmap->_bitmap)
+		pack = reader.ReadPODObject<uint64_t>();
 	return ret;
 }

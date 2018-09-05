@@ -42,7 +42,6 @@ class MFSBlockDevice
 {
 public:
     MFSBlockDevice(MFSRawDevice * rawDevice);
-    virtual ~MFSBlockDevice();
 
     MFSRawDevice * GetRawDevice() const;
     virtual uint32_t GetBlockSize() const;

@@ -6,7 +6,7 @@ MFSFSEntry::DataStream::DataStream(MFSFSEntry * entry, uint32_t firstBlockId)
 {
 }
 
-MFSFSEntry::DataStream::DataStream(MFSFSEntry * entry, uint32_t firstBlockId, UINT64 length)
+MFSFSEntry::DataStream::DataStream(MFSFSEntry * entry, uint32_t firstBlockId, uint64_t length)
     : ChainedBlockStream(entry->GetPartition(), firstBlockId, length), _entry(entry)
 {
 }

@@ -26,7 +26,7 @@ MFSPartition::~MFSPartition()
 
 MFSBlockDevice * MFSPartition::GetDevice() const
 {
-    return _device.get();
+    return _device;
 }
 
 bool MFSPartition::IsValidDevice() const
@@ -112,10 +112,12 @@ MFSPartition::Internals MFSPartition::GetInternalObject()
 
 void MFSPartition::Flush()
 {
-    if (!_validDevice)
+    if (!IsValidDevice())
+        return;
+    if (IsRaw())
         return;
 
-    MFSBlockStream stream(_device.get());
+    MFSBlockStream stream(_device);
     MFSStreamWriter writer(&stream);
     
     // Write master info.
@@ -129,8 +131,7 @@ void MFSPartition::Flush()
     MFSFileAllocationTableSerializer().Serialize(&stream, _blockChain.get());
 
     // Write fsnode pool.
-    stream.Write(_fsnodePool.get(), 
-        static_cast<uint32_t>(_device->GetBlocksCount() * sizeof(MFSFSEntryMeta)));
+    MFSFSNodePoolSerializer().Serialize(&stream, _fsnodePool.get());
 
     stream.Flush();
     stream.Close();
@@ -142,7 +143,7 @@ void MFSPartition::Close()
     {
         Flush();
         _device->Close();
-        _device.release();
+        _device = nullptr;
         _validDevice = false;
     }
 }
@@ -169,9 +170,10 @@ void MFSPartition::LoadDevice(MFSBlockDevice * device)
 
 bool MFSPartition::LoadMasterInfo(MFSBlockStream * deviceStream)
 {
-    LPVOID buffer = VirtualAlloc(NULL, deviceStream->GetDeviceBlockSize(), 
+    uint32_t bufferSize = deviceStream->GetDeviceBlockSize();
+    LPVOID buffer = VirtualAlloc(NULL, bufferSize, 
         MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-    uint32_t read = deviceStream->Read(buffer, 0, deviceStream->GetDeviceBlockSize());
+    uint32_t read = deviceStream->Read(buffer, bufferSize, bufferSize);
 
     bool ret = (read == deviceStream->GetDeviceBlockSize());
     if (ret)

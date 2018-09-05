@@ -41,7 +41,7 @@ class MFSBufferedBlockDevice
 {
 public:
     MFSBufferedBlockDevice(MFSRawDevice * rawDevice, uint32_t bufferedBlockCount = 64);
-    ~MFSBufferedBlockDevice() override;
+    ~MFSBufferedBlockDevice();
 
     bool ReadBlock(void * lpBuffer, uint64_t blockId) override;
     bool WriteBlock(uint64_t blockId, const void * lpBuffer) override;

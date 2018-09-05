@@ -8,11 +8,6 @@ MFSBlockDevice::MFSBlockDevice(MFSRawDevice * rawDevice)
 {
 }
 
-MFSBlockDevice::~MFSBlockDevice()
-{
-    MFSBlockDevice::Close();
-}
-
 
 MFSRawDevice * MFSBlockDevice::GetRawDevice() const
 {

@@ -157,7 +157,7 @@ private:
         uint64_t GetLength() const override;
         uint64_t GetPosition() const override;
 
-        bool Seek(MFSStreamSeekOrigin origin, INT64 offset) override;
+        bool Seek(MFSStreamSeekOrigin origin, int64_t offset) override;
 
     protected:
         uint64_t OnBlockSwap(uint64_t currentBlock) override;
@@ -172,9 +172,9 @@ private:
         uint32_t GetNextBlockId(uint32_t current) const;
         uint32_t GetNextBlockId() const;
 
-        bool SeekBegin(INT64 offset);
-        bool SeekRelative(INT64 offset);
-        bool SeekEnd(INT64 offset);
+        bool SeekBegin(int64_t offset);
+        bool SeekRelative(int64_t offset);
+        bool SeekEnd(int64_t offset);
     };
 
 public:
@@ -235,7 +235,7 @@ public:
     void Close();
 
 private:
-    std::unique_ptr<MFSBlockDevice> _device;
+    MFSBlockDevice * _device;
     MFSFSMasterInfo _master;
     std::unique_ptr<MFSBlockAllocationBitmap> _blockAllocation;
     std::unique_ptr<MFSFileAllocationTable> _blockChain;

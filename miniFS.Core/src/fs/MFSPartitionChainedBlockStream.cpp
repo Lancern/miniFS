@@ -12,7 +12,7 @@ MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, u
 }
 
 MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, uint32_t firstBlockId, uint64_t length)
-    : MFSBlockStream(partition->_device.get()), _partition(partition), _firstBlock(firstBlockId),
+    : MFSBlockStream(partition->_device), _partition(partition), _firstBlock(firstBlockId),
     _currentBlock(firstBlockId), _blockOffset(0), _length(length)
 {
     MFSBlockStream::Seek(MFSStreamSeekOrigin::Begin, GetDeviceBlockSize() * _firstBlock);

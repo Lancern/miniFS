@@ -38,7 +38,7 @@ MFSBlockAllocationBitmap::Bitmap::Reference::operator bool() const
 }
 
 MFSBlockAllocationBitmap::Bitmap::Bitmap(uint32_t sizeInBits)
-	: _bitmap(sizeInBits / BIT_PACK_SIZE + sizeInBits % BIT_PACK_SIZE ? 1 : 0)
+	: _bitmap(sizeInBits / BIT_PACK_SIZE + (sizeInBits % BIT_PACK_SIZE ? 1 : 0))
 {
 }
 
