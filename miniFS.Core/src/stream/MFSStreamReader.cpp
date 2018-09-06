@@ -22,7 +22,7 @@ MFSString MFSStreamReader::ReadString()
         if (buffer.back() == 0)
             break;
     }
-    if (buffer.back() != 0)
-        buffer.push_back(0);
+    if (buffer.back() == 0)
+        buffer.pop_back();
     return MFSString(buffer.data(), buffer.size());
 }

@@ -127,10 +127,16 @@ void MFSBlockStream::Close()
 
 bool MFSBlockStream::SeekBlock(uint64_t blockId)
 {
-    if (blockId > _device->GetBlocksCount())
+    uint64_t blocksCount = _device->GetBlocksCount();
+    if (blockId > blocksCount)
         return false;
-    else if (blockId == _device->GetBlocksCount())
+    else if (blockId == blocksCount)
     {
+        if (blockId != _blockOffset)
+        {
+            Flush();
+        }
+
         _blockOffset = blockId;
         _insideOffset = 0;
         return true;
@@ -150,6 +156,11 @@ bool MFSBlockStream::SeekBlock(uint64_t blockId)
     }
 }
 
+void MFSBlockStream::SetBlockInternalOffset(uint32_t offset)
+{
+    _insideOffset = offset;
+}
+
 bool MFSBlockStream::IsDirty() const
 {
     return _dirty;
@@ -165,7 +176,7 @@ uint64_t MFSBlockStream::GetCurrentBlockId() const
     return _blockOffset;
 }
 
-uint64_t MFSBlockStream::GetBlockInternalOffset() const
+uint32_t MFSBlockStream::GetBlockInternalOffset() const
 {
     return _insideOffset;
 }

@@ -48,7 +48,7 @@ public:
     uint64_t GetPosition() const override;
 
     uint64_t GetCurrentBlockId() const;
-    uint64_t GetBlockInternalOffset() const;
+    uint32_t GetBlockInternalOffset() const;
 
     MFSBlockDevice * GetDevice() const;
     uint32_t GetDeviceBlockSize() const;
@@ -63,6 +63,7 @@ public:
 
 protected:
     bool SeekBlock(uint64_t blockId);
+    void SetBlockInternalOffset(uint32_t offset);
 
     bool IsDirty() const;
     void SetDirtyFlag(bool dirty);

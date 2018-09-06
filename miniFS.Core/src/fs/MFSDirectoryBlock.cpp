@@ -46,7 +46,7 @@ MFSDirectoryBlock::Iterator MFSDirectoryBlock::end() const
 }
 
 MFSDirectoryBlock::MFSDirectoryBlock(uint32_t size)
-	: _usedSize(4), _blockSize(size), _dir(0)
+	: _usedSize(sizeof(MFSFSDirectoryBlockMasterInfo)), _blockSize(size), _dir(0)
 {
 }
 
@@ -66,7 +66,7 @@ MFSFSDirectoryItem * MFSDirectoryBlock::AddDir(const MFSString & name)
 	if (FindDir(name) != nullptr) 
         return nullptr;
 
-	uint32_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(WCHAR);
+	uint32_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(wchar_t);
 	if (_usedSize + size > _blockSize) 
         return nullptr;
     
@@ -82,7 +82,7 @@ uint32_t MFSDirectoryBlock::EraseDir(const MFSString & name)
 
 	uint32_t ret = _dir[name].fsnodeId;
 	_dir.erase(name);
-	uint32_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(WCHAR);
+	uint32_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(wchar_t);
 	_usedSize -= size;
 	return ret;
 }

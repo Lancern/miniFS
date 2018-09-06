@@ -165,12 +165,12 @@ private:
     private:
         MFSPartition * _partition;
         uint32_t _firstBlock;
-        uint32_t _currentBlock;
-        uint32_t _blockOffset;
         uint64_t _length;
 
         uint32_t GetNextBlockId(uint32_t current) const;
         uint32_t GetNextBlockId() const;
+
+        uint32_t GetCurrentChainedBlockId() const;
 
         bool SeekBegin(int64_t offset);
         bool SeekRelative(int64_t offset);
@@ -407,6 +407,7 @@ private:
         MFSBlockStream * blockStream;
         MFSDirectoryBlock * blockObject;
         bool stopIteration;
+        bool needWriteBack;
     };
 
     MFSPartition::Internals _partition;
@@ -424,20 +425,38 @@ template<typename Callback>
 inline void MFSFSEntry::WalkDirectoryBlocks(Callback callback)
 {
     std::unique_ptr<MFSBlockStream> stream(OpenDataStream());
-    MFSDirectoryBlockSerializer serializer(_partition.GetPartition()->GetDevice()->GetBlockSize());
+    uint32_t blockSize = _partition.GetPartition()->GetDevice()->GetBlockSize();
+    MFSDirectoryBlockSerializer serializer(blockSize);
+
     while (stream->HasNext())
     {
-        std::unique_ptr<MFSDirectoryBlock> block(serializer.Deserialize(stream.get()));
-
         WalkDirectoryBlockParameters params;
         params.blockId = stream->GetCurrentBlockId();
         params.blockStream = stream.get();
-        params.blockObject = block.get();
         params.stopIteration = false;
+        params.needWriteBack = false;
+
+        std::unique_ptr<MFSDirectoryBlock> block(serializer.Deserialize(stream.get()));
+        params.blockObject = block.get();
         callback(params);
 
         if (params.stopIteration)
+        {
+            if (params.needWriteBack)
+            {
+                if (stream->CanSeek())
+                {
+                    stream->Seek(MFSStreamSeekOrigin::Relative, -static_cast<int64_t>(blockSize));
+                    serializer.Serialize(stream.get(), block.get());
+                }
+                else
+                {
+                    // UNDONE: Write back directory block when random seek is not supported on the base stream.
+                }
+            }
+
             break;
+        }
     }
     stream->Close();
 }

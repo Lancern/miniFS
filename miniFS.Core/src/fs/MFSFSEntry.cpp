@@ -201,6 +201,7 @@ MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name, uint32_t fsnodeId)
             item->fsnodeId = fsnodeId;
             ret = new MFSFSEntry(_partition, fsnodeId);
             params.stopIteration = true;
+            params.needWriteBack = true;
         }
     };
     WalkDirectoryBlocks(callback);
@@ -226,12 +227,20 @@ bool MFSFSEntry::RemoveSubEntry(const MFSString & name)
 		if (params.blockObject->EraseDir(name) != MFSFSNodePool::InvalidFSNodeId)
 		{
             _partition.FreeEntryMeta(_fsnodeId);
-			if (params.blockObject->Empty())
-                _partition.FreeChainedBlock(_meta->common.firstBlockId, 
+            if (params.blockObject->Empty())
+            {
+                _meta->common.firstBlockId = _partition.FreeChainedBlock(
+                    _meta->common.firstBlockId,
                     static_cast<DWORD>(params.blockId));
+            }
+            else
+            {
+                params.needWriteBack = true;
+            }
             params.stopIteration = true;
 		}
     };
+    WalkDirectoryBlocks(callback);
 
     return true;
 }

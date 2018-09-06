@@ -32,7 +32,7 @@ void MFSDirectoryBlockSerializer::Serialize(MFSStream * stream, MFSDirectoryBloc
 
 MFSDirectoryBlock * MFSDirectoryBlockSerializer::Deserialize(MFSStream * stream)
 {
-	MFSDirectoryBlock * ret = new MFSDirectoryBlock(_blockSize - 8);
+	MFSDirectoryBlock * ret = new MFSDirectoryBlock(_blockSize);
 	MFSStreamReader reader(stream);
 	MFSFSDirectoryBlockMasterInfo master = reader.ReadPODObject<MFSFSDirectoryBlockMasterInfo>();
 

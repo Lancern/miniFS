@@ -16,5 +16,6 @@ MFSBlockAllocationBitmap * MFSBlockAllocationBitmapSerializer::Deserialize(MFSSt
 	MFSStreamReader reader(stream);
 	for (auto & pack : ret->_bitmap->_bitmap)
 		pack = reader.ReadPODObject<uint64_t>();
+    ret->LocateNextFreeBlock();
 	return ret;
 }

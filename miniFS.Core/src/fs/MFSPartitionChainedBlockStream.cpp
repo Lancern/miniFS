@@ -12,10 +12,12 @@ MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, u
 }
 
 MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, uint32_t firstBlockId, uint64_t length)
-    : MFSBlockStream(partition->_device), _partition(partition), _firstBlock(firstBlockId),
-    _currentBlock(firstBlockId), _blockOffset(0), _length(length)
+    : MFSBlockStream(partition->_device), _partition(partition), _firstBlock(firstBlockId), _length(length)
 {
-    MFSBlockStream::Seek(MFSStreamSeekOrigin::Begin, GetDeviceBlockSize() * _firstBlock);
+    if (firstBlockId == MFSFileAllocationTable::InvalidBlockId)
+        SeekBlock(GetDeviceBlocksCount());
+    else
+        SeekBlock(firstBlockId);
 }
 
 MFSPartition * MFSPartition::ChainedBlockStream::GetPartition() const
@@ -25,7 +27,7 @@ MFSPartition * MFSPartition::ChainedBlockStream::GetPartition() const
 
 bool MFSPartition::ChainedBlockStream::HasNext() const
 {
-    return _currentBlock != MFSFileAllocationTable::InvalidBlockId;
+    return GetCurrentChainedBlockId() != MFSFileAllocationTable::InvalidBlockId;
 }
 
 uint64_t MFSPartition::ChainedBlockStream::GetLength() const
@@ -52,14 +54,15 @@ uint64_t MFSPartition::ChainedBlockStream::GetPosition() const
     uint64_t result = 0;
     uint32_t blockSize = GetDeviceBlockSize();
     uint32_t blockId = _firstBlock;
+    uint64_t currentBlock = GetCurrentChainedBlockId();
 
-    while (blockId != _currentBlock)
+    while (blockId != currentBlock)
     {
         result += blockSize;
         blockId = GetNextBlockId(blockId);
     }
 
-    result += _blockOffset;
+    result += GetBlockInternalOffset();
     return result;
 }
 
@@ -93,7 +96,15 @@ uint32_t MFSPartition::ChainedBlockStream::GetNextBlockId(uint32_t current) cons
 
 uint32_t MFSPartition::ChainedBlockStream::GetNextBlockId() const
 {
-    return GetNextBlockId(_currentBlock);
+    return GetNextBlockId(GetCurrentChainedBlockId());
+}
+
+uint32_t MFSPartition::ChainedBlockStream::GetCurrentChainedBlockId() const
+{
+    uint64_t baseViewBlock = GetCurrentBlockId();
+    return baseViewBlock >= GetDeviceBlocksCount()
+        ? MFSFileAllocationTable::InvalidBlockId
+        : static_cast<uint32_t>(baseViewBlock);
 }
 
 bool MFSPartition::ChainedBlockStream::SeekBegin(int64_t offset)
@@ -111,21 +122,15 @@ bool MFSPartition::ChainedBlockStream::SeekBegin(int64_t offset)
 
     if (blockId == MFSFileAllocationTable::InvalidBlockId)
     {
-        if (offset != 0)
-            return false;
-        else
-        {
-            _currentBlock = MFSFileAllocationTable::InvalidBlockId;
-            _blockOffset = 0;
-            return true;
-        }
+        SeekBlock(GetDeviceBlocksCount());
+        SetBlockInternalOffset(0);
     }
     else
     {
-        _currentBlock = blockId;
-        _blockOffset = static_cast<uint32_t>(offset);
-        return true;
+        SeekBlock(blockId);
+        SetBlockInternalOffset(static_cast<uint32_t>(offset));
     }
+    return true;
 }
 
 bool MFSPartition::ChainedBlockStream::SeekRelative(int64_t offset)
@@ -139,8 +144,8 @@ bool MFSPartition::ChainedBlockStream::SeekEnd(int64_t offset)
         return false;
     else if (offset == 0)
     {
-        _currentBlock = MFSFileAllocationTable::InvalidBlockId;
-        _blockOffset = 0;
+        SeekBlock(GetDeviceBlocksCount());
+        SetBlockInternalOffset(0);
         return true;
     }
     else
