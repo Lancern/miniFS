@@ -114,6 +114,18 @@
     <ClInclude Include="dist\include\MFSFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dist\include\exceptions\MFSDirectoryNotFoundException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dist\include\exceptions\MFSFileNotFoundException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dist\include\exceptions\MFSFileAlreadyExistException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dist\include\exceptions\MFSOutOfSpaceException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp">
