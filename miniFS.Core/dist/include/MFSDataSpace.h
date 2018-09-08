@@ -17,6 +17,8 @@ class MFSDataSpace
     MFSDataSpace::MFSDataSpace(const MFSString & osFileName)
         从给定的底层文件初始化 MFSDataSpace 类的新实例。
         @param osFileName 底层操作系统文件名。
+        @exception
+            MFSWindowsException 打开底层操作系统文件时出现错误。
 
     成员函数：
 
@@ -112,6 +114,15 @@ class MFSDataSpace
 
     静态成员函数：
 
+    static MFSDataSpace * MFSDataSpace::CreateDataSpace(const MFSString & filename, uint64_t size)
+        创建一个数据空间。
+        @param filename 数据空间所对应的底层操作系统文件名。
+        @param size 数据空间的总字节大小。该参数不应该小于 134,217,728，即 128 MB；同时不应该大于 4,294,967,296，即 4GB。
+                    该参数在函数内部将会被向上对齐到 4KB 的整数倍。
+        @exceptions
+            std::invalid_argument size 过小或过大。
+            MFSWindowsException 在与操作系统交互过程中出现错误。
+
     static MFSDataSpace * MFSDataSpace::GetActiveDataSpace() noexcept
         获取应用程序中当前活动的数据空间。若当前应用程序中没有活动的数据空间，返回 nullptr。
 
@@ -150,6 +161,8 @@ public:
 
     std::vector<MFSString> GetDirectories(const MFSString & directory);
     std::vector<MFSString> GetFiles(const MFSString & directory);
+
+    static MFSDataSpace * CreateDataSpace(const MFSString & filename, uint64_t size);
     
     static MFSDataSpace * GetActiveDataSpace() noexcept;
     static void SetActiveDataSpace(MFSDataSpace * dataSpace) noexcept;
