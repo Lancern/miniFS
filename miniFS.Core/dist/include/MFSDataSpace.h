@@ -140,7 +140,7 @@ class MFSDataSpace
         @param size 数据空间的总字节大小。该参数不应该小于 134,217,728，即 128 MB；同时不应该大于 4,294,967,296，即 4GB。
                     该参数在函数内部将会被向上对齐到 4KB 的整数倍。
         @exceptions
-            std::invalid_argument size 过小或过大。
+            MFSInvalidArgumentException size 过小或过大。
             MFSWindowsException 在与操作系统交互过程中出现错误。
 
     static MFSDataSpace * MFSDataSpace::GetActiveDataSpace() noexcept
