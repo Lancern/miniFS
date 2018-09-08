@@ -17,7 +17,7 @@ MFSDataSpace::MFSDataSpace(const MFSString & osFileName)
 {
     _hFile = CreateFileW(
         osFileName.GetRawString(),
-        GENERIC_ALL,
+        GENERIC_READ | GENERIC_WRITE,
         0,
         NULL,
         OPEN_EXISTING,
@@ -177,7 +177,7 @@ MFSDataSpace * MFSDataSpace::CreateDataSpace(const MFSString & filename, uint64_
 
     HANDLE hFile = CreateFileW(
         filename.GetRawString(),
-        GENERIC_ALL,
+        GENERIC_READ | GENERIC_WRITE,
         0,
         NULL,
         CREATE_ALWAYS,
