@@ -236,5 +236,26 @@
     <ClCompile Include="dist\src\MFSPath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSDirectoryNotFoundException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSFileAlreadyExistException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSFileNotFoundException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSInvalidArgumentException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSInvalidDeviceException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSInvalidPathException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSOutOfSpaceException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

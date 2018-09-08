@@ -14,8 +14,15 @@ void CreateCommand::Action(const std::vector<MFSString> & argv) const
 		printf("command is wrong\n");
 		return;
 	}
-	if (argv.size() == 2 )
-	std::wcout << L"copy file " << argv[0].GetRawString() << L" to file " << argv[1].GetRawString() << std::endl;
+	try
+	{
+		MFSDataSpace * space = MFSDataSpace::CreateDataSpace(argv[0], 1024 * 1024 * 1024);
+		space->Close();
+	}
+	catch (const std::exception&)
+	{
+
+	}
 }
 
 CreateCommand::CreateCommand()

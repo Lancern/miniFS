@@ -63,7 +63,7 @@ MFSString MFSDataSpace::GetWorkingDirectory() const noexcept
     return _workingDirectory;
 }
 
-void MFSDataSpace::SetWorkingDirectory(const MFSString & path) noexcept
+void MFSDataSpace::SetWorkingDirectory(const MFSString & path)
 {
     if (!MFSPath::IsValidPath(path))
         throw MFSInvalidPathException();

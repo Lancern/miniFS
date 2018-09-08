@@ -62,7 +62,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dist\src\exceptions\MFSDataSpaceNotLoadedException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSDirectoryNotFoundException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSFileAlreadyExistException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSFileNotFoundException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSInvalidArgumentException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSInvalidDeviceException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSInvalidPathException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSOutOfSpaceException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSWindowsException.cpp" />
     <ClCompile Include="dist\src\MFSDataSpace.cpp" />
     <ClCompile Include="dist\src\MFSFile.cpp" />
