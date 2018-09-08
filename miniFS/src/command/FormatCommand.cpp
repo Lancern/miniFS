@@ -9,7 +9,6 @@ bool FormatCommand::Accept(const MFSString & string) const
 
 void FormatCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 FormatCommand::FormatCommand()

@@ -99,7 +99,7 @@ MFSString MFSConsole::ReadLine()
         if (buffer.back() == L'\n')
         {
             buffer.pop_back();
-			if (!buffer.empty() && buffer.back() == '\r')
+			if (!buffer.empty() && buffer.back() == L'\r')
 				buffer.pop_back();
             break;
         }

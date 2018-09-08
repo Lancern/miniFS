@@ -6,6 +6,9 @@
 #include "../miniFS.Core/include/stream/MFSStream.h"
 #include "../miniFS.Core/include/stream/MFSStreamWriter.h"
 #include "../miniFS.Core/include/stream/MFSStreamReader.h"
+#include "../miniFS.Core/include/stream/MFSNativeFileStream.h"
+#include "../miniFS.Core/include/stream/MFSStreamTextReader.h"
+#include "../miniFS.Core/include/stream/MFSStreamTextWriter.h"
 #include "include/MFSTest.h"
 #include "include/io/MFSConsole.h"
 
@@ -13,33 +16,52 @@ int main()
 {
 	MFSTest command;
 	MFSConsole *point = MFSGetDefaultConsole();
-	MFSStreamWriter writer();
-	//while (1)
-	//{
-	//	std::vector<WCHAR> split = {L'|'};
-	//	std::vector<MFSString> subString;
-	//	point->Log(L"miniFS>");
-	//	MFSString strInput = point->ReadLine();
-	//	/*point->SetForegroundColor(MFSConsoleColors::Red);
-	//	point->SetBackgroundColor(MFSConsoleColors::Green);*/
-	//	subString = strInput.SplitName(split);
-	//	for (const MFSString & part : subString) {
+	//MFSStreamWriter writer();
 
-	//		MFSTestunit *tmp = command.Chead->link;
-	//		std::vector<WCHAR> splitNew = { L' ', L'\t'};
-	//		std::vector<MFSString> paragrameter;
-	//		paragrameter = part.SplitName(splitNew);
-	//		for (int i = 0; i < 14; i++)
-	//		{
-	//			if (tmp->base->Accept(paragrameter[0]))
-	//			{
-	//				paragrameter.erase(paragrameter.begin());
-	//				tmp->base->Action(paragrameter);
-	//				break;
-	//			}
-	//			tmp = tmp->link;
-	//		}
-	//	}
-	//}
+	while (1)
+	{
+		std::vector<WCHAR> split = {L'|'};
+		std::vector<MFSString> subString;
+		std::wcout << (L"miniFS>");
+		//MFSString strInput = point->ReadLine();
+		std::vector<WCHAR> str;
+		while (1)
+		{
+			WCHAR temp;
+			DWORD read;
+			ReadConsole(GetStdHandle(STD_INPUT_HANDLE), &temp, 1, &read, NULL);
+			str.push_back(temp);
+			if (str.back() == L'\n')
+			{
+				str.pop_back();
+				if (!str.empty() && str.back() == L'\r')
+					str.pop_back();
+				break;
+			}
+		}
+		MFSString strInput(str.data(), str.size());
+		//test.Read();
+		/*point->SetForegroundColor(MFSConsoleColors::Red);
+		point->SetBackgroundColor(MFSConsoleColors::Green);*/
+		subString = strInput.SplitName(split);
+		for (const MFSString & part : subString) {
+
+			MFSTestunit *tmp = command.Chead->link;
+			std::vector<WCHAR> splitNew = { L' ', L'\t'};
+			std::vector<MFSString> paragrameter;
+			paragrameter = part.SplitName(splitNew);
+			while(tmp)
+			{
+				if (tmp->base->Accept(paragrameter[0]))
+				{
+					paragrameter.erase(paragrameter.begin());
+					tmp->base->Action(paragrameter);
+					break;
+				}
+				tmp = tmp->link;
+			}
+			if (tmp == NULL) std::cout << "input error!" << std::endl;
+		}
+	}
 	return 0;
 }

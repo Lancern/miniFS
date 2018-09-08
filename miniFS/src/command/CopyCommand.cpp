@@ -9,7 +9,6 @@ bool CopyCommand::Accept(const MFSString & string) const
 
 void CopyCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 CopyCommand::CopyCommand()

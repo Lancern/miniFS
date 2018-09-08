@@ -9,7 +9,6 @@ bool MoveCommand::Accept(const MFSString & string) const
 
 void MoveCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 MoveCommand::MoveCommand()

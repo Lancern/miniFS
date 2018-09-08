@@ -9,7 +9,6 @@ bool DirCommand::Accept(const MFSString & string) const
 
 void DirCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 DirCommand::DirCommand()

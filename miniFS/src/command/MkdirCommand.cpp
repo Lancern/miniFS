@@ -9,7 +9,6 @@ bool MkdirCommand::Accept(const MFSString & string) const
 
 void MkdirCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 MkdirCommand::MkdirCommand()

@@ -9,7 +9,6 @@ bool UnmountCommand::Accept(const MFSString & string) const
 
 void UnmountCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 UnmountCommand::UnmountCommand()

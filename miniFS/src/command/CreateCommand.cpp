@@ -9,7 +9,6 @@ bool CreateCommand::Accept(const MFSString & string) const
 
 void CreateCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 CreateCommand::CreateCommand()

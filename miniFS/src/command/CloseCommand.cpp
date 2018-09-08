@@ -9,7 +9,6 @@ bool CloseCommand::Accept(const MFSString & string) const
 
 void CloseCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 CloseCommand::CloseCommand()

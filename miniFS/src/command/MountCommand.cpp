@@ -9,7 +9,6 @@ bool MountCommand::Accept(const MFSString & string) const
 
 void MountCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 MountCommand::MountCommand()
