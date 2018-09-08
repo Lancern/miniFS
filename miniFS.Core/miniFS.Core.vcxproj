@@ -19,6 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dist\include\exceptions\MFSDataSpaceNotLoadedException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSDirectoryNotFoundException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSFileAlreadyExistException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSFileNotFoundException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSInvalidPathException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSOutOfSpaceException.h" />
+    <ClInclude Include="dist\include\MFSDataSpace.h" />
+    <ClInclude Include="dist\include\MFSFile.h" />
+    <ClInclude Include="dist\include\MFSPath.h" />
     <ClInclude Include="include\device\MFSBlockDevice.h" />
     <ClInclude Include="include\device\MFSBufferedBlockDevice.h" />
     <ClInclude Include="include\fs\MFSDirectoryBlock.h" />
