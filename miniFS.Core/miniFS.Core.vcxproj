@@ -24,6 +24,8 @@
     <ClInclude Include="dist\include\exceptions\MFSException.h" />
     <ClInclude Include="dist\include\exceptions\MFSFileAlreadyExistException.h" />
     <ClInclude Include="dist\include\exceptions\MFSFileNotFoundException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSInvalidArgumentException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSInvalidDeviceException.h" />
     <ClInclude Include="dist\include\exceptions\MFSInvalidPathException.h" />
     <ClInclude Include="dist\include\exceptions\MFSOutOfSpaceException.h" />
     <ClInclude Include="dist\include\exceptions\MFSWindowsException.h" />
@@ -59,6 +61,10 @@
     <ClInclude Include="include\stream\MFSStreamWriter.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dist\src\exceptions\MFSDataSpaceNotLoadedException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSWindowsException.cpp" />
+    <ClCompile Include="dist\src\MFSDataSpace.cpp" />
     <ClCompile Include="src\fs\MFSFSEntry.cpp" />
     <ClCompile Include="src\fs\MFSFSEntryDataStream.cpp" />
     <ClCompile Include="src\fs\MFSFSNodePool.cpp" />

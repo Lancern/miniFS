@@ -28,6 +28,9 @@ public:
 
     MFSString GetExceptMessage() const;
 
+protected:
+    void SetExceptMessage(const MFSString & message) noexcept;
+
 private:
     MFSString _msg;
 };

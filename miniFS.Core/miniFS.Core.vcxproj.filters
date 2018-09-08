@@ -129,6 +129,12 @@
     <ClInclude Include="dist\include\exceptions\MFSWindowsException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dist\include\exceptions\MFSInvalidArgumentException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dist\include\exceptions\MFSInvalidDeviceException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp">
@@ -210,6 +216,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\fs\MFSFSEntryDataStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\MFSDataSpace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSWindowsException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dist\src\exceptions\MFSDataSpaceNotLoadedException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
