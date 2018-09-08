@@ -65,6 +65,8 @@
     <ClCompile Include="dist\src\exceptions\MFSException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSWindowsException.cpp" />
     <ClCompile Include="dist\src\MFSDataSpace.cpp" />
+    <ClCompile Include="dist\src\MFSFile.cpp" />
+    <ClCompile Include="dist\src\MFSPath.cpp" />
     <ClCompile Include="src\fs\MFSFSEntry.cpp" />
     <ClCompile Include="src\fs\MFSFSEntryDataStream.cpp" />
     <ClCompile Include="src\fs\MFSFSNodePool.cpp" />

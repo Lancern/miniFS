@@ -26,7 +26,7 @@ int main()
 			std::vector<WCHAR> splitNew = { L' ', L'\t'};
 			std::vector<MFSString> paragrameter;
 			paragrameter = part.SplitName(splitNew);
-			/*for (int i = 0; i < 14; i++)
+			for (int i = 0; i < 14; i++)
 			{
 				if (tmp->base->Accept(paragrameter[0]))
 				{
@@ -35,7 +35,7 @@ int main()
 					break;
 				}
 				tmp = tmp->link;
-			}*/
+			}
 		}
 	}
 	return 0;
