@@ -96,6 +96,24 @@
     <ClInclude Include="include\serialize\MFSFSNodePoolSerializer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dist\include\MFSPath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dist\include\exceptions\MFSException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dist\include\exceptions\MFSInvalidPathException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dist\include\exceptions\MFSDataSpaceNotLoadedException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dist\include\MFSDataSpace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dist\include\MFSFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp">
