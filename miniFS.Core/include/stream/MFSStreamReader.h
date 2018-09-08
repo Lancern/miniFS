@@ -24,14 +24,8 @@ class MFSStreamReader
         从基础流中读取出一个 PODType 类型的对象。
         @typeparam PODType 一个 POD 类型。
 
-    MFSString ReadString(const std::vector<WCHAR> & terminators)
-        从基础流中读取出一个以给定的结束符结尾的字符串。
-
     MFSString ReadString()
         从基础流中读取出一个以 0 结束符结尾的字符串。
-
-    MFSString ReadLine()
-        从基础流中读取出一行字符串。行末换行符会被保留在返回的字符串中。
 
 */
 
@@ -45,10 +39,8 @@ public:
     template <typename PODType>
     PODType ReadPODObject();
 
-    MFSString ReadString(const std::vector<WCHAR> & terminators);
     MFSString ReadString();
-    MFSString ReadLine();
-    
+
 private:
     MFSStream * _stream;
 };

@@ -15,14 +15,14 @@ MFSStream * MFSStreamReader::GetStream() const
 
 MFSString MFSStreamReader::ReadString()
 {
-    std::vector<WCHAR> buffer;
+    std::vector<wchar_t> buffer;
     while (_stream->HasNext())
     {
-        buffer.push_back(ReadPODObject<WCHAR>());
+        buffer.push_back(ReadPODObject<wchar_t>());
         if (buffer.back() == 0)
             break;
     }
-    if (buffer.back() != 0)
-        buffer.push_back(0);
+    if (buffer.back() == 0)
+        buffer.pop_back();
     return MFSString(buffer.data(), buffer.size());
 }

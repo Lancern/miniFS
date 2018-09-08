@@ -25,7 +25,7 @@ class MFSStreamTextReader
     void MFSStreamTextWriter::Write(const MFSString & string)
         将一个字符串写入基础流中。
 
-    void MFSStreamTextWriter::WriteChar(WCHAR ch)
+    void MFSStreamTextWriter::WriteChar(wchar_t ch)
         将一个字符写入基础流中。
 
     void MFSStreamTextWriter::WriteLine(const MFSString & string)
@@ -44,7 +44,7 @@ public:
     void WriteInteger(IntegerT value);
 
     void Write(const MFSString & string);
-    void WriteChar(WCHAR ch);
+    void WriteChar(wchar_t ch);
     void WriteLine(const MFSString & string);
 
 private:

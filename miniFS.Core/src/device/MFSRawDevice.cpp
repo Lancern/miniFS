@@ -12,7 +12,7 @@ MFSRawDevice::~MFSRawDevice()
 }
 
 
-MFSRawDeviceView * MFSRawDevice::OpenView(UINT64 offset, DWORD viewSize)
+MFSRawDeviceView * MFSRawDevice::OpenView(uint64_t offset, uint32_t viewSize)
 {
     return OpenView(offset, viewSize, !CanWrite());
 }

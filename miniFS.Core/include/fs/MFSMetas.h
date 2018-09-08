@@ -9,7 +9,6 @@ struct MFSFSMasterInfo
 {
     uint64_t magicSeq;      // mini-FS文件系统魔数。
     uint32_t mfsVer;        // mini-FS文件系统版本号
-    uint32_t reversed;
     uint32_t totalBlocks;   // 总的数据块数量
     uint32_t freeBlocks;    // 处于空闲状态的数据块数量。
 };
@@ -28,15 +27,15 @@ struct MFS_INTEGER64
     uint32_t high;
 };
 
-inline int64_t MFSGetPackedSignedValue(const MFS_INTEGER64 * i64)
+inline uint64_t MFSGetPackedUnsignedValue(const MFS_INTEGER64 * i64)
 {
-    int64_t result = static_cast<int64_t>(MFSGetPackedUnsignedValue(i64));
+    uint64_t result = (static_cast<uint64_t>(i64->high) << 32) | i64->low;
     return result;
 }
 
-inline uint64_t MFSGetPackedUnsignedValue(const MFS_INTEGER64 * i64)
+inline int64_t MFSGetPackedSignedValue(const MFS_INTEGER64 * i64)
 {
-    uint64_t result = (i64->high << 32) | i64->low;
+    int64_t result = static_cast<int64_t>(MFSGetPackedUnsignedValue(i64));
     return result;
 }
 
@@ -84,7 +83,6 @@ static_assert(alignof(MFSFSDirectoryEntryMeta) == 4, "Unexpected alignment of st
 struct MFSFSEntryMeta
 {
     MFSFSEntryCommonMeta common;
-    uint32_t reserved;
     union
     {
         MFSFSFileEntryMeta fileMeta;
@@ -92,7 +90,7 @@ struct MFSFSEntryMeta
     } spec;
 };
 
-static_assert(sizeof(MFSFSEntryMeta) == 48, "Unexpected size of struct MFSFSEntryMeta.");
+static_assert(sizeof(MFSFSEntryMeta) == 44, "Unexpected size of struct MFSFSEntryMeta.");
 static_assert(alignof(MFSFSEntryMeta) == 4, "Unexpected alignment of struct MFSFSEntryMeta.");
 
 struct MFSFSDirectoryBlockMasterInfo
@@ -105,9 +103,8 @@ static_assert(alignof(MFSFSDirectoryBlockMasterInfo) == 4, "Unexpected alignment
 
 struct MFSFSDirectoryItem
 {
-    uint32_t nameOffset;        // 目录项的名称在目录项名称堆区域内的起始偏移量。
     uint32_t fsnodeId;          // 表示与该目录项对应的文件系统节点。
 };
 
-static_assert(sizeof(MFSFSDirectoryItem) == 8, "Unexpected size of struct MFSFSDirectoryItem.");
+static_assert(sizeof(MFSFSDirectoryItem) == 4, "Unexpected size of struct MFSFSDirectoryItem.");
 static_assert(alignof(MFSFSDirectoryItem) == 4, "Unexpected alignment of struct MFSFSDirectoryItem.");

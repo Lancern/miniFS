@@ -8,7 +8,8 @@ void MFSFSNodePoolSerializer::Serialize(MFSStream * stream, MFSFSNodePool * obje
 
 MFSFSNodePool * MFSFSNodePoolSerializer::Deserialize(MFSStream * stream)
 {
-    size_t nodesCount = (stream->GetLength() - stream->GetPosition()) / sizeof(MFSFSEntryMeta);
+    uint32_t nodesCount = static_cast<uint32_t>(
+        (stream->GetLength() - stream->GetPosition()) / sizeof(MFSFSEntryMeta));
     MFSFSNodePool * pool = new MFSFSNodePool(nodesCount);
 
     stream->Read(pool->_pool.get(), nodesCount * sizeof(MFSFSEntryMeta), nodesCount * sizeof(MFSFSEntryMeta));

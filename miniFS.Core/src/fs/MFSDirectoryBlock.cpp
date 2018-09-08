@@ -1,7 +1,52 @@
-#include "..\..\include\fs\MFSDirectoryBlock.h"
+#include "../../include/fs/MFSDirectoryBlock.h"
+#include "../../include/fs/MFSFSNodePool.h"
 
-MFSDirectoryBlock::MFSDirectoryBlock(size_t size)
-	: _usedSize(4), _blockSize(size), _dir(0)
+
+MFSDirectoryBlock::Iterator::Iterator(base_iter iter)
+	: _iter(iter)
+{
+}
+
+MFSDirectoryBlock::Iterator& MFSDirectoryBlock::Iterator::operator ++ ()
+{
+	++_iter;
+	return *this;
+}
+
+MFSDirectoryBlock::Iterator MFSDirectoryBlock::Iterator::operator ++ (int)
+{
+	auto ret = *this;
+	++_iter;
+	return ret;
+}
+
+bool MFSDirectoryBlock::Iterator::operator == (const Iterator& rhs) const
+{
+	return _iter == rhs._iter;
+}
+
+bool MFSDirectoryBlock::Iterator::operator != (const Iterator& rhs) const
+{
+	return _iter != rhs._iter;
+}
+
+auto MFSDirectoryBlock::Iterator::operator * () const -> typename value_type
+{
+	return *_iter;
+}
+
+MFSDirectoryBlock::Iterator MFSDirectoryBlock::begin() const
+{
+	return Iterator(_dir.begin());
+}
+
+MFSDirectoryBlock::Iterator MFSDirectoryBlock::end() const
+{
+	return Iterator(_dir.end());
+}
+
+MFSDirectoryBlock::MFSDirectoryBlock(uint32_t size)
+	: _usedSize(sizeof(MFSFSDirectoryBlockMasterInfo)), _blockSize(size), _dir(0)
 {
 }
 
@@ -21,7 +66,7 @@ MFSFSDirectoryItem * MFSDirectoryBlock::AddDir(const MFSString & name)
 	if (FindDir(name) != nullptr) 
         return nullptr;
 
-	size_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(WCHAR);
+	uint32_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(wchar_t);
 	if (_usedSize + size > _blockSize) 
         return nullptr;
     
@@ -30,13 +75,19 @@ MFSFSDirectoryItem * MFSDirectoryBlock::AddDir(const MFSString & name)
 	return &_dir[name];
 }
 
-bool MFSDirectoryBlock::EraseDir(const MFSString & name)
+uint32_t MFSDirectoryBlock::EraseDir(const MFSString & name)
 {
-	if (FindDir(name) == nullptr) 
-        return false;
+	if (FindDir(name) == nullptr)
+        return MFSFSNodePool::InvalidFSNodeId;
 
+	uint32_t ret = _dir[name].fsnodeId;
 	_dir.erase(name);
-	size_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(WCHAR);
+	uint32_t size = sizeof(MFSFSDirectoryItem) + (name.GetLength() + 1) * sizeof(wchar_t);
 	_usedSize -= size;
-	return true;
+	return ret;
+}
+
+bool MFSDirectoryBlock::Empty() const
+{
+	return _dir.empty();
 }

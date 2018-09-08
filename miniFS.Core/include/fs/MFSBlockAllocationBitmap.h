@@ -9,11 +9,12 @@ class MFSBlockAllocationBitmap
 public:
 	static constexpr uint32_t InvalidBlockId = ~0;
 
-	MFSBlockAllocationBitmap(size_t sizeBits);
+	MFSBlockAllocationBitmap(uint32_t sizeBits);
 	~MFSBlockAllocationBitmap();
 
 	uint32_t AllocBlock();
-	void FreeBlock(uint32_t pos);
+    bool AllocBlock(uint32_t blockId);
+	bool FreeBlock(uint32_t pos);
 
     void Set(uint32_t pos);
     void Reset(uint32_t pos);
@@ -21,13 +22,13 @@ public:
 private:
 	class Bitmap
 	{
-		static constexpr size_t BIT_PACK_SIZE = 64;
+		static constexpr uint32_t BIT_PACK_SIZE = 64;
 
 	public:
 		class Reference
 		{
 		public:
-			Reference(uint64_t& value, size_t offset);
+			Reference(uint64_t & value, uint32_t offset);
 			~Reference();
 
 			Reference& operator = (bool x);
@@ -36,19 +37,19 @@ private:
 
 		private:
 			uint64_t & value;
-			size_t offset;
+			uint32_t offset;
 		};
 
-		explicit Bitmap(size_t sizeInBits);
+		explicit Bitmap(uint32_t sizeInBits);
 		~Bitmap();
 
-		bool Test(size_t pos) const;
-		size_t Size() const;
-		void Set(size_t pos, bool value = true);
-		void Reset(size_t pos);
+		bool Test(uint32_t pos) const;
+		uint32_t Size() const;
+		void Set(uint32_t pos, bool value = true);
+		void Reset(uint32_t pos);
 
-		Reference operator [] (size_t pos);
-		bool operator [] (size_t pos) const;
+		Reference operator [] (uint32_t pos);
+		bool operator [] (uint32_t pos) const;
 
 		friend class MFSBitmapSerializer;
 

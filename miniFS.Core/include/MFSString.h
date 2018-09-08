@@ -15,13 +15,11 @@ class MFSString
 
     MFSString::MFSString()
         初始化 MFSString 对象为一空字符串。
-
-    
 	
-	::MFSString(LPCWSTR psRaw)
+	MFSString::MFSString(const wchar_t * psRaw)
         从给定的 C 风格 Unicode 字符串创建 MFSString 类的新实例。
 
-    MFSString::MFSString(LPCWSTR psBuffer, DWORD length)
+    MFSString::MFSString(const wchar_t * psBuffer, uint32_t length)
         从给定的字符缓冲区起始地址和字符串长度创建 MFSString 类的新实例。
 
     MFSString::MFSString(const MFSString & another)
@@ -32,10 +30,10 @@ class MFSString
 
     成员函数：
 
-    DWORD MFSString::GetLength() const
+    uint32_t MFSString::GetLength() const
         获取当前字符串的长度。
 
-    const WCHAR * MFSString::GetRawString() const
+    const wchar_t * MFSString::GetRawString() const
         获取当前字符串的 C 字符串表示。
 
     int MFSString::CompareTo(const MFSString & another) const
@@ -60,13 +58,13 @@ class MFSString
     MFSString MFSString::Concat(const MFSString & another) const
         将给定的字符串接在当前字符串的末尾并返回新的字符串。
 
-    MFSString Substring(DWORD startOffset) const
+    MFSString Substring(uint32_t startOffset) const
         获取当前字符串的从某个位置开始一直到当前字符串结尾的子串。
 
-    MFSString Substring(DWORD startOffset, DWORD length) const
+    MFSString Substring(uint32_t startOffset, uint32_t length) const
         获取当前字符串的从某个位置开始、长度为 length 的子串。
 
-    std::vector<MFSString> MFSString::Split(const std::vector<WCHAR> & separators) const
+    std::vector<MFSString> MFSString::Split(const std::vector<wchar_t> & separators) const
         将当前字符串以指定的分隔符为界限拆分为若干个子串。
         @param separators 分隔符。
         @return 当前字符串以分隔符为界拆分出的子串。
@@ -74,18 +72,18 @@ class MFSString
     template <typename IntegerT> IntegerT MFSString::ParseInteger() const
         将当前字符串转换为其表示的整数。
 
-	std::vector<MFSString> MFSString::Split(const std::vector<WCHAR> & separators, bool type) const
+	std::vector<MFSString> MFSString::Split(const std::vector<wchar_t> & separators, bool type) const
 		将当前字符串以指定的分隔符为界限拆分为若干个子串。
 		type为1时进行除空字符串操作。
 		@param separators 分隔符。
 		@return 当前字符串以分隔符为界拆分出的子串。
 
-	std::vector<MFSString> MFSString::SplitName(const std::vector<WCHAR> & separators) const
+	std::vector<MFSString> MFSString::SplitName(const std::vector<wchar_t> & separators) const
 		将当前字符串以指定的分隔符为界限拆分为若干个子串, 用于处理含有特殊字符的文件名, 默认去空串。
 		@param separators 分隔符。
 		@return 当前字符串以分隔符为界拆分出的子串。
 
-    UINT32 MFSString::GetHashCode() const
+    uint32_t MFSString::GetHashCode() const
         获取当前字符串的哈希值。
 
     bool MFSString::IsInteger() const
@@ -108,16 +106,15 @@ public:
     {
     public:
         using difference_type = size_t;
-        using value_type = WCHAR;
-        using pointer = WCHAR * ;
-        using reference = WCHAR & ;
+        using value_type = wchar_t;
+        using reference = wchar_t & ;
         using iterator_category = std::random_access_iterator_tag;
 
         explicit Iterator(const MFSString & string);
-        explicit Iterator(const WCHAR * ptr);
+        explicit Iterator(const wchar_t * ptr);
         
-        WCHAR operator * () const;
-        WCHAR operator [] (int offset) const;
+        wchar_t operator * () const;
+        wchar_t operator [] (int offset) const;
 
         Iterator & operator ++ ();
         Iterator operator ++ (int);
@@ -132,18 +129,18 @@ public:
         bool operator != (const Iterator & another) const;
         
     private:
-        const WCHAR * _iter;
+        const wchar_t * _iter;
     };
 
     MFSString();
-    MFSString(LPCWSTR psRaw);
-    MFSString(LPCWSTR psBuffer, DWORD length);
+    MFSString(const wchar_t * psRaw);
+    MFSString(const wchar_t * psBuffer, uint32_t length);
     MFSString(const MFSString & another);
     MFSString(MFSString && another);
     ~MFSString();
 
-    DWORD GetLength() const;
-    const WCHAR * GetRawString() const;
+    uint32_t GetLength() const;
+    const wchar_t * GetRawString() const;
 
     int CompareTo(const MFSString & another) const;
 
@@ -155,14 +152,14 @@ public:
 
     MFSString Concat(const MFSString & another) const;
 
-    MFSString Substring(DWORD startOffset) const;
-    MFSString Substring(DWORD startOffset, DWORD length) const;
+    MFSString Substring(uint32_t startOffset) const;
+    MFSString Substring(uint32_t startOffset, uint32_t length) const;
 
-    std::vector<MFSString> Split(const std::vector<WCHAR> & separators) const;
-	std::vector<MFSString> Split(const std::vector<WCHAR> & separators, bool type) const;
-	std::vector<MFSString> SplitName(const std::vector<WCHAR> & separators) const;
+    std::vector<MFSString> Split(const std::vector<wchar_t> & separators) const;
+	std::vector<MFSString> Split(const std::vector<wchar_t> & separators, bool type) const;
+	std::vector<MFSString> SplitName(const std::vector<wchar_t> & separators) const;
 
-    UINT32 GetHashCode() const;
+    uint32_t GetHashCode() const;
 
     bool IsInteger() const;
 
@@ -174,13 +171,16 @@ public:
 
     MFSString & operator = (const MFSString & another);
     MFSString & operator = (MFSString && another);
-    WCHAR operator [] (DWORD offset) const;
+    wchar_t operator [] (uint32_t offset) const;
+
+    template <typename ...T>
+    static MFSString Format(const wchar_t * format, T...args);
 
 private:
-    DWORD _len;
-    std::unique_ptr<WCHAR[]> _data;
+    uint32_t _len;
+    std::unique_ptr<wchar_t[]> _data;
 
-    bool ContainsAt(const MFSString & substring, DWORD offset) const;
+    bool ContainsAt(const MFSString & substring, uint32_t offset) const;
 };
 
 bool operator == (const MFSString & s1, const MFSString & s2);
@@ -196,7 +196,7 @@ MFSString MFSGetString(IntegerT value)
 {
     static_assert(std::is_integral_v<IntegerT>, "The type given should be a integer type.");
 
-    DWORD valueLen = 0;
+    uint32_t valueLen = 0;
     if constexpr (std::is_signed_v<IntegerT>)
     {
         if (value < 0)
@@ -208,8 +208,8 @@ MFSString MFSGetString(IntegerT value)
     for (IntegerT tmp = value; tmp; tmp /= 10)
         ++valueLen;
 
-    WCHAR * lpBuffer = new WCHAR[valueLen + 1];
-    WCHAR * lpBufferBase = lpBuffer;
+    wchar_t * lpBuffer = new wchar_t[valueLen + 1];
+    wchar_t * lpBufferBase = lpBuffer;
     if constexpr (std::is_signed_v<IntegerT>)
     {
         if (value < 0)
@@ -252,7 +252,7 @@ inline IntegerT MFSString::ParseInteger() const
         return 0;
 
     IntegerT sign = 1;
-    DWORD i = 0;
+    uint32_t i = 0;
     if (_data[i] == '-')
     {
         sign = static_cast<IntegerT>(-1);
@@ -266,6 +266,19 @@ inline IntegerT MFSString::ParseInteger() const
     }
 
     return result * sign;
+}
+
+template <typename ...T>
+MFSString MFSString::Format(const wchar_t * format, T... arg)
+{
+    uint32_t bufferSize = 64;
+    while (true)
+    {
+        std::unique_ptr<wchar_t[]> buffer(new wchar_t[bufferSize]);
+        if (swprintf_s(buffer.get(), bufferSize, format, arg...) != -1)
+            return MFSString(buffer.get());
+    }
+    return MFSString();
 }
 
 namespace std

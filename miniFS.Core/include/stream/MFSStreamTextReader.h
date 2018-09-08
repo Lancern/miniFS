@@ -20,10 +20,10 @@ class MFSStreamTextReader
     MFSStream * MFSStreamTextReader::GetStream() const
         获取基础流对象。
 
-    WCHAR MFSStreamTextReader::ReadChar()
+    wchar_t MFSStreamTextReader::ReadChar()
         从基础流中读取一个字符。
 
-    MFSString MFSStreamTextReader::ReadString(const std::vector<WCHAR> & terminators, bool includeTerminator)
+    MFSString MFSStreamTextReader::ReadString(const std::vector<wchar_t> & terminators, bool includeTerminator)
         从基础流中读取出一个以给定的结束符结尾的字符串。
         @param includeTerminator 一个 bool 值指示分隔符是否应保留在返回的字符串中。
 
@@ -42,9 +42,9 @@ public:
 
     MFSStream * GetStream() const;
 
-    WCHAR ReadChar();
+    wchar_t ReadChar();
 
-    MFSString Read(const std::vector<WCHAR> & terminators, bool includeTerminator);
+    MFSString Read(const std::vector<wchar_t> & terminators, bool includeTerminator);
 
     MFSString ReadToken();
     MFSString ReadLine();

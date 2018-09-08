@@ -1,6 +1,6 @@
 #include "../../include/fs/MFSBlockAllocationBitmap.h"
 
-MFSBlockAllocationBitmap::Bitmap::Reference::Reference(uint64_t& value, size_t offset)
+MFSBlockAllocationBitmap::Bitmap::Reference::Reference(uint64_t & value, uint32_t offset)
 	: value(value), offset(offset)
 {
 }
@@ -14,12 +14,12 @@ MFSBlockAllocationBitmap::Bitmap::Reference &
 {
 	if (x)
 	{
-		uint64_t mask = 1ULL << offset;
+		uint64_t mask = 1ull << offset;
 		value |= mask;
 	}
 	else
 	{
-		uint64_t mask = ~(1ULL << offset);
+		uint64_t mask = ~(1ull << offset);
 		value &= mask;
 	}
 	return *this;
@@ -37,8 +37,8 @@ MFSBlockAllocationBitmap::Bitmap::Reference::operator bool() const
 	return value >> offset & 1;
 }
 
-MFSBlockAllocationBitmap::Bitmap::Bitmap(size_t sizeInBits)
-	: _bitmap(sizeInBits / BIT_PACK_SIZE + sizeInBits % BIT_PACK_SIZE ? 1 : 0)
+MFSBlockAllocationBitmap::Bitmap::Bitmap(uint32_t sizeInBits)
+	: _bitmap(sizeInBits / BIT_PACK_SIZE + (sizeInBits % BIT_PACK_SIZE ? 1 : 0))
 {
 }
 
@@ -46,31 +46,31 @@ MFSBlockAllocationBitmap::Bitmap::~Bitmap()
 {
 }
 
-MFSBlockAllocationBitmap::Bitmap::Reference MFSBlockAllocationBitmap::Bitmap::operator[](size_t pos)
+MFSBlockAllocationBitmap::Bitmap::Reference MFSBlockAllocationBitmap::Bitmap::operator[](uint32_t pos)
 {
-	size_t index = pos / BIT_PACK_SIZE, offset = pos % BIT_PACK_SIZE;
+	uint32_t index = pos / BIT_PACK_SIZE, offset = pos % BIT_PACK_SIZE;
 	return Reference(_bitmap[index], offset);
 }
 
-bool MFSBlockAllocationBitmap::Bitmap::operator[](size_t pos) const
+bool MFSBlockAllocationBitmap::Bitmap::operator[](uint32_t pos) const
 {
 	return Test(pos);
 }
 
-bool MFSBlockAllocationBitmap::Bitmap::Test(size_t pos) const
+bool MFSBlockAllocationBitmap::Bitmap::Test(uint32_t pos) const
 {
-	size_t index = pos / BIT_PACK_SIZE, offset = pos % BIT_PACK_SIZE;
+	uint32_t index = pos / BIT_PACK_SIZE, offset = pos % BIT_PACK_SIZE;
 	return _bitmap[index] >> offset & 1;
 }
 
-size_t MFSBlockAllocationBitmap::Bitmap::Size() const
+uint32_t MFSBlockAllocationBitmap::Bitmap::Size() const
 {
 	return _bitmap.size() * BIT_PACK_SIZE;
 }
 
-void MFSBlockAllocationBitmap::Bitmap::Set(size_t pos, bool value)
+void MFSBlockAllocationBitmap::Bitmap::Set(uint32_t pos, bool value)
 {
-	size_t index = pos / BIT_PACK_SIZE, offset = pos % BIT_PACK_SIZE;
+	uint32_t index = pos / BIT_PACK_SIZE, offset = pos % BIT_PACK_SIZE;
 	if (value)
 	{
 		uint64_t mask = 1ULL << offset;
@@ -83,14 +83,14 @@ void MFSBlockAllocationBitmap::Bitmap::Set(size_t pos, bool value)
 	}
 }
 
-void MFSBlockAllocationBitmap::Bitmap::Reset(size_t pos)
+void MFSBlockAllocationBitmap::Bitmap::Reset(uint32_t pos)
 {
-	size_t index = pos / BIT_PACK_SIZE, offset = pos % BIT_PACK_SIZE;
+	uint32_t index = pos / BIT_PACK_SIZE, offset = pos % BIT_PACK_SIZE;
 	uint64_t mask = ~(1ULL << offset);
 	_bitmap[index] &= mask;
 }
 
-MFSBlockAllocationBitmap::MFSBlockAllocationBitmap(size_t sizeBits)
+MFSBlockAllocationBitmap::MFSBlockAllocationBitmap(uint32_t sizeBits)
 	: _bitmap(new Bitmap(sizeBits)), _alloc(0)
 {
 }
@@ -110,9 +110,23 @@ uint32_t MFSBlockAllocationBitmap::AllocBlock()
 	return ret;
 }
 
-void MFSBlockAllocationBitmap::FreeBlock(uint32_t pos)
+bool MFSBlockAllocationBitmap::AllocBlock(uint32_t blockId)
 {
+    if (_bitmap->Test(blockId))
+        return false;
+
+    _bitmap->Set(blockId);
+    if (blockId == _alloc)
+        LocateNextFreeBlock();
+
+    return true;
+}
+
+bool MFSBlockAllocationBitmap::FreeBlock(uint32_t pos)
+{
+    bool result = _bitmap->Test(pos);
     Reset(pos);
+    return result;
 }
 
 void MFSBlockAllocationBitmap::Set(uint32_t pos)
@@ -134,7 +148,7 @@ void MFSBlockAllocationBitmap::LocateNextFreeBlock()
     bool found = false;
     for (uint32_t i = _alloc + 1; i != _alloc; i = (i + 1) % _bitmap->Size())
     {
-        if (_bitmap->Test(i))
+        if (!_bitmap->Test(i))
         {
             found = true;
             _alloc = i;

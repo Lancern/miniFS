@@ -2,14 +2,15 @@
 #include "../../include/stream/MFSMemoryStream.h"
 #include "../../include/serialize/MFSBlockAllocationBitmapSerializer.h"
 #include "../../include/serialize/MFSFileAllocationTableSerializer.h"
+#include "../../include/serialize/MFSFSNodePoolSerializer.h"
 #include "../../include/stream/MFSStreamWriter.h"
 #include "../../include/MFSDateTime.h"
 
 
 
-#define CEIL_DIV(a, b)      ((a) / (b) + (a) % (b) ? 1 : 0)
+#define CEIL_DIV(a, b)      ((a) / (b) + ((a) % (b) ? 1 : 0))
 
-#define BLOCK_CHAIN_TAIL      0xFFFFFFFF
+
 
 
 MFSPartition::MFSPartition(MFSBlockDevice * device)
@@ -25,7 +26,7 @@ MFSPartition::~MFSPartition()
 
 MFSBlockDevice * MFSPartition::GetDevice() const
 {
-    return _device.get();
+    return _device;
 }
 
 bool MFSPartition::IsValidDevice() const
@@ -38,14 +39,14 @@ bool MFSPartition::IsRaw() const
     return _master.magicSeq != MFS_MAGIC_SEQ;
 }
 
-UINT64 MFSPartition::GetTotalSpaceInBytes() const
+uint64_t MFSPartition::GetTotalSpaceInBytes() const
 {
-    return static_cast<UINT64>(_master.totalBlocks) * _device->GetBlockSize();
+    return static_cast<uint64_t>(_master.totalBlocks) * _device->GetBlockSize();
 }
 
-UINT64 MFSPartition::GetFreeSpaceInBytes() const
+uint64_t MFSPartition::GetFreeSpaceInBytes() const
 {
-    return static_cast<UINT64>(_master.freeBlocks) * _device->GetBlockSize();
+    return static_cast<uint64_t>(_master.freeBlocks) * _device->GetBlockSize();
 }
 
 void MFSPartition::BuildFileSystem()
@@ -53,73 +54,70 @@ void MFSPartition::BuildFileSystem()
     // Build partition master record.
     _master.magicSeq = MFS_MAGIC_SEQ;
     _master.mfsVer = MFS_VER;
-    _master.totalBlocks = static_cast<DWORD>(_device->GetBlocksCount());
+    _master.totalBlocks = static_cast<uint32_t>(_device->GetBlocksCount());
 
-    DWORD blockSize = _device->GetBlockSize();
-    DWORD babBlocksCount = _master.totalBlocks / CHAR_BIT / blockSize;
-    DWORD fatBlocksCount = _master.totalBlocks * sizeof(DWORD) / blockSize;
-    DWORD fsnodePoolBlocksCount = _master.totalBlocks * sizeof(MFSFSEntryMeta) / blockSize;
-    DWORD fsblocksCount = 1 + babBlocksCount + fatBlocksCount + fsnodePoolBlocksCount;    // mini-FS 占用的块数量
+    uint32_t blockSize = _device->GetBlockSize();
+    uint32_t babBlocksCount = _master.totalBlocks / CHAR_BIT / blockSize;
+    uint32_t fatBlocksCount = _master.totalBlocks * sizeof(uint32_t) / blockSize;
+    uint32_t fsnodePoolBlocksCount = _master.totalBlocks * sizeof(MFSFSEntryMeta) / blockSize;
+    uint32_t fsblocksCount = 1 + babBlocksCount + fatBlocksCount + fsnodePoolBlocksCount;    // mini-FS 占用的块数量
 
     _master.freeBlocks = _master.totalBlocks - fsblocksCount;
 
     // Build block allocation bitmap.
-    _blockAllocation.reset(new MFSBlockAllocationBitmap(_device->GetBlocksCount()));
-    for (DWORD blockId = 0; blockId < fsblocksCount; ++blockId)
+    _blockAllocation.reset(new MFSBlockAllocationBitmap(static_cast<uint32_t>(_device->GetBlocksCount())));
+    for (uint32_t blockId = 0; blockId < fsblocksCount; ++blockId)
         _blockAllocation->Set(blockId);
 
     // Build file allocation table.
-    _blockChain.reset(new MFSFileAllocationTable(_device->GetBlocksCount()));
-    DWORD babBlockOffset = 1;
-    DWORD fatBlockOffset = babBlockOffset + babBlocksCount;
-    DWORD fsnodePoolBlockOffset = fatBlockOffset + fatBlocksCount;
+    _blockChain.reset(new MFSFileAllocationTable(static_cast<uint32_t>(_device->GetBlocksCount())));
+    uint32_t babBlockOffset = 1;
+    uint32_t fatBlockOffset = babBlockOffset + babBlocksCount;
+    uint32_t fsnodePoolBlockOffset = fatBlockOffset + fatBlocksCount;
 
-    _blockChain->Set(0, BLOCK_CHAIN_TAIL);
+    _blockChain->Set(0, MFSFileAllocationTable::InvalidBlockId);
 
-    for (DWORD i = 0; i < babBlocksCount; ++i)
+    for (uint32_t i = 0; i < babBlocksCount; ++i)
         _blockChain->Set(babBlockOffset + i, babBlockOffset + i + 1);
-    _blockChain->Set(babBlockOffset + babBlocksCount - 1, BLOCK_CHAIN_TAIL);
+    _blockChain->Set(babBlockOffset + babBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
-    for (DWORD i = 0; i < fatBlocksCount; ++i)
+    for (uint32_t i = 0; i < fatBlocksCount; ++i)
         _blockChain->Set(fatBlockOffset + i, fatBlockOffset + i + 1);
-    _blockChain->Set(fatBlockOffset + fatBlocksCount - 1, BLOCK_CHAIN_TAIL);
+    _blockChain->Set(fatBlockOffset + fatBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
-    for (DWORD i = 0; i < fsnodePoolBlocksCount; ++i)
+    for (uint32_t i = 0; i < fsnodePoolBlocksCount; ++i)
         _blockChain->Set(fsnodePoolBlockOffset + i, fsnodePoolBlockOffset + i + 1);
-    _blockChain->Set(fsnodePoolBlockOffset + fsnodePoolBlocksCount - 1, BLOCK_CHAIN_TAIL);
+    _blockChain->Set(fsnodePoolBlockOffset + fsnodePoolBlocksCount - 1, MFSFileAllocationTable::InvalidBlockId);
 
     // Initialize fsnode pool.
-    _fsnodePool.reset(new MFSFSEntryMeta[static_cast<DWORD>(_device->GetBlocksCount())]);
+    _fsnodePool.reset(new MFSFSNodePool(static_cast<uint32_t>(_device->GetBlocksCount())));
     // Initialize the first fsnode as the node for the root directory.
-    _fsnodePool[0].common.flags = 0 | MFS_FSENTRY_FLAG_PROTECTED;
-    _fsnodePool[0].common.firstBlockId = BLOCK_CHAIN_TAIL;
-
-    uint64_t timestamp = MFSGetCurrentTimestamp();
-    MFSGetInteger64Struct(&_fsnodePool[0].common.creationTimestamp, timestamp);
-    MFSGetInteger64Struct(&_fsnodePool[0].common.lastAccessTimestamp, timestamp);
-    MFSGetInteger64Struct(&_fsnodePool[0].common.lastModTimestamp, timestamp);
-
-    _fsnodePool[0].common.refCount = 1;
-
-    // TODO: Implement MFSPartition::BuildFileSystem.
+    // Force allocate the first fsnode as the fsnode for the root directory.
+    _fsnodePool->Allocate(0);
 }
 
-MFSFSEntry * MFSPartition::GetRoot() const
+MFSFSEntry * MFSPartition::GetRoot()
 {
     if (!_validDevice || IsRaw())
         return nullptr;
 
-    // TODO: Implement MFSPartition::GetRoot().
+    MFSFSEntry * entry = new MFSFSEntry(GetInternalObject(), 0);
+    return entry;
+}
 
-    return nullptr;
+MFSPartition::Internals MFSPartition::GetInternalObject()
+{
+    return Internals(this);
 }
 
 void MFSPartition::Flush()
 {
-    if (!_validDevice)
+    if (!IsValidDevice())
+        return;
+    if (IsRaw())
         return;
 
-    MFSBlockStream stream(_device.get());
+    MFSBlockStream stream(_device);
     MFSStreamWriter writer(&stream);
     
     // Write master info.
@@ -133,7 +131,7 @@ void MFSPartition::Flush()
     MFSFileAllocationTableSerializer().Serialize(&stream, _blockChain.get());
 
     // Write fsnode pool.
-    stream.Write(_fsnodePool.get(), static_cast<DWORD>(_device->GetBlocksCount() * sizeof(MFSFSEntryMeta)));
+    MFSFSNodePoolSerializer().Serialize(&stream, _fsnodePool.get());
 
     stream.Flush();
     stream.Close();
@@ -145,7 +143,7 @@ void MFSPartition::Close()
     {
         Flush();
         _device->Close();
-        _device.release();
+        _device = nullptr;
         _validDevice = false;
     }
 }
@@ -172,9 +170,10 @@ void MFSPartition::LoadDevice(MFSBlockDevice * device)
 
 bool MFSPartition::LoadMasterInfo(MFSBlockStream * deviceStream)
 {
-    LPVOID buffer = VirtualAlloc(NULL, deviceStream->GetDeviceBlockSize(), 
+    uint32_t bufferSize = deviceStream->GetDeviceBlockSize();
+    LPVOID buffer = VirtualAlloc(NULL, bufferSize, 
         MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-    DWORD read = deviceStream->Read(buffer, 0, deviceStream->GetDeviceBlockSize());
+    uint32_t read = deviceStream->Read(buffer, bufferSize, bufferSize);
 
     bool ret = (read == deviceStream->GetDeviceBlockSize());
     if (ret)
@@ -190,16 +189,17 @@ bool MFSPartition::LoadMasterInfo(MFSBlockStream * deviceStream)
 
 bool MFSPartition::LoadBlockAllocationManager(MFSBlockStream * deviceStream)
 {
-    DWORD dwBabByteSize = CEIL_DIV(deviceStream->GetDeviceBlockSize(), CHAR_BIT);
-    LPVOID buffer = VirtualAlloc(NULL, dwBabByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    uint32_t dwBabByteSize = static_cast<uint32_t>(CEIL_DIV(deviceStream->GetDeviceBlocksCount(), CHAR_BIT));
+    void * buffer = VirtualAlloc(NULL, dwBabByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-    DWORD read = deviceStream->Read(buffer, dwBabByteSize, dwBabByteSize);
+    uint32_t read = deviceStream->Read(buffer, dwBabByteSize, dwBabByteSize);
     bool ret = (read == dwBabByteSize);
 
     if (ret)
     {
         MFSMemoryStream memStream(buffer, dwBabByteSize);
         _blockAllocation.reset(MFSBlockAllocationBitmapSerializer().Deserialize(&memStream));
+        memStream.Close();
     }
 
     VirtualFree(buffer, 0, MEM_RELEASE);
@@ -212,16 +212,18 @@ bool MFSPartition::LoadBlockAllocationManager(MFSBlockStream * deviceStream)
 
 bool MFSPartition::LoadAllocationTable(MFSBlockStream * deviceStream)
 {
-    DWORD dwFatByteSize = static_cast<DWORD>(deviceStream->GetDeviceBlocksCount()) * sizeof(UINT32);
-    LPVOID buffer = VirtualAlloc(NULL, dwFatByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    uint32_t dwFatByteSize = static_cast<uint32_t>(
+        deviceStream->GetDeviceBlocksCount()) * sizeof(uint32_t);
+    void * buffer = VirtualAlloc(NULL, dwFatByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-    DWORD read = deviceStream->Read(buffer, dwFatByteSize, dwFatByteSize);
+    uint32_t read = deviceStream->Read(buffer, dwFatByteSize, dwFatByteSize);
     bool ret = (read == dwFatByteSize);
 
     if (ret)
     {
         MFSMemoryStream memStream(buffer, dwFatByteSize);
         _blockChain.reset(MFSFileAllocationTableSerializer().Deserialize(&memStream));
+        memStream.Close();
     }
 
     VirtualFree(buffer, 0, MEM_RELEASE);
@@ -234,176 +236,24 @@ bool MFSPartition::LoadAllocationTable(MFSBlockStream * deviceStream)
 
 bool MFSPartition::LoadFSNodePool(MFSBlockStream * deviceStream)
 {
-    DWORD dwFsnodepoolByteSize = static_cast<DWORD>(deviceStream->GetDeviceBlocksCount()) * sizeof(MFSFSEntryMeta);
-    MFSFSEntryMeta * buffer = new MFSFSEntryMeta[static_cast<size_t>(deviceStream->GetDeviceBlocksCount())];
+    uint32_t dwFsnodepoolByteSize = static_cast<uint32_t>(
+        deviceStream->GetDeviceBlocksCount()) * sizeof(MFSFSEntryMeta);
+    void * buffer = VirtualAlloc(NULL, dwFsnodepoolByteSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-    DWORD read = deviceStream->Read(buffer, dwFsnodepoolByteSize, dwFsnodepoolByteSize);
+    uint32_t read = deviceStream->Read(buffer, dwFsnodepoolByteSize, dwFsnodepoolByteSize);
     bool ret = (read == dwFsnodepoolByteSize);
-    
+
     if (ret)
-        _fsnodePool.reset(buffer);
-    else
     {
-        _validDevice = false;
-        delete[] buffer;
+        MFSMemoryStream memStream(buffer, dwFsnodepoolByteSize);
+        _fsnodePool.reset(MFSFSNodePoolSerializer().Deserialize(&memStream));
+        memStream.Close();
     }
+
+    VirtualFree(buffer, 0, MEM_RELEASE);
+
+    if (!ret)
+        _validDevice = false;
 
     return ret;
-}
-
-MFSPartition::ChainedBlockStream * MFSPartition::OpenBlockStream(DWORD firstBlock)
-{
-    return new ChainedBlockStream(this, firstBlock);
-}
-
-MFSPartition::ChainedBlockStream * MFSPartition::OpenBlockStream(DWORD firstBlock, UINT64 length)
-{
-    return new ChainedBlockStream(this, firstBlock, length);
-}
-
-
-#define CBLOCK_STREAM_MAX_LEN        0xFFFFFFFFFFFFFFFF
-
-MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId)
-    : ChainedBlockStream(partition, firstBlockId, CBLOCK_STREAM_MAX_LEN)
-{
-    _length = GetLength();
-}
-
-MFSPartition::ChainedBlockStream::ChainedBlockStream(MFSPartition * partition, DWORD firstBlockId, UINT64 length)
-    : MFSBlockStream(partition->_device.get()), _partition(partition), _firstBlock(firstBlockId),
-      _currentBlock(firstBlockId), _blockOffset(0), _length(length)
-{
-    MFSBlockStream::Seek(MFSStreamSeekOrigin::Begin, GetDeviceBlockSize() * _firstBlock);
-}
-
-MFSPartition * MFSPartition::ChainedBlockStream::GetPartition() const
-{
-    return _partition;
-}
-
-bool MFSPartition::ChainedBlockStream::HasNext() const
-{
-    return _currentBlock != BLOCK_CHAIN_TAIL;
-}
-
-UINT64 MFSPartition::ChainedBlockStream::GetLength() const
-{
-    if (_length != CBLOCK_STREAM_MAX_LEN)
-        return _length;
-    else
-    {
-        UINT64 result = 0;
-        DWORD blockSize = GetDeviceBlockSize();
-        DWORD blockId = _firstBlock;
-        while (blockId != BLOCK_CHAIN_TAIL)
-        {
-            result += blockSize;
-            blockId = GetNextBlockId(blockId);
-        }
-
-        return result;
-    }
-}
-
-UINT64 MFSPartition::ChainedBlockStream::GetPosition() const
-{
-    UINT64 result = 0;
-    DWORD blockSize = GetDeviceBlockSize();
-    DWORD blockId = _firstBlock;
-
-    while (blockId != _currentBlock)
-    {
-        result += blockSize;
-        blockId = GetNextBlockId(blockId);
-    }
-
-    result += _blockOffset;
-    return result;
-}
-
-bool MFSPartition::ChainedBlockStream::Seek(MFSStreamSeekOrigin origin, INT64 offset)
-{
-    switch (origin)
-    {
-    case MFSStreamSeekOrigin::Begin:
-        return SeekBegin(offset);
-    case MFSStreamSeekOrigin::Relative:
-        return SeekRelative(offset);
-    case MFSStreamSeekOrigin::End:
-        return SeekEnd(offset);
-    default:
-        return false;
-    }
-}
-
-UINT64 MFSPartition::ChainedBlockStream::OnBlockSwap(UINT64 currentBlock)
-{
-    DWORD nextBlock = GetNextBlockId(static_cast<DWORD>(currentBlock));
-    return nextBlock == BLOCK_CHAIN_TAIL 
-        ? _partition->_device->GetBlocksCount() 
-        : nextBlock;
-}
-
-DWORD MFSPartition::ChainedBlockStream::GetNextBlockId(DWORD current) const
-{
-    return _partition->_blockChain->Get(current);
-}
-
-DWORD MFSPartition::ChainedBlockStream::GetNextBlockId() const
-{
-    return GetNextBlockId(_currentBlock);
-}
-
-bool MFSPartition::ChainedBlockStream::SeekBegin(INT64 offset)
-{
-    if (offset < 0)
-        return false;
-
-    DWORD blockSize = GetDeviceBlockSize();
-    DWORD blockId = _firstBlock;
-    while (offset >= blockSize && blockId != BLOCK_CHAIN_TAIL)
-    {
-        offset -= blockSize;
-        blockId = GetNextBlockId(blockId);
-    }
-
-    if (blockId == BLOCK_CHAIN_TAIL)
-    {
-        if (offset != 0)
-            return false;
-        else
-        {
-            _currentBlock = BLOCK_CHAIN_TAIL;
-            _blockOffset = 0;
-            return true;
-        }
-    }
-    else
-    {
-        _currentBlock = blockId;
-        _blockOffset = static_cast<DWORD>(offset);
-        return true;
-    }
-}
-
-bool MFSPartition::ChainedBlockStream::SeekRelative(INT64 offset)
-{
-    return SeekBegin(GetPosition() + offset);
-}
-
-bool MFSPartition::ChainedBlockStream::SeekEnd(INT64 offset)
-{
-    if (offset > 0)
-        return false;
-    else if (offset == 0)
-    {
-        _currentBlock = BLOCK_CHAIN_TAIL;
-        _blockOffset = 0;
-        return true;
-    }
-    else
-    {
-        return SeekBegin(GetLength() + offset);
-    }
 }

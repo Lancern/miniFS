@@ -17,18 +17,18 @@ class MFSBlockDevice
     MFSRawDevice * MFSBlockDevice::GetRawDevice() const
         获取原始的字节随机设备对象。
 
-    DWORD MFSBlockDevice::GetBlockSize() const
+    uint32_t MFSBlockDevice::GetBlockSize() const
         获取块大小。
 
-    DWORD MFSBlockDevice::GetBlocksCount() const
+    uint32_t MFSBlockDevice::GetBlocksCount() const
         获取块的总数量。
 
-    bool MFSBlockDevice::ReadBlock(LPVOID lpBuffer, UINT64 blockId)
+    bool MFSBlockDevice::ReadBlock(void * lpBuffer, uint64_t blockId)
         从设备中读取一个数据块到指定的缓冲区中。
         @param lpBuffer 接收读取的数据的缓冲区首地址指针。
         @param blockId 要读取数据的块编号。
 
-    bool MFSBlockDevice::WriteBlock(UINT64 blockId, LPCVOID lpBuffer)
+    bool MFSBlockDevice::WriteBlock(uint64_t blockId, const void * lpBuffer)
         将给定缓冲区中的一个数据块的数据写入设备中。
         @param blockId 要写入数据的块编号。
         @param lpBuffer 存放要写入的数据的缓冲区首地址指针。
@@ -42,19 +42,18 @@ class MFSBlockDevice
 {
 public:
     MFSBlockDevice(MFSRawDevice * rawDevice);
-    virtual ~MFSBlockDevice();
 
     MFSRawDevice * GetRawDevice() const;
-    virtual DWORD GetBlockSize() const;
-    virtual UINT64 GetBlocksCount() const;
+    virtual uint32_t GetBlockSize() const;
+    virtual uint64_t GetBlocksCount() const;
 
-    virtual bool ReadBlock(LPVOID lpBuffer, UINT64 blockId);
-    virtual bool WriteBlock(UINT64 blockId, LPCVOID lpBuffer);
+    virtual bool ReadBlock(void * lpBuffer, uint64_t blockId);
+    virtual bool WriteBlock(uint64_t blockId, const void * lpBuffer);
 
     virtual void Close();
 
 protected:
-    virtual MFSRawDeviceView * OpenBlockView(UINT64 blockId, bool readonly);
+    virtual MFSRawDeviceView * OpenBlockView(uint64_t blockId, bool readonly);
 
 private:
     MFSRawDevice * _rawDevice;

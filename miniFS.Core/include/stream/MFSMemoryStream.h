@@ -14,7 +14,7 @@ class MFSMemoryStream
     : public MFSStream
 {
 public:
-    MFSMemoryStream(LPVOID lpBuffer, DWORD bufferSize);
+    MFSMemoryStream(void * lpBuffer, uint32_t bufferSize);
 
     bool CanRead() const override;
     bool CanWrite() const override;
@@ -22,18 +22,18 @@ public:
 
     bool HasNext() const override;
 
-    UINT64 GetLength() const override;
-    UINT64 GetPosition() const override;
+    uint64_t GetLength() const override;
+    uint64_t GetPosition() const override;
 
-    DWORD Read(LPVOID lpBuffer, DWORD dwBufferSize, DWORD dwNumberOfBytesToRead) override;
-    DWORD Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite) override;
-    bool Seek(MFSStreamSeekOrigin origin, INT64 offset) override;
+    uint32_t Read(void * lpBuffer, uint32_t dwBufferSize, uint32_t dwNumberOfBytesToRead) override;
+    uint32_t Write(const void * lpBuffer, uint32_t dwNumberOfBytesToWrite) override;
+    bool Seek(MFSStreamSeekOrigin origin, int64_t offset) override;
 
     void Flush() override;
     void Close() override;
     
 private:
-    LPVOID _lpBuffer;
-    DWORD _size;
-    DWORD _offset;
+    void * _lpBuffer;
+    uint32_t _size;
+    uint32_t _offset;
 };

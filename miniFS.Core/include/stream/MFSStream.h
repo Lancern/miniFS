@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Windows.h>
+#include <cstdint>
 
 /*
 
@@ -21,20 +21,20 @@ class MFSStream
     bool MFSStream::HasNext() const
         当在子类中重写时，返回一个 bool 指示当前的流指针之后是否还有数据存在。
 
-    UINT64 MFSStream::GetLength() const
+    uint64_t MFSStream::GetLength() const
         当在子类中重写时，返回流的长度。
 
-    UINT64 MFSStream::GetPosition() const   
+    uint64_t MFSStream::GetPosition() const   
         当在子类中重写时，返回当前的流指针。
 
-    DWORD MFSStream::Read(LPVOID lpBuffer, DWORD count)
+    uint32_t MFSStream::Read(void * lpBuffer, uint32_t count)
         当在子类中重写时，从流中读取数据并存放在给定的缓冲区中。
         @param lpBuffer 存放读取出的数据的缓冲区首地址。
         @param dwBufferSize 缓冲区总大小。
         @param dwNumberOfBytesToRead 要从流中读取的最大字节数量。
         @return 实际从流中读取的字节数量。
 
-    DWORD MFSStream::Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite)
+    uint32_t MFSStream::Write(const void * lpBuffer, uint32_t dwNumberOfBytesToWrite)
         当在子类中重写时，将数据写入到当前的流对象中。
         @param lpBuffer 存放要写入的数据的缓冲区。
         @param dwNumberOfBytesToWrite 要写入的字节数量。
@@ -79,24 +79,19 @@ enum MFSStreamSeekOrigin
 class MFSStream
 {
 public:
-    virtual ~MFSStream();
-
     virtual bool CanRead() const = 0;
     virtual bool CanWrite() const = 0;
     virtual bool CanSeek() const = 0;
 
     virtual bool HasNext() const = 0;
 
-    virtual UINT64 GetLength() const = 0;
-    virtual UINT64 GetPosition() const = 0;
+    virtual uint64_t GetLength() const = 0;
+    virtual uint64_t GetPosition() const = 0;
 
-    virtual DWORD Read(LPVOID lpBuffer, DWORD dwBufferSize, DWORD dwNumberOfBytesToRead) = 0;
-    virtual DWORD Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite) = 0;
-    virtual bool Seek(MFSStreamSeekOrigin origin, INT64 offset) = 0;
+    virtual uint32_t Read(void * lpBuffer, uint32_t dwBufferSize, uint32_t dwNumberOfBytesToRead) = 0;
+    virtual uint32_t Write(const void * lpBuffer, uint32_t dwNumberOfBytesToWrite) = 0;
+    virtual bool Seek(MFSStreamSeekOrigin origin, int64_t offset) = 0;
 
     virtual void Flush() = 0;
     virtual void Close() = 0;
-
-protected:
-    MFSStream();
 };

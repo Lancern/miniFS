@@ -1,5 +1,6 @@
 #include "../../include/stream/MFSStreamTextWriter.h"
 
+
 MFSStreamTextWriter::MFSStreamTextWriter(MFSStream * stream)
     : _stream(stream)
 {
@@ -12,10 +13,10 @@ MFSStream * MFSStreamTextWriter::GetStream() const
 
 void MFSStreamTextWriter::Write(const MFSString & string)
 {
-    _stream->Write(string.GetRawString(), string.GetLength() * sizeof(WCHAR));
+    _stream->Write(string.GetRawString(), string.GetLength() * sizeof(wchar_t));
 }
 
-void MFSStreamTextWriter::WriteChar(WCHAR ch)
+void MFSStreamTextWriter::WriteChar(wchar_t ch)
 {
     _stream->Write(&ch, sizeof(ch));
 }
