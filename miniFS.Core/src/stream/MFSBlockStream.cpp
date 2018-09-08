@@ -82,7 +82,7 @@ uint32_t MFSBlockStream::Write(const void * lpBuffer, uint32_t dwNumberOfBytesTo
         ++write;
     }
 
-    return 0;
+    return write;
 }
 
 bool MFSBlockStream::Seek(MFSStreamSeekOrigin origin, int64_t offset)

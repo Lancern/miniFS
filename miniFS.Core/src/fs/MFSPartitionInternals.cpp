@@ -17,6 +17,10 @@ uint32_t MFSPartition::Internals::AllocateDeviceBlock()
     if (blockId != MFSBlockAllocationBitmap::InvalidBlockId)
     {
         _partition->_blockChain->Set(blockId, MFSFileAllocationTable::InvalidBlockId);
+
+        // Initialize the block to zero.
+        InitializeDeviceBlock(blockId);
+
         --_partition->_master.freeBlocks;
     }
     return blockId;
@@ -31,6 +35,14 @@ bool MFSPartition::Internals::AllocateDeviceBlock(uint32_t blockId)
         --_partition->_master.freeBlocks;
     }
     return result;
+}
+
+void MFSPartition::Internals::InitializeDeviceBlock(uint32_t blockId)
+{
+    const void * buffer = VirtualAlloc(NULL, _partition->_device->GetBlockSize(), 
+        MEM_RESERVE | MEM_COMMIT, PAGE_READONLY);
+    _partition->_device->WriteBlock(blockId, buffer);
+    VirtualFree(const_cast<void *>(buffer), 0, MEM_FREE);
 }
 
 bool MFSPartition::Internals::FreeDeviceBlock(uint32_t blockId)

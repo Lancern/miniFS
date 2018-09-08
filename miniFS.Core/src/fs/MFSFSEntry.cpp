@@ -199,7 +199,9 @@ MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name, uint32_t fsnodeId)
         {
             _partition.AllocateEntryMeta(fsnodeId);
             item->fsnodeId = fsnodeId;
+            ++_meta->spec.directoryMeta.childCount;
             ret = new MFSFSEntry(_partition, fsnodeId);
+            
             params.stopIteration = true;
             params.needWriteBack = true;
         }
@@ -227,6 +229,7 @@ bool MFSFSEntry::RemoveSubEntry(const MFSString & name)
 		if (params.blockObject->EraseDir(name) != MFSFSNodePool::InvalidFSNodeId)
 		{
             _partition.FreeEntryMeta(_fsnodeId);
+            --_meta->spec.directoryMeta.childCount;
             if (params.blockObject->Empty())
             {
                 _meta->common.firstBlockId = _partition.FreeChainedBlock(
@@ -260,6 +263,7 @@ bool MFSFSEntry::TruncateFileSize(uint64_t size)
     if (truncatedBlocksCount > 0)
     {
         // Unexpected block pointer hit end of block chain.
+        MFSGetInteger64Struct(&_meta->spec.fileMeta.size, size);
         return true;
     }
     else
@@ -295,7 +299,10 @@ bool MFSFSEntry::ExtendFileSize(uint64_t size)
         : 0;
     
     if (required == 0)
+    {
+        MFSGetInteger64Struct(&_meta->spec.fileMeta.size, size);
         return true;
+    }
     else
     {
         // Try allocate $required chained blocks.
@@ -307,7 +314,8 @@ bool MFSFSEntry::ExtendFileSize(uint64_t size)
             _meta->common.firstBlockId = allocatedFirst;
         else
             _partition.AppendTailBlock(blockPtr, allocatedFirst);
-        
+
+        MFSGetInteger64Struct(&_meta->spec.fileMeta.size, size);
         return true;
     }
 }

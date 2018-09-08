@@ -192,6 +192,7 @@ public:
 
         uint32_t AllocateDeviceBlock();
         bool AllocateDeviceBlock(uint32_t blockId);
+        void InitializeDeviceBlock(uint32_t blockId);
         bool FreeDeviceBlock(uint32_t blockId);
 
         uint32_t AllocateTailBlock(uint32_t firstBlockId);
