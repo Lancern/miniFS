@@ -11,7 +11,12 @@ MFSException::MFSException()
 {
 }
 
-MFSString MFSException::GetExceptMessage() const
+MFSString MFSException::GetExceptMessage() const noexcept
 {
     return _msg;
+}
+
+void MFSException::SetExceptMessage(const MFSString & message) noexcept
+{
+	_msg = message;
 }

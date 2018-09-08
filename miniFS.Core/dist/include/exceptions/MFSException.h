@@ -26,7 +26,7 @@ public:
     MFSException(const MFSString & message);
     MFSException();
 
-    MFSString GetExceptMessage() const;
+    MFSString GetExceptMessage() const noexcept;
 
 protected:
     void SetExceptMessage(const MFSString & message) noexcept;

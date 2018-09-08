@@ -8,6 +8,7 @@ MFSWindowsException::MFSWindowsException()
 }
 
 MFSWindowsException::MFSWindowsException(uint32_t errCode)
+	: _errCode(errCode)
 {
     wchar_t * lpMsgBuf;
     FormatMessageW(
@@ -17,10 +18,15 @@ MFSWindowsException::MFSWindowsException(uint32_t errCode)
         NULL,
         errCode,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        static_cast<LPWSTR>(lpMsgBuf),
+        reinterpret_cast<LPWSTR>(&lpMsgBuf),
         0, NULL
     );
 
     SetExceptMessage(lpMsgBuf);
     LocalFree(lpMsgBuf);
+}
+
+uint32_t MFSWindowsException::GetErrorCode() const noexcept
+{
+	return _errCode;
 }

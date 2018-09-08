@@ -8,9 +8,9 @@
 #include "../../include/device/MFSBlockDevice.h"
 #include "../../include/fs/MFSPartition.h"
 
-#define MFS_DATASPACE_MIN_SIZE      (128 * 1024 * 1024)
-#define MFS_DATASPACE_MAX_SIZE      (4 * 1024 * 1024 * 1024)
-#define MFS_DEVICE_BLOCK_SIZE       (4 * 1024 * 1024)
+#define MFS_DATASPACE_MIN_SIZE      uint64_t(128ull * 1024 * 1024)
+#define MFS_DATASPACE_MAX_SIZE      uint64_t(4ull * 1024 * 1024 * 1024)
+#define MFS_DEVICE_BLOCK_SIZE       uint64_t(4ull * 1024 * 1024)
 
 
 MFSDataSpace::MFSDataSpace(const MFSString & osFileName)
@@ -56,6 +56,7 @@ MFSDataSpace & MFSDataSpace::operator=(MFSDataSpace && another)
     this->_blockDevice = std::move(another._blockDevice);
     this->_partition = std::move(another._partition);
     another._hFile = INVALID_HANDLE_VALUE;
+	return *this;
 }
 
 MFSString MFSDataSpace::GetWorkingDirectory() const noexcept

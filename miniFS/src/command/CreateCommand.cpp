@@ -19,9 +19,9 @@ void CreateCommand::Action(const std::vector<MFSString> & argv) const
 		MFSDataSpace * space = MFSDataSpace::CreateDataSpace(argv[0], 1024 * 1024 * 1024);
 		space->Close();
 	}
-	catch (const std::exception&)
+	catch (MFSWindowsException & ex)
 	{
-
+		std::wcerr << L"FUCK: " << ex.GetErrorCode() << L" " << ex.GetExceptMessage().GetRawString() << std::endl;
 	}
 }
 
