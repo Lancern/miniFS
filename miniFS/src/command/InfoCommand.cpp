@@ -20,7 +20,12 @@ void InfoCommand::Action(const std::vector<MFSString> & argv) const
 		printf("并没有挂载任何空间\n");
 	}
 	else {
-
+		printf("当前数据空间可用总空间 ");
+		std::wcout << space->GetTotalSpaceInBytes() << std::endl;
+		printf("当前数据空间可用空间 ");
+		std::wcout << space->GetFreeSpaceInBytes() << std::endl;
+		printf("当前数据空间已用空间 ");
+		std::wcout << space->GetTotalSpaceInBytes() - space->GetFreeSpaceInBytes() << std::endl;
 	}
 }
 
