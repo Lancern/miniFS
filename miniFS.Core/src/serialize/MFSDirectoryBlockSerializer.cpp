@@ -8,7 +8,7 @@ MFSDirectoryBlockSerializer::MFSDirectoryBlockSerializer(uint32_t blockSize)
 void MFSDirectoryBlockSerializer::Serialize(MFSStream * stream, MFSDirectoryBlock * object)
 {
 	MFSStreamWriter writer(stream);
-    MFSFSDirectoryBlockMasterInfo master = { object->_dir.size() };
+    MFSFSDirectoryBlockMasterInfo master = { static_cast<uint32_t>(object->_dir.size()) };
     writer.Write(master);
 
 	for (auto & it : object->_dir)

@@ -104,7 +104,7 @@ MFSString MFSConsole::ReadLine()
             break;
         }
     }
-    return MFSString(buffer.data(), buffer.size());
+    return MFSString(buffer.data(), static_cast<uint32_t>(buffer.size()));
 }
 
 void MFSConsole::LogChar(WCHAR ch)

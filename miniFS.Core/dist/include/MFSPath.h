@@ -13,7 +13,8 @@ class MFSPath
     静态成员函数：
 
     static bool MFSPath::IsValidPath(const MFSString & path) noexcept
-        检查给定的路径是否为一个合法的路径（即不含有非法字符）。
+        检查给定的路径是否为一个合法的 mini-FS 路径（即不含有非法字符）。
+        若给定的路径是一个 OS 路径，此函数将直接返回 true。
 
     static bool MFSPath::IsAbsolutePath(const MFSString & path) noexcept
         检查给定的路径是否为一个绝对路径。
@@ -61,8 +62,8 @@ class MFSPath
     static wchar_t MFSPath::GetPathSeparator() noexcept
         获取系统中用于分隔路径中文件或目录名的字符。
 
-    static std::vector<wchar_t> MFSPath::GetInvalidChars() noexcept
-        获取系统中定义的无效路径字符。
+    static std::vector<wchar_t> MFSPath::GetInvalidNameChars() noexcept
+        获取系统中定义的无效文件或目录名字符。
 
 */
 
@@ -85,5 +86,5 @@ public:
     static MFSString GetAbsolutePath(const MFSString & path);
 
     static wchar_t GetPathSeparator() noexcept;
-    static std::vector<wchar_t> GetInvalidChars() noexcept;
+    static std::vector<wchar_t> GetInvalidNameChars() noexcept;
 };

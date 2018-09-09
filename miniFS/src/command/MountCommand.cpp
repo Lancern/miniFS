@@ -9,6 +9,30 @@ bool MountCommand::Accept(const MFSString & string) const
 
 void MountCommand::Action(const std::vector<MFSString> & argv) const
 {
+	if (argv.size() != 1)
+	{
+		printf("command is wrong\n");
+		return;
+	}
+	try
+	{
+		MFSDataSpace * space;
+		space = MFSDataSpace::GetActiveDataSpace();
+		if (space != NULL)
+		{
+			space->Close();
+			delete space;
+		}
+		space = new MFSDataSpace(argv[0]);
+		MFSDataSpace::SetActiveDataSpace(space);
+		space->Format();
+		std::wcout << L"TotalSpaceInBytes " <<space->GetTotalSpaceInBytes() << std::endl;
+		std::wcout << L"FreeSpaceInBytes " <<space->GetFreeSpaceInBytes() << std::endl;
+	}
+	catch (MFSException & ex)
+	{
+		std::wcerr << ex.GetExceptMessage().GetRawString() << std::endl;
+	}
 }
 
 MountCommand::MountCommand()

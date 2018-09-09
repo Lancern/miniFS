@@ -32,7 +32,7 @@ MFSString MFSStreamTextReader::Read(const std::vector<wchar_t> & terminators, bo
             break;
         }
     }
-    return MFSString(buffer.data(), buffer.size());
+    return MFSString(buffer.data(), static_cast<uint32_t>(buffer.size()));
 }
 
 MFSString MFSStreamTextReader::ReadToken()

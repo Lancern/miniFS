@@ -1,5 +1,6 @@
 #include "../include/MFSString.h"
 #include <cwctype>
+#include <string>
 #include <memory>
 #include <wchar.h>
 
@@ -7,9 +8,19 @@ MFSString::MFSString()
 {
 }
 
+MFSString::MFSString(wchar_t ch)
+    : _len(1)
+{
+    wchar_t * pBuffer = new wchar_t[2];
+    pBuffer[0] = ch;
+    pBuffer[1] = 0;
+
+    _data.reset(pBuffer);
+}
+
 MFSString::MFSString(const wchar_t * psRaw)
 {
-    _len = wcslen(psRaw);
+    _len = static_cast<uint32_t>(wcslen(psRaw));
     wchar_t * pBuffer = new wchar_t[_len + 1];
     wcscpy_s(pBuffer, _len + 1, psRaw);
 
@@ -54,6 +65,11 @@ uint32_t MFSString::GetLength() const
 const wchar_t * MFSString::GetRawString() const
 {
     return _data.get();
+}
+
+bool MFSString::IsEmpty() const
+{
+    return GetLength() == 0;
 }
 
 int MFSString::CompareTo(const MFSString & another) const
@@ -151,24 +167,10 @@ MFSString MFSString::Substring(uint32_t startOffset, uint32_t length) const
 
 std::vector<MFSString> MFSString::Split(const std::vector<wchar_t>& separators) const
 {
-    std::vector<MFSString> result;
-    
-    uint32_t windowLeft = 0;
-    while (windowLeft < this->_len)
-    {
-        uint32_t windowRight = windowLeft;
-		while (windowRight < this->_len &&
-			std::find(separators.begin(), separators.end(), _data[windowRight]) == separators.end())
-			++windowRight;
-
-        result.emplace_back(_data.get() + windowLeft, windowRight - windowLeft);
-        windowLeft = windowRight + 1;
-    }
-
-    return result;
+    return Split(separators, false);
 }
 
-std::vector<MFSString> MFSString::Split(const std::vector<wchar_t>& separators, bool type) const
+std::vector<MFSString> MFSString::Split(const std::vector<wchar_t>& separators, bool removeEmpty) const
 {
 	std::vector<MFSString> result;
 
@@ -179,7 +181,8 @@ std::vector<MFSString> MFSString::Split(const std::vector<wchar_t>& separators, 
 		while (windowRight < this->_len &&
 			std::find(separators.begin(), separators.end(), _data[windowRight]) == separators.end())
 			++windowRight;
-		if (type)
+
+		if (removeEmpty)
 		{
 			if (windowRight - windowLeft != 0)
 				result.emplace_back(_data.get() + windowLeft, windowRight - windowLeft);
@@ -283,6 +286,11 @@ wchar_t MFSString::operator[](uint32_t offset) const
     return _data[offset];
 }
 
+MFSString MFSString::GetEmpty()
+{
+    return L"";
+}
+
 bool MFSString::ContainsAt(const MFSString & substring, uint32_t offset) const
 {
     uint32_t cap = _len - offset;
@@ -333,6 +341,19 @@ bool operator>=(const MFSString & s1, const MFSString & s2)
 MFSString operator+(const MFSString & s1, const MFSString & s2)
 {
     return s1.Concat(s2);
+}
+
+std::wostream & operator<<(std::wostream & stream, MFSString & string)
+{
+    return (stream << string.GetRawString());
+}
+
+std::wistream & operator>>(std::wistream & stream, MFSString & string)
+{
+    std::wstring buf;
+    std::wistream & result = (stream >> buf);
+    string = MFSString(buf.c_str());
+    return result;
 }
 
 MFSString::Iterator::Iterator(const MFSString & string)
