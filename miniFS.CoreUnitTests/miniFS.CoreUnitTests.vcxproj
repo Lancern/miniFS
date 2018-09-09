@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFSFSEntryTests.cpp" />
+    <ClCompile Include="MFSPathTest.cpp" />
     <ClCompile Include="MFSUnitTestCommon.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
