@@ -97,7 +97,13 @@ class MFSString
 template <typename IntegerT> MFSString MFSGetString(IntegerT value)
     将一个整数数值转换为其字符串表示。
 
-static MFSString MFSString::GetEmpty()
+template <typename ForwardIterator> static MFSString Join(const MFSString & separator, 
+    ForwardIterator first, ForwardIterator last)
+    使用指定的分隔字符串分隔拼接给定的一组字符串。
+    @param separator 用于分隔的字符串。
+    @param (first, last) 指定待拼接的字符串的首尾迭代器。 
+
+static MFSString MFSString::GetEmptyString()
     获取一个空字符串。
 
 struct std::hash<MFSString>
@@ -185,7 +191,10 @@ public:
     template <typename ...T>
     static MFSString Format(const wchar_t * format, T...args);
 
-    static MFSString GetEmpty();
+    template <typename ForwardIterator>
+    static MFSString Join(const MFSString & separator, ForwardIterator first, ForwardIterator last);
+
+    static MFSString GetEmptyString();
 
 private:
     uint32_t _len;
@@ -201,9 +210,6 @@ bool operator > (const MFSString & s1, const MFSString & s2);
 bool operator <= (const MFSString & s1, const MFSString & s2);
 bool operator >= (const MFSString & s1, const MFSString & s2);
 MFSString operator + (const MFSString & s1, const MFSString & s2);
-
-std::wostream & operator << (std::wostream & stream, MFSString & string);
-std::wistream & operator >> (std::wistream & stream, MFSString & string);
 
 template <typename IntegerT>
 MFSString MFSGetString(IntegerT value)
@@ -293,6 +299,44 @@ MFSString MFSString::Format(const wchar_t * format, T... arg)
             return MFSString(buffer.get());
     }
     return MFSString();
+}
+
+template<typename ForwardIterator>
+inline MFSString MFSString::Join(const MFSString & separator, ForwardIterator first, ForwardIterator last)
+{
+    static_assert(std::is_convertible<
+        typename std::iterator_traits<ForwardIterator>::value_type,
+        MFSString>::value,
+        "Type dereferenceable by the given iterators should be able to be convertable to MFSString.");
+
+    uint32_t count = std::distance(first, last);
+    if (count == 0)
+        return MFSString::GetEmptyString();
+
+    uint32_t totalLength = separator.GetLength() * (count - 1);
+    for (ForwardIterator iter = first; iter != last; ++iter)
+    {
+        totalLength += dynamic_cast<const MFSString &>(*iter).GetLength();
+    }
+
+    std::unique_ptr<wchar_t[]> buffer(new wchar_t[totalLength + 1]);
+    uint32_t offset = 0;
+
+    for (ForwardIterator iter = first; iter != last; ++iter)
+    {
+        if (iter != first)
+        {
+            wcscpy_s(buffer.get() + offset, totalLength + 1 - offset, separator.GetRawString());
+            offset += separator.GetLength();
+        }
+
+        const MFSString & current = dynamic_cast<const MFSString &>(*iter);
+
+        wcscpy_s(buffer.get() + offset, totalLength + 1 - offset, current.GetLength());
+        offset += current.GetLength();
+    }
+
+    return MFSString(buffer.get(), totalLength);
 }
 
 namespace std

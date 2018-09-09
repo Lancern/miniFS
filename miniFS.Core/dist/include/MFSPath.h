@@ -13,8 +13,8 @@ class MFSPath
     静态成员函数：
 
     static bool MFSPath::IsValidPath(const MFSString & path) noexcept
-        检查给定的路径是否为一个合法的 mini-FS 路径（即不含有非法字符）。
-        若给定的路径是一个 OS 路径，此函数将直接返回 true。
+        检查给定的路径是否为一个合法的 mini-FS 路径。
+        若给定的路径是一个 OS 路径，此函数将直接返回 false。
 
     static bool MFSPath::IsAbsolutePath(const MFSString & path) noexcept
         检查给定的路径是否为一个绝对路径。

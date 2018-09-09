@@ -226,3 +226,9 @@ void MFSDataSpace::SetActiveDataSpace(MFSDataSpace * dataSpace) noexcept
 {
     globalActiveSpace = dataSpace;
 }
+
+MFSFSEntry * MFSDataSpace::OpenFSEntry(const MFSString & path)
+{
+    // TODO: Implement MFSDataSpace::OpenFSEntry(const MFSString &).
+    return nullptr;
+}
