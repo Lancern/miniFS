@@ -9,6 +9,12 @@ bool CloseCommand::Accept(const MFSString & string) const
 
 void CloseCommand::Action(const std::vector<MFSString> & argv) const
 {
+	if (argv.size() != 0)
+	{
+		printf("command is wrong\n");
+		return;
+	}
+	exit(0);
 }
 
 CloseCommand::CloseCommand()

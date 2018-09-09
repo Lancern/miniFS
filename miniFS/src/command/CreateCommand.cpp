@@ -9,6 +9,20 @@ bool CreateCommand::Accept(const MFSString & string) const
 
 void CreateCommand::Action(const std::vector<MFSString> & argv) const
 {
+	if (argv.size() < 0 || argv.size() > 2)
+	{
+		printf("command is wrong\n");
+		return;
+	}
+	try
+	{
+		MFSDataSpace * space = MFSDataSpace::CreateDataSpace(argv[0], 1024 * 1024 * 1024);
+		space->Close();
+	}
+	catch (MFSWindowsException & ex)
+	{
+		std::wcerr << L"FUCK: " << ex.GetErrorCode() << L" " << ex.GetExceptMessage().GetRawString() << std::endl;
+	}
 }
 
 CreateCommand::CreateCommand()

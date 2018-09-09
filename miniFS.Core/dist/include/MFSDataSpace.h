@@ -4,13 +4,15 @@
 #include "MFSFile.h"
 #include <memory>
 
+class MFSOSFileDevice;
+class MFSBlockDevice;
 class MFSPartition;
 
 
 /*
 
 class MFSDataSpace
-提供对数据空间的操作。
+提供对数据空间的操作。该类的实例对象上的复制语义已被禁用。
 
     构造器：
 
@@ -19,14 +21,29 @@ class MFSDataSpace
         @param osFileName 底层操作系统文件名。
         @exception
             MFSWindowsException 打开底层操作系统文件时出现错误。
+            MFSInvalidDeviceException 作为后备设备的底层操作系统文件不合法。
 
     成员函数：
 
-    MFSString MFSDataSpace::GetWorkingDirectory() const
+    MFSString MFSDataSpace::GetWorkingDirectory() const noexcept
         获取数据空间的当前工作目录。
 
-    void MFSDataSpace::SetWorkingDirectory() const
+    void MFSDataSpace::SetWorkingDirectory(const MFSString & path)
         设置数据空间的当前工作目录。
+        @exceptions
+            MFSInvalidPathException 给定的路径不合法。
+
+    uint64_t MFSDataSpace::GetTotalSpaceInBytes() const noexcept
+        获取数据空间的总字节大小。
+
+    uint64_t MFSDataSpace::GetFreeSpaceInBytes() const noexcept
+        获取数据空间的总可用大小。
+
+    bool MFSDataSpace::IsFormatted() const noexcept
+        获取一个 bool 值指示当前的数据空间是否已经经过格式化。
+
+    void MFSDataSpace::Format() noexcept
+        格式化当前的数据空间。
 
     bool MFSDataSpace::Exist(const MFSString & path)
         检查给定的路径是否存在。
@@ -111,6 +128,9 @@ class MFSDataSpace
             MFSInvalidPathException 给定的路径不合法。
             MFSDirectoryNotFoundException 给定的路径上有一个或多个目录不存在。
 
+    void MFSDataSpace::Close() noexcept
+        关闭当前的数据空间对象并释放其占用的所有外部资源。
+
 
     静态成员函数：
 
@@ -120,7 +140,7 @@ class MFSDataSpace
         @param size 数据空间的总字节大小。该参数不应该小于 134,217,728，即 128 MB；同时不应该大于 4,294,967,296，即 4GB。
                     该参数在函数内部将会被向上对齐到 4KB 的整数倍。
         @exceptions
-            std::invalid_argument size 过小或过大。
+            MFSInvalidArgumentException size 过小或过大。
             MFSWindowsException 在与操作系统交互过程中出现错误。
 
     static MFSDataSpace * MFSDataSpace::GetActiveDataSpace() noexcept
@@ -146,8 +166,21 @@ class MFSDataSpace
 public:
     MFSDataSpace(const MFSString & osFileName);
 
+    MFSDataSpace(const MFSDataSpace &) = delete;
+    MFSDataSpace(MFSDataSpace && another);
+
+    MFSDataSpace & operator = (const MFSDataSpace &) = delete;
+    MFSDataSpace & operator = (MFSDataSpace && another);
+
     MFSString GetWorkingDirectory() const noexcept;
-    void SetWorkingDirectory(const MFSString & path) noexcept;
+    void SetWorkingDirectory(const MFSString & path);
+
+    uint64_t GetTotalSpaceInBytes() const noexcept;
+    uint64_t GetFreeSpaceInBytes() const noexcept;
+
+    bool IsFormatted() const noexcept;
+    
+    void Format() noexcept;
 
     bool Exist(const MFSString & path);
     MFSFile * OpenFile(const MFSString & path, bool createIfNotExist);
@@ -162,6 +195,8 @@ public:
     std::vector<MFSString> GetDirectories(const MFSString & directory);
     std::vector<MFSString> GetFiles(const MFSString & directory);
 
+    void Close() noexcept;
+
     static MFSDataSpace * CreateDataSpace(const MFSString & filename, uint64_t size);
     
     static MFSDataSpace * GetActiveDataSpace() noexcept;
@@ -169,6 +204,10 @@ public:
 
 private:
     MFSString _workingDirectory;
+
+    HANDLE _hFile;
+    std::shared_ptr<MFSOSFileDevice> _fileDevice;
+    std::shared_ptr<MFSBlockDevice> _blockDevice;
     // NOTICE: MFSPartition is an incomplete type and yet we should use std::shared_ptr as below shows.
     std::shared_ptr<MFSPartition> _partition;
 };
