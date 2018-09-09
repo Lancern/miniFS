@@ -13,3 +13,4 @@
 #include "command/StatCommand.h"
 #include "command/TpCommand.h"
 #include "command/UnmountCommand.h"
+#include "command/InfoCommand.h"

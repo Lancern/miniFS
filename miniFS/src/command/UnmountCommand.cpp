@@ -21,7 +21,7 @@ void UnmountCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	else
 	{
-		//std::wcout << L"aaa" << std::endl;
+		//std::wcout << L"哈哈哈" << std::endl;
 		printf("当前没有活动空间\n");
 	}
 }

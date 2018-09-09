@@ -20,26 +20,7 @@ int main()
 		if (space)
 			std::wcout << space->GetWorkingDirectory().GetRawString();
 
-		//MFSString strInput = point->ReadLine();
-		std::vector<WCHAR> str;
-		while (1)
-		{
-			WCHAR temp;
-			DWORD read;
-			ReadConsole(GetStdHandle(STD_INPUT_HANDLE), &temp, 1, &read, NULL);
-			str.push_back(temp);
-			if (str.back() == L'\n')
-			{
-				str.pop_back();
-				if (!str.empty() && str.back() == L'\r')
-					str.pop_back();
-				break;
-			}
-		}
-		MFSString strInput(str.data(), str.size());
-		//test.Read();
-		/*point->SetForegroundColor(MFSConsoleColors::Red);
-		point->SetBackgroundColor(MFSConsoleColors::Green);*/
+		MFSString strInput = MFSGetDefaultConsole()->ReadLine();
 		subString = strInput.SplitName(split);
 		for (const MFSString & part : subString) {
 
@@ -52,6 +33,7 @@ int main()
 				if (tmp->base->Accept(paragrameter[0]))
 				{
 					paragrameter.erase(paragrameter.begin());
+					//std::wcout << paragrameter.back().GetRawString();
 					tmp->base->Action(paragrameter);
 					break;
 				}

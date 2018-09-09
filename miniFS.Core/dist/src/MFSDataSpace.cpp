@@ -68,7 +68,7 @@ void MFSDataSpace::SetWorkingDirectory(const MFSString & path)
 {
     if (!MFSPath::IsValidPath(path))
         throw MFSInvalidPathException();
-    if (!MFSPath::IsOSPath(path))
+    if (MFSPath::IsOSPath(path))
         throw MFSInvalidPathException(L"The path given is a OS path.");
     if (!Exist(path))
         throw MFSInvalidPathException(L"The path given is not exist.");
