@@ -15,7 +15,7 @@
 int main()
 {
 	MFSTest command;
-	MFSConsole *point = MFSGetDefaultConsole();
+	//MFSConsole *point = MFSGetDefaultConsole();
 	//MFSStreamWriter writer();
 
 	while (1)
@@ -28,7 +28,7 @@ int main()
 			std::wcout << space->GetWorkingDirectory().GetRawString();
 		std::wcout << L">";
 		MFSString strInput;
-		point->LogLine(strInput);
+		strInput = MFSGetDefaultConsole()->ReadLine();
 		//std::wcin >> strInput;
 		//test.Read();
 		/*point->SetForegroundColor(MFSConsoleColors::Red);
