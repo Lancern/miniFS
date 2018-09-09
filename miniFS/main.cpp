@@ -13,20 +13,41 @@ int main()
 
 	while (1)
 	{
-		MFSTestunit *tmp = command.Chead->link;
-		std::vector<WCHAR> split = {L'|'};
+		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
+		std::vector<WCHAR> split = { L'|' };
 		std::vector<MFSString> subString;
-		point->Log(L"miniFS>");
-		MFSString strInput = point->ReadLine();
+		std::wcout << L"miniFS>";
+		if (space)
+			std::wcout << space->GetWorkingDirectory().GetRawString();
+
+		//MFSString strInput = point->ReadLine();
+		std::vector<WCHAR> str;
+		while (1)
+		{
+			WCHAR temp;
+			DWORD read;
+			ReadConsole(GetStdHandle(STD_INPUT_HANDLE), &temp, 1, &read, NULL);
+			str.push_back(temp);
+			if (str.back() == L'\n')
+			{
+				str.pop_back();
+				if (!str.empty() && str.back() == L'\r')
+					str.pop_back();
+				break;
+			}
+		}
+		MFSString strInput(str.data(), str.size());
+		//test.Read();
 		/*point->SetForegroundColor(MFSConsoleColors::Red);
 		point->SetBackgroundColor(MFSConsoleColors::Green);*/
 		subString = strInput.SplitName(split);
 		for (const MFSString & part : subString) {
 
-			std::vector<WCHAR> splitNew = { L' ', L'\t'};
+			MFSTestunit *tmp = command.Chead->link;
+			std::vector<WCHAR> splitNew = { L' ', L'\t' };
 			std::vector<MFSString> paragrameter;
 			paragrameter = part.SplitName(splitNew);
-			for (int i = 0; i < 14; i++)
+			while (tmp)
 			{
 				if (tmp->base->Accept(paragrameter[0]))
 				{
@@ -36,6 +57,7 @@ int main()
 				}
 				tmp = tmp->link;
 			}
+			if (tmp == NULL) std::cout << "input error!" << std::endl;
 		}
 	}
 	return 0;
