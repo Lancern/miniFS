@@ -16,12 +16,12 @@ void UnmountCommand::Action(const std::vector<MFSString> & argv) const
 		space->Close();
 		delete space;
 		MFSDataSpace::SetActiveDataSpace(NULL);
-		//std::wcout << L"ccc" << std::endl;
+		std::wcout << L"ccc" << std::endl;
 		printf("已卸载当前活动空间\n");
 	}
 	else
 	{
-		//std::wcout << L"aaa" << std::endl;
+		std::wcout << L"哈哈哈" << std::endl;
 		printf("当前没有活动空间\n");
 	}
 }

@@ -24,5 +24,5 @@ MFSString MFSStreamReader::ReadString()
     }
     if (buffer.back() == 0)
         buffer.pop_back();
-    return MFSString(buffer.data(), buffer.size());
+    return MFSString(buffer.data(), static_cast<uint32_t>(buffer.size()));
 }

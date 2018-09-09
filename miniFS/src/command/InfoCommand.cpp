@@ -14,7 +14,14 @@ void InfoCommand::Action(const std::vector<MFSString> & argv) const
 		printf("command is wrong\n");
 		return;
 	}
+	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
+	if (!space)
+	{
+		printf("并没有挂载任何空间\n");
+	}
+	else {
 
+	}
 }
 
 InfoCommand::InfoCommand()

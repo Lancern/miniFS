@@ -20,7 +20,7 @@ MFSString::MFSString(wchar_t ch)
 
 MFSString::MFSString(const wchar_t * psRaw)
 {
-    _len = wcslen(psRaw);
+    _len = static_cast<uint32_t>(wcslen(psRaw));
     wchar_t * pBuffer = new wchar_t[_len + 1];
     wcscpy_s(pBuffer, _len + 1, psRaw);
 

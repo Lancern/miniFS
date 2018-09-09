@@ -36,7 +36,7 @@ int main()
 				break;
 			}
 		}
-		MFSString strInput(str.data(), str.size());
+		MFSString strInput(str.data(), static_cast<uint32_t>(str.size()));
 		//test.Read();
 		/*point->SetForegroundColor(MFSConsoleColors::Red);
 		point->SetBackgroundColor(MFSConsoleColors::Green);*/
