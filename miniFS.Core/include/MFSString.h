@@ -332,7 +332,7 @@ inline MFSString MFSString::Join(const MFSString & separator, ForwardIterator fi
 
         const MFSString & current = dynamic_cast<const MFSString &>(*iter);
 
-        wcscpy_s(buffer.get() + offset, totalLength + 1 - offset, current.GetLength());
+        wcscpy_s(buffer.get() + offset, totalLength + 1 - offset, current.GetRawString());
         offset += current.GetLength();
     }
 
