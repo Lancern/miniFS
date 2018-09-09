@@ -11,7 +11,7 @@
 #include "../miniFS.Core/include/stream/MFSStreamTextWriter.h"
 #include "include/MFSTest.h"
 #include "include/io/MFSConsole.h"
-
+#include "../miniFS.Core/dist/include/MFSDataSpace.h"
 int main()
 {
 	MFSTest command;
@@ -20,9 +20,13 @@ int main()
 
 	while (1)
 	{
+		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 		std::vector<WCHAR> split = {L'|'};
 		std::vector<MFSString> subString;
-		std::wcout << (L"miniFS>");
+		std::wcout << L"miniFS@";
+		if (space)
+			std::wcout << space->GetWorkingDirectory().GetRawString();
+		std::wcout << L">";
 		//MFSString strInput = point->ReadLine();
 		std::vector<WCHAR> str;
 		while (1)
