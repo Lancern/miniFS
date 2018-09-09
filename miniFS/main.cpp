@@ -23,27 +23,12 @@ int main()
 		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 		std::vector<WCHAR> split = {L'|'};
 		std::vector<MFSString> subString;
-		std::wcout << L"miniFS@";
+		std::wcout << L"miniFS:";
 		if (space)
-			std::wcout << space->GetWorkingDirectory().GetRawString();
+			std::wcout << space->GetWorkingDirectory();
 		std::wcout << L">";
-		//MFSString strInput = point->ReadLine();
-		std::vector<WCHAR> str;
-		while (1)
-		{
-			WCHAR temp;
-			DWORD read;
-			ReadConsole(GetStdHandle(STD_INPUT_HANDLE), &temp, 1, &read, NULL);
-			str.push_back(temp);
-			if (str.back() == L'\n')
-			{
-				str.pop_back();
-				if (!str.empty() && str.back() == L'\r')
-					str.pop_back();
-				break;
-			}
-		}
-		MFSString strInput(str.data(), str.size());
+		MFSString strInput;
+		std::wcin >> strInput;
 		//test.Read();
 		/*point->SetForegroundColor(MFSConsoleColors::Red);
 		point->SetBackgroundColor(MFSConsoleColors::Green);*/
