@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+#include <iostream>
 #include <memory>
 #include <vector>
 #include <iterator>
@@ -36,6 +37,9 @@ class MFSString
     const wchar_t * MFSString::GetRawString() const
         获取当前字符串的 C 字符串表示。
 
+    bool MFSString::IsEmpty() const
+        检查当前字符串是否为一空串。
+
     int MFSString::CompareTo(const MFSString & another) const
         比较当前的字符串和另一个给定的字符串的字典序。
         若当前串的字典序在 another 之前，返回一个负数；若当前串与 another 相同，返回 0；否则返回一个正数。
@@ -69,12 +73,9 @@ class MFSString
         @param separators 分隔符。
         @return 当前字符串以分隔符为界拆分出的子串。
 
-    template <typename IntegerT> IntegerT MFSString::ParseInteger() const
-        将当前字符串转换为其表示的整数。
-
-	std::vector<MFSString> MFSString::Split(const std::vector<wchar_t> & separators, bool type) const
+	std::vector<MFSString> MFSString::Split(const std::vector<wchar_t> & separators, bool removeEmpty) const
 		将当前字符串以指定的分隔符为界限拆分为若干个子串。
-		type为1时进行除空字符串操作。
+		removeEmpty 为 true 时进行除空字符串操作。
 		@param separators 分隔符。
 		@return 当前字符串以分隔符为界拆分出的子串。
 
@@ -82,6 +83,9 @@ class MFSString
 		将当前字符串以指定的分隔符为界限拆分为若干个子串, 用于处理含有特殊字符的文件名, 默认去空串。
 		@param separators 分隔符。
 		@return 当前字符串以分隔符为界拆分出的子串。
+
+    template <typename IntegerT> IntegerT MFSString::ParseInteger() const
+        将当前字符串转换为其表示的整数。
 
     uint32_t MFSString::GetHashCode() const
         获取当前字符串的哈希值。
@@ -92,6 +96,9 @@ class MFSString
 
 template <typename IntegerT> MFSString MFSGetString(IntegerT value)
     将一个整数数值转换为其字符串表示。
+
+static MFSString MFSString::GetEmpty()
+    获取一个空字符串。
 
 struct std::hash<MFSString>
     为 MFSString 提供 STL 哈希表支持。
@@ -133,6 +140,7 @@ public:
     };
 
     MFSString();
+    MFSString(wchar_t ch);
     MFSString(const wchar_t * psRaw);
     MFSString(const wchar_t * psBuffer, uint32_t length);
     MFSString(const MFSString & another);
@@ -141,6 +149,7 @@ public:
 
     uint32_t GetLength() const;
     const wchar_t * GetRawString() const;
+    bool IsEmpty() const;
 
     int CompareTo(const MFSString & another) const;
 
@@ -156,7 +165,7 @@ public:
     MFSString Substring(uint32_t startOffset, uint32_t length) const;
 
     std::vector<MFSString> Split(const std::vector<wchar_t> & separators) const;
-	std::vector<MFSString> Split(const std::vector<wchar_t> & separators, bool type) const;
+	std::vector<MFSString> Split(const std::vector<wchar_t> & separators, bool removeEmpty) const;
 	std::vector<MFSString> SplitName(const std::vector<wchar_t> & separators) const;
 
     uint32_t GetHashCode() const;
@@ -176,6 +185,8 @@ public:
     template <typename ...T>
     static MFSString Format(const wchar_t * format, T...args);
 
+    static MFSString GetEmpty();
+
 private:
     uint32_t _len;
     std::unique_ptr<wchar_t[]> _data;
@@ -190,6 +201,9 @@ bool operator > (const MFSString & s1, const MFSString & s2);
 bool operator <= (const MFSString & s1, const MFSString & s2);
 bool operator >= (const MFSString & s1, const MFSString & s2);
 MFSString operator + (const MFSString & s1, const MFSString & s2);
+
+std::wostream & operator << (std::wostream & stream, MFSString & string);
+std::wistream & operator >> (std::wistream & stream, MFSString & string);
 
 template <typename IntegerT>
 MFSString MFSGetString(IntegerT value)
