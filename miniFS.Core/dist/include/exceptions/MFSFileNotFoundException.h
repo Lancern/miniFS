@@ -7,6 +7,5 @@ class MFSFileNotFoundException
     : public MFSException
 {
 public:
-    MFSFileNotFoundException();
-    MFSFileNotFoundException(const MFSString & message);
+    MFSFileNotFoundException(const MFSString & filename);
 };

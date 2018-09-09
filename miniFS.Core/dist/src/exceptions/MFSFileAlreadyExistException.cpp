@@ -1,12 +1,7 @@
 #include "../../include/exceptions/MFSFileAlreadyExistException.h"
 
 
-MFSFileAlreadyExistException::MFSFileAlreadyExistException()
-	: MFSFileAlreadyExistException(L"Data space not loaded.")
-{
-}
-
-MFSFileAlreadyExistException::MFSFileAlreadyExistException(const MFSString & message)
-	: MFSException(message)
+MFSFileAlreadyExistException::MFSFileAlreadyExistException(const MFSString & filename)
+	: MFSException(MFSString::Format(L"File %s already exist.", filename))
 {
 }

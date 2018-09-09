@@ -212,5 +212,6 @@ private:
     // NOTICE: MFSPartition is an incomplete type and yet we should use std::shared_ptr as below shows.
     std::shared_ptr<MFSPartition> _partition;
 
+    MFSFSEntry * OpenRootFSEntry();
     MFSFSEntry * OpenFSEntry(const MFSString & path);
 };

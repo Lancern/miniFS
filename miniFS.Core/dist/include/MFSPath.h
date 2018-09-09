@@ -71,6 +71,8 @@ class MFSPath
 class MFSPath
 {
 public:
+    MFSPath() = delete;
+
     static bool IsValidPath(const MFSString & path) noexcept;
     static bool IsAbsolutePath(const MFSString & path) noexcept;
     static bool IsOSPath(const MFSString & path) noexcept;
