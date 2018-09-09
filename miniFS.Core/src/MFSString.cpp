@@ -343,12 +343,13 @@ MFSString operator+(const MFSString & s1, const MFSString & s2)
     return s1.Concat(s2);
 }
 
-std::wostream & operator<<(std::wostream & stream, MFSString & string)
+std::wostream & operator <<(std::wostream & stream, MFSString & string)
 {
-    return (stream << string.GetRawString());
+	stream << string.GetRawString();
+	return stream;
 }
 
-std::wistream & operator>>(std::wistream & stream, MFSString & string)
+std::wistream & operator >>(std::wistream & stream, MFSString & string)
 {
     std::wstring buf;
     std::wistream & result = (stream >> buf);

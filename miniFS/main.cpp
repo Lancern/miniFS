@@ -25,16 +25,17 @@ int main()
 		std::vector<MFSString> subString;
 		std::wcout << L"miniFS:";
 		if (space)
-			std::wcout << space->GetWorkingDirectory();
+			std::wcout << space->GetWorkingDirectory().GetRawString();
 		std::wcout << L">";
 		MFSString strInput;
-		std::wcin >> strInput;
+		point->LogLine(strInput);
+		//std::wcin >> strInput;
 		//test.Read();
 		/*point->SetForegroundColor(MFSConsoleColors::Red);
 		point->SetBackgroundColor(MFSConsoleColors::Green);*/
 		subString = strInput.SplitName(split);
 		for (const MFSString & part : subString) {
-
+			std::wcout << part.GetRawString();
 			MFSTestunit *tmp = command.Chead->link;
 			std::vector<WCHAR> splitNew = { L' ', L'\t'};
 			std::vector<MFSString> paragrameter;
