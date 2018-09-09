@@ -1,12 +1,7 @@
 #include "../../include/exceptions/MFSInvalidPathException.h"
 
 
-MFSInvalidPathException::MFSInvalidPathException()
-	: MFSInvalidPathException(L"Data space not loaded.")
-{
-}
-
-MFSInvalidPathException::MFSInvalidPathException(const MFSString & message)
-	: MFSException(message)
+MFSInvalidPathException::MFSInvalidPathException(const MFSString & path)
+	: MFSException(MFSString::Format(L"Path %s is invalid.", path))
 {
 }

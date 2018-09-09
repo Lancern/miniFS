@@ -7,6 +7,5 @@ class MFSFileAlreadyExistException
     : public MFSException
 {
 public:
-    MFSFileAlreadyExistException();
-    MFSFileAlreadyExistException(const MFSString & messeag);
+    MFSFileAlreadyExistException(const MFSString & filename);
 };

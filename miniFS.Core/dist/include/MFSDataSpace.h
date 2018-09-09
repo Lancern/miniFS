@@ -7,6 +7,7 @@
 class MFSOSFileDevice;
 class MFSBlockDevice;
 class MFSPartition;
+class MFSFSEntry;
 
 
 /*
@@ -210,4 +211,7 @@ private:
     std::shared_ptr<MFSBlockDevice> _blockDevice;
     // NOTICE: MFSPartition is an incomplete type and yet we should use std::shared_ptr as below shows.
     std::shared_ptr<MFSPartition> _partition;
+
+    MFSFSEntry * OpenRootFSEntry();
+    MFSFSEntry * OpenFSEntry(const MFSString & path);
 };

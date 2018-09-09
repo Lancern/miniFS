@@ -14,6 +14,5 @@ class MFSInvalidPathException
     : public MFSException
 {
 public:
-    MFSInvalidPathException();
-    MFSInvalidPathException(const MFSString & message);
+    MFSInvalidPathException(const MFSString & path);
 };

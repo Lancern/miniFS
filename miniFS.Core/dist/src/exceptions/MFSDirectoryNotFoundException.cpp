@@ -1,12 +1,7 @@
 #include "../../include/exceptions/MFSDirectoryNotFoundException.h"
 
 
-MFSDirectoryNotFoundException::MFSDirectoryNotFoundException()
-	: MFSDirectoryNotFoundException(L"Data space not loaded.")
-{
-}
-
-MFSDirectoryNotFoundException::MFSDirectoryNotFoundException(const MFSString & message)
-	: MFSException(message)
+MFSDirectoryNotFoundException::MFSDirectoryNotFoundException(const MFSString & directory)
+	: MFSException(MFSString::Format(L"Directory %s cannot be found.", directory))
 {
 }

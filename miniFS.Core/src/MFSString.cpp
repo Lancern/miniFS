@@ -286,7 +286,7 @@ wchar_t MFSString::operator[](uint32_t offset) const
     return _data[offset];
 }
 
-MFSString MFSString::GetEmpty()
+MFSString MFSString::GetEmptyString()
 {
     return L"";
 }
@@ -341,20 +341,6 @@ bool operator>=(const MFSString & s1, const MFSString & s2)
 MFSString operator+(const MFSString & s1, const MFSString & s2)
 {
     return s1.Concat(s2);
-}
-
-std::wostream & operator <<(std::wostream & stream, MFSString & string)
-{
-	stream << string.GetRawString();
-	return stream;
-}
-
-std::wistream & operator >>(std::wistream & stream, MFSString & string)
-{
-    std::wstring buf;
-    std::wistream & result = (stream >> buf);
-    string = MFSString(buf.c_str());
-    return result;
 }
 
 MFSString::Iterator::Iterator(const MFSString & string)

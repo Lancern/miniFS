@@ -3,6 +3,7 @@
 #include "../include/exceptions/MFSInvalidArgumentException.h"
 #include "../include/exceptions/MFSInvalidPathException.h"
 #include "../include/exceptions/MFSInvalidDeviceException.h"
+#include "../include/exceptions/MFSDirectoryNotFoundException.h"
 #include "../include/exceptions/MFSWindowsException.h"
 #include "../../include/device/MFSOSFileDevice.h"
 #include "../../include/device/MFSBlockDevice.h"
@@ -225,4 +226,36 @@ MFSDataSpace * MFSDataSpace::GetActiveDataSpace() noexcept
 void MFSDataSpace::SetActiveDataSpace(MFSDataSpace * dataSpace) noexcept
 {
     globalActiveSpace = dataSpace;
+}
+
+MFSFSEntry * MFSDataSpace::OpenRootFSEntry()
+{
+    return _partition->GetRoot();
+}
+
+MFSFSEntry * MFSDataSpace::OpenFSEntry(const MFSString & path)
+{
+    if (!MFSPath::IsValidPath(path))
+        throw MFSInvalidPathException(path);
+
+    MFSString absolute = MFSPath::IsAbsolutePath(path)
+        ? path
+        : MFSPath::Combine(GetWorkingDirectory(), path);
+    
+    std::vector<MFSString> pathNames = MFSPath::GetPathNames(absolute);
+    MFSFSEntry * entry = OpenRootFSEntry();
+    
+    for (const MFSString & name : pathNames)
+    {
+        MFSFSEntry * subEntry = entry->GetSubEntry(name);
+        if (!subEntry)
+            throw MFSDirectoryNotFoundException(name);
+        else
+        {
+            delete entry;
+            entry = subEntry;
+        }
+    }
+
+    return entry;
 }

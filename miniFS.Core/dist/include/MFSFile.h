@@ -61,6 +61,7 @@ public:
     MFSStream * OpenStream() noexcept;
 
 private:
+	MFSFSEntry * _entry;
     MFSFile(MFSFSEntry * entry);
 
     friend class MFSDataSpace;

@@ -7,6 +7,5 @@ class MFSDirectoryNotFoundException
     : public MFSException
 {
 public:
-    MFSDirectoryNotFoundException();
-    MFSDirectoryNotFoundException(const MFSString & message);
+    MFSDirectoryNotFoundException(const MFSString & directory);
 };
