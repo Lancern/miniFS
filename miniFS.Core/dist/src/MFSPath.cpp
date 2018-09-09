@@ -11,6 +11,12 @@ bool MFSPath::IsValidPath(const MFSString & path) noexcept
     if (IsOSPath(path))
         return false;
 
+	if (path.IsEmpty())
+		return false;
+
+	if (path.StartsWith(L" ") || path.EndsWith(L" "))
+		return false;
+
     std::vector<wchar_t> invalidChars = GetInvalidNameChars();
 
     wchar_t sep = GetPathSeparator();
@@ -18,6 +24,11 @@ bool MFSPath::IsValidPath(const MFSString & path) noexcept
     {
         if (path[i] == sep)
         {
+			if (i > 0 && path[i - 1] == L' ')
+				return false;
+			if (i < path.GetLength() - 1 && path[i + 1] == L' ')
+				return false;
+
             if (i > 0 && path[i - 1] == sep)
             {
                 // Consecuive separator is invalid.
@@ -139,8 +150,10 @@ MFSString MFSPath::GetDirectoryPath(const MFSString & path)
 
 MFSString MFSPath::Combine(const MFSString & path1, const MFSString & path2)
 {
-    if (!IsValidPath(path1) || !IsValidPath(path2))
-        throw MFSInvalidPathException(path);
+    if (!IsValidPath(path1))
+		throw MFSInvalidPathException(path1);
+	if (!IsValidPath(path2))
+        throw MFSInvalidPathException(path2);
     if (IsAbsolutePath(path2))
         return path2;
 

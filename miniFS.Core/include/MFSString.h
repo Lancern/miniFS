@@ -309,7 +309,7 @@ inline MFSString MFSString::Join(const MFSString & separator, ForwardIterator fi
         MFSString>::value,
         "Type dereferenceable by the given iterators should be able to be convertable to MFSString.");
 
-    uint32_t count = std::distance(first, last);
+    uint32_t count = static_cast<uint32_t>(std::distance(first, last));
     if (count == 0)
         return MFSString::GetEmptyString();
 
