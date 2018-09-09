@@ -1,12 +1,7 @@
 #include "../../include/exceptions/MFSFileNotFoundException.h"
 
 
-MFSFileNotFoundException::MFSFileNotFoundException()
-	: MFSFileNotFoundException(L"Data space not loaded.")
-{
-}
-
-MFSFileNotFoundException::MFSFileNotFoundException(const MFSString & message)
-	: MFSException(message)
+MFSFileNotFoundException::MFSFileNotFoundException(const MFSString & filename)
+	: MFSException(MFSString::Format(L"File %s cannot be found.", filename))
 {
 }

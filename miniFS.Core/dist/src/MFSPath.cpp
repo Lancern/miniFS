@@ -52,7 +52,7 @@ bool MFSPath::IsOSPath(const MFSString & path) noexcept
 std::vector<MFSString> MFSPath::GetPathNames(const MFSString & path)
 {
     if (!IsValidPath(path))
-        throw MFSInvalidPathException();
+        throw MFSInvalidPathException(path);
 
     return path.Split({ GetPathSeparator() }, true);
 }
@@ -60,7 +60,7 @@ std::vector<MFSString> MFSPath::GetPathNames(const MFSString & path)
 MFSString MFSPath::GetFileName(const MFSString & path)
 {
     if (!IsValidPath(path))
-        throw MFSInvalidPathException();
+        throw MFSInvalidPathException(path);
     if (path.GetLength() == 0)
         return path;
 
@@ -95,7 +95,7 @@ MFSString MFSPath::GetFileName(const MFSString & path)
 MFSString MFSPath::GetExtension(const MFSString & path)
 {
     if (!IsValidPath(path))
-        throw MFSInvalidPathException();
+        throw MFSInvalidPathException(path);
 
     MFSString name = GetFileName(path);
     if (name.IsEmpty())
@@ -111,7 +111,7 @@ MFSString MFSPath::GetExtension(const MFSString & path)
 MFSString MFSPath::GetFileNameWithoutExtension(const MFSString & path)
 {
     if (!IsValidPath(path))
-        throw MFSInvalidPathException();
+        throw MFSInvalidPathException(path);
 
     MFSString name = GetFileName(path);
     if (name.IsEmpty())
@@ -127,7 +127,7 @@ MFSString MFSPath::GetFileNameWithoutExtension(const MFSString & path)
 MFSString MFSPath::GetDirectoryPath(const MFSString & path)
 {
     if (!IsValidPath(path))
-        throw MFSInvalidPathException();
+        throw MFSInvalidPathException(path);
 
     wchar_t sep = GetPathSeparator();
     int lastSep = path.LastIndexOf(sep);
@@ -140,7 +140,7 @@ MFSString MFSPath::GetDirectoryPath(const MFSString & path)
 MFSString MFSPath::Combine(const MFSString & path1, const MFSString & path2)
 {
     if (!IsValidPath(path1) || !IsValidPath(path2))
-        throw MFSInvalidPathException();
+        throw MFSInvalidPathException(path);
     if (IsAbsolutePath(path2))
         return path2;
 
@@ -185,7 +185,7 @@ MFSString MFSPath::Combine(const MFSString & path1, const MFSString & path2)
 MFSString MFSPath::GetAbsolutePath(const MFSString & path)
 {
     if (!IsValidPath(path))
-        throw MFSInvalidPathException();
+        throw MFSInvalidPathException(path);
 
     MFSDataSpace * activeSpace = MFSDataSpace::GetActiveDataSpace();
     if (!activeSpace)
