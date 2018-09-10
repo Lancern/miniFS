@@ -9,7 +9,13 @@ bool DelCommand::Accept(const MFSString & string) const
 
 void DelCommand::Action(const std::vector<MFSString> & argv) const
 {
+	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	MFSConsole *point = MFSGetDefaultConsole();
+	if (space == NULL)
+	{
+		point->Log(L"当前未挂载空间");
+		return;
+	}
 	if (argv.size() < 1 || argv.size() > 2)
 	{
 		point->Log(L"指令输入有误\n");
@@ -17,12 +23,6 @@ void DelCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
-		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-		if (space == NULL)
-		{
-			point->Log(L"未挂载数据空间");
-			return;
-		}
 		if (argv.size() == 1) {
 			space->Delete(argv[0]);
 		}
