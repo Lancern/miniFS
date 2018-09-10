@@ -21,6 +21,14 @@ void StatCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"Ö¸ÁîÊäÈëÓÐÎó\n");
 		return;
 	}
+	try
+	{
+		MFSFile *file = space->OpenFile(argv[0], false);
+	}
+	catch (MFSException & ex)
+	{
+		point->LogLine(ex.GetExceptMessage());
+	}
 }
 
 StatCommand::StatCommand()

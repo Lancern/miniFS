@@ -147,6 +147,7 @@
     <ClInclude Include="include\command\MapCommand.h" />
     <ClInclude Include="include\command\OptCommand.h" />
     <ClInclude Include="include\command\TouchCommand.h" />
+    <ClInclude Include="include\command\TreeCommand.h" />
     <ClInclude Include="include\io\MFSConsole.h" />
     <ClInclude Include="include\Commands.h" />
     <ClInclude Include="include\command\CloseCommand.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="src\command\StatCommand.cpp" />
     <ClCompile Include="src\command\TouchCommand.cpp" />
     <ClCompile Include="src\command\TpCommand.cpp" />
+    <ClCompile Include="src\command\TreeCommand.cpp" />
     <ClCompile Include="src\command\UnmountCommand.cpp" />
     <ClCompile Include="src\io\MFSConsole.cpp" />
     <ClCompile Include="src\MFSTest.cpp" />
