@@ -9,7 +9,12 @@ bool OptCommand::Accept(const MFSString & string) const
 
 void OptCommand::Action(const std::vector<MFSString> & argv) const
 {
-
+	MFSConsole *point = MFSGetDefaultConsole();
+	if (argv.size() != 0)
+	{
+		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
+		return;
+	}
 }
 
 OptCommand::OptCommand()

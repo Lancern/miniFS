@@ -9,9 +9,10 @@ bool MountCommand::Accept(const MFSString & string) const
 
 void MountCommand::Action(const std::vector<MFSString> & argv) const
 {
+	MFSConsole *point = MFSGetDefaultConsole();
 	if (argv.size() != 1)
 	{
-		printf("command is wrong\n");
+		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
 		return;
 	}
 	try

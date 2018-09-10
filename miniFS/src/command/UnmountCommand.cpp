@@ -11,18 +11,22 @@ void UnmountCommand::Action(const std::vector<MFSString> & argv) const
 {
 	MFSDataSpace * space;
 	space = MFSDataSpace::GetActiveDataSpace();
+	MFSConsole *point = MFSGetDefaultConsole();
+	if (argv.size() != 0)
+	{
+		point->Log(L"指令输入有误\n");
+		return;
+	}
 	if (space != NULL)
 	{
 		space->Close();
 		delete space;
 		MFSDataSpace::SetActiveDataSpace(NULL);
-		//std::wcout << L"ccc" << std::endl;
-		printf("已卸载当前活动空间\n");
+		point->Log(L"已卸载当前活动空间\n");
 	}
 	else
 	{
-		//std::wcout << L"哈哈哈" << std::endl;
-		printf("当前没有活动空间\n");
+		point->Log(L"当前没有活动空间\n");
 	}
 }
 
