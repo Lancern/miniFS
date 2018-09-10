@@ -16,3 +16,5 @@
 #include "command/InfoCommand.h"
 #include "command/OptCommand.h"
 #include "command/MapCommand.h"
+#include "command/TouchCommand.h"
+#include "command/CdCommand.h"

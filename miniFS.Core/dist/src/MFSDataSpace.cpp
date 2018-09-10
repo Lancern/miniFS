@@ -189,7 +189,6 @@ MFSFile * MFSDataSpace::CreateFile(const MFSString & path, bool openIfExist)
         MFSFSEntry * fileFsEntry = directoryFsEntry->AddSubEntry(filename);
         if (!fileFsEntry)
             throw MFSOutOfSpaceException();
-
         return new MFSFile(fileFsEntry);
     }
 }

@@ -310,6 +310,12 @@ bool MFSString::ContainsAt(const MFSString & substring, uint32_t offset) const
     return true;
 }
 
+void swap(MFSString & s1, MFSString & s2)
+{
+	std::swap(s1._len, s2._len);
+	std::swap(s1._data, s2._data);
+}
+
 bool operator==(const MFSString & s1, const MFSString & s2)
 {
     return s1.CompareTo(s2) == 0;
