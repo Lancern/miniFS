@@ -201,7 +201,11 @@ private:
     std::unique_ptr<wchar_t[]> _data;
 
     bool ContainsAt(const MFSString & substring, uint32_t offset) const;
+
+	friend void swap(MFSString &, MFSString &);
 };
+
+void swap(MFSString & s1, MFSString & s2);
 
 bool operator == (const MFSString & s1, const MFSString & s2);
 bool operator != (const MFSString & s1, const MFSString & s2);
