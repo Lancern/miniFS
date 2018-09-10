@@ -9,26 +9,19 @@ bool CopyCommand::Accept(const MFSString & string) const
 
 void CopyCommand::Action(const std::vector<MFSString> & argv) const
 {
-	if (argv.size() != 2)
+	MFSConsole *point = MFSGetDefaultConsole();
+	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
+	if (space == NULL)
 	{
-		printf("command is wrong\n");
+		point->Log(L"当前未挂载空间");
 		return;
 	}
-	/*
-	//std::wcout << L"copy file " << argv[0].GetRawString() << L" to file " << argv[1].GetRawString()<<std::endl;
-	MFSPath *path = new MFSPath();
-	MFSString from = argv[0];
-	MFSString to = argv[1];
-	try
+	if (argv.size() != 2)
 	{
-		if (path->IsValidPath(from)) {
-
-		}
+		point->Log(L"指令输入有误\n");
+		return;
 	}
-	catch (const std::exception&)
-	{
-
-	}*/
+	
 }
 
 CopyCommand::CopyCommand()
