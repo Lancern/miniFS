@@ -9,9 +9,10 @@ bool CreateCommand::Accept(const MFSString & string) const
 
 void CreateCommand::Action(const std::vector<MFSString> & argv) const
 {
-	if (argv.size() <= 0 || argv.size() > 2)
+	MFSConsole *point = MFSGetDefaultConsole();
+	if (argv.size() < 1 || argv.size() > 2)
 	{
-		printf("command is wrong\n");
+		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
 		return;
 	}
 	try
