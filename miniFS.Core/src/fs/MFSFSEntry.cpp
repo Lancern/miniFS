@@ -234,6 +234,16 @@ bool MFSFSEntry::RemoveSubEntry(const MFSString & name)
     return true;
 }
 
+std::vector<uint32_t> MFSFSEntry::GetAllBlocksId() const
+{
+	std::vector<uint32_t> ret;
+	for (uint32_t block = _meta->common.firstBlockId;
+		block != MFSFileAllocationTable::InvalidBlockId;
+		block = _partition.GetNextChainedBlock(block))
+		ret.push_back(block);
+	return ret;
+}
+
 bool MFSFSEntry::TruncateFileSize(uint64_t size)
 {
     uint32_t blockSize = _partition.GetPartition()->GetDevice()->GetBlockSize();

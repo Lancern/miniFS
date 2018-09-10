@@ -38,6 +38,9 @@ class MFSFile
         @exception
             MFSOutOfSpaceException 数据空间空间不足，无法完成所需的操作。
 
+    std::vector<uint32_t> MFSFile::GetAllBlocksId() const noexcept
+        获取文件所占用的所有数据块的设备块编号。
+
     MFSStream * MFSFile::OpenStream() noexcept
         打开文件数据流进行读写。
 
@@ -58,9 +61,9 @@ public:
     uint64_t GetFileSize() const noexcept;
     void SetFileSize(uint64_t size);
 
-    MFSStream * OpenStream() noexcept;
+    std::vector<uint32_t> GetAllBlocksId() const noexcept;
 
-	std::vector<uint32_t> GetAllBlocksId() const noexcept;
+    MFSStream * OpenStream() noexcept;
 
 private:
 	MFSFSEntry * _entry;
