@@ -9,6 +9,7 @@ bool MkdirCommand::Accept(const MFSString & string) const
 
 void MkdirCommand::Action(const std::vector<MFSString> & argv) const
 {
+	MFSC
 	if (argv.size() != 1)
 	{
 		printf("command is wrong\n");

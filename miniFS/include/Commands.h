@@ -14,3 +14,5 @@
 #include "command/TpCommand.h"
 #include "command/UnmountCommand.h"
 #include "command/InfoCommand.h"
+#include "command/OptCommand.h"
+#include "command/MapCommand.h"
