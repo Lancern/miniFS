@@ -128,9 +128,9 @@ MFSBlockStream * MFSFSEntry::OpenDataStream()
             MFSGetPackedUnsignedValue(&_meta->spec.fileMeta.size));
 }
 
-auto MFSFSEntry::GetSubEntries() -> std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>>
+auto MFSFSEntry::GetSubEntries() -> std::vector<std::pair<MFSString, MFSFSEntry *>>
 {
-	std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>> ret;
+	std::vector<std::pair<MFSString, MFSFSEntry *>> ret;
 	auto callback = [&](const WalkDirectoryBlockParameters & params)
 	{
 		for (auto&& it : *params.blockObject)

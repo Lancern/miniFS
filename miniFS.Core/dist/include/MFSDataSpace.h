@@ -214,4 +214,6 @@ private:
 
     MFSFSEntry * OpenRootFSEntry();
     MFSFSEntry * OpenFSEntry(const MFSString & path);
+
+    std::vector<MFSString> GetSubEntryNames(const MFSString & directory, MFSFSEntryType entryType);
 };

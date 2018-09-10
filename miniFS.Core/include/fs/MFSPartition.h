@@ -379,7 +379,7 @@ public:
 
     MFSBlockStream * OpenDataStream();
 
-    auto GetSubEntries()->std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>>;
+    auto GetSubEntries()->std::vector<std::pair<MFSString, MFSFSEntry *>>;
     uint32_t GetSubEntriesCount() const;
     bool ContainsSubEntry(const MFSString & name);
     MFSFSEntry * GetSubEntry(const MFSString & name);
