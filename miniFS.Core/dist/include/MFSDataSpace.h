@@ -69,6 +69,7 @@ class MFSDataSpace
             MFSInvalidPathException 给定的路径不合法。
             MFSDirectoryNotFoundException 路径上有一个或多个目录不存在。
             MFSFileAlreadyExistException 文件已经存在且 openIfExist 参数为 false。
+            MFSDirectoryAlreadyExistException 已经存在一个同名的目录。
             MFSOutOfSpaceException 数据空间空间不足，无法完成要求的操作。
 
     void MFSDataSpace::CreateDirectory(const MFSString & path, bool errorIfExist)
