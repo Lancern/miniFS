@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dist\include\exceptions\MFSDataSpaceNotLoadedException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSDirectoryAlreadyExistException.h" />
     <ClInclude Include="dist\include\exceptions\MFSDirectoryNotFoundException.h" />
     <ClInclude Include="dist\include\exceptions\MFSException.h" />
     <ClInclude Include="dist\include\exceptions\MFSFileAlreadyExistException.h" />
@@ -63,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dist\src\exceptions\MFSDataSpaceNotLoadedException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSDirectoryAlreadyExistException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSDirectoryNotFoundException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSFileAlreadyExistException.cpp" />

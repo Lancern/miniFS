@@ -6,6 +6,7 @@
 #include "../include/exceptions/MFSInvalidEntryTypeException.h"
 #include "../include/exceptions/MFSFileAlreadyExistException.h"
 #include "../include/exceptions/MFSDirectoryNotFoundException.h"
+#include "../include/exceptions/MFSDirectoryAlreadyExistException.h"
 #include "../include/exceptions/MFSFileNotFoundException.h"
 #include "../include/exceptions/MFSWindowsException.h"
 #include "../include/exceptions/MFSOutOfSpaceException.h"
@@ -201,7 +202,7 @@ MFSFile * MFSDataSpace::CreateFile(const MFSString & path, bool openIfExist)
     }
 }
 
-void MFSDataSpace::CreateDirectory(const MFSString & path)
+void MFSDataSpace::CreateDirectory(const MFSString & path, bool errorIfExist)
 {
     if (!MFSPath::IsValidPath(path))
         throw MFSInvalidPathException(path);
@@ -211,8 +212,9 @@ void MFSDataSpace::CreateDirectory(const MFSString & path)
     std::vector<MFSString> pathNames = MFSPath::GetPathNames(absolute);
     MFSFSEntry * entry = OpenRootFSEntry();
 
-    for (const MFSString & name : pathNames)
+    for (uint32_t i = 0; i < pathNames.size(); ++i)
     {
+        const MFSString & name = pathNames[i];
         if (entry->ContainsSubEntry(name))
         {
             MFSFSEntry * subEntry = entry->GetSubEntry(name);
@@ -220,6 +222,7 @@ void MFSDataSpace::CreateDirectory(const MFSString & path)
 
             if (!subEntry)
                 throw MFSException(L"Unexpected null subEntry.");
+
             if (subEntry->GetEntryType() == MFSFSEntryType::File)
                 throw MFSFileAlreadyExistException(name);
 
