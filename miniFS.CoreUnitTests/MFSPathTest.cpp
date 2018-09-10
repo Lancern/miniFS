@@ -34,7 +34,7 @@ public:
 
 		Assert::IsFalse(MFSPath::IsValidPath(L" a/"));
 
-		Assert::IsFalse(MFSPath::IsValidPath(L""));
+		Assert::IsTrue(MFSPath::IsValidPath(L""));
 
 		Assert::IsTrue(MFSPath::IsValidPath(L"a b/"));
 
