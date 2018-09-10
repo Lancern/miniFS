@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\command\CdCommand.h" />
     <ClInclude Include="include\command\InfoCommand.h" />
     <ClInclude Include="include\command\MapCommand.h" />
     <ClInclude Include="include\command\OptCommand.h" />

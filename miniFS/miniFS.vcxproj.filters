@@ -81,6 +81,9 @@
     <ClInclude Include="include\command\TouchCommand.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\command\CdCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\command\CreateCommand.cpp">

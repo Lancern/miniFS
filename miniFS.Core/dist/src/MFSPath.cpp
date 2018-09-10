@@ -161,6 +161,8 @@ MFSString MFSPath::Combine(const MFSString & path1, const MFSString & path2)
 {
 	if (path1.IsEmpty())
 		return path2;
+	if (path2.IsEmpty())
+		return path1;
 
     if (!IsValidPath(path1))
 		throw MFSInvalidPathException(path1);
