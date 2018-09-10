@@ -16,11 +16,23 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 		return;
 	}
 	MFSDataSpace * space = MFSDataSpace::GetActiveDataSpace();
-	std::vector<MFSString> fileList = space->GetDirectories(space->GetWorkingDirectory());
-	for (MFSString file : fileList)
+	try
 	{
-		std::wcout << file.GetRawString() << std::endl;
+		std::vector<MFSString> fileList = space->GetDirectories(space->GetWorkingDirectory());
+		for (MFSString file : fileList)
+		{
+			std::wcout << file.GetRawString() << std::endl;
+		}
 	}
+	catch (MFSInvalidPathException)
+	{
+		point->Log(L"给定的路径不合法");
+	}
+	catch (MFSOutOfSpaceException)
+	{
+		//point->Log("数据空间空间不足，无法完成要求的操作");
+	}
+
 }
 
 DirCommand::DirCommand()

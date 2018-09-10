@@ -5,7 +5,9 @@
 #include <wchar.h>
 
 MFSString::MFSString()
+	: _len(0), _data(new wchar_t[1])
 {
+	_data[0] = 0;
 }
 
 MFSString::MFSString(wchar_t ch)

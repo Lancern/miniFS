@@ -39,7 +39,8 @@ MFSDataSpace::MFSDataSpace(const MFSString & osFileName)
         throw MFSInvalidDeviceException();
     }
 
-    SetWorkingDirectory(L"/");
+	if (!_partition->IsRaw())
+		SetWorkingDirectory(L"/");
 }
 
 MFSDataSpace::MFSDataSpace(MFSDataSpace && another)
@@ -98,6 +99,7 @@ bool MFSDataSpace::IsFormatted() const noexcept
 void MFSDataSpace::Format() noexcept
 {
     _partition->BuildFileSystem();
+	SetWorkingDirectory(L"/");
 }
 
 bool MFSDataSpace::Exist(const MFSString & path)
