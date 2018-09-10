@@ -366,6 +366,7 @@ void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
 		delete pEntry;
 	else
 		throw MFSOutOfSpaceException();
+
 	srcFileEntry.release();
 	bool flag = srcDirEntry->RemoveSubEntry(srcFilename);
 	if (!flag)

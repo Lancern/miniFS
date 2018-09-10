@@ -11,22 +11,21 @@ MFSFSNodePool::MFSFSNodePool(uint32_t numberOfNodes)
 
 uint32_t MFSFSNodePool::GetAvailableFSNodeId()
 {
-    if (_alloc == InvalidFSNodeId)
-        return _alloc;
-
-    uint32_t result = _alloc;
-    _alloc = LocateNextFreeNode();
-
-    return result;
+    return _alloc;
 }
 
 bool MFSFSNodePool::Allocate(uint32_t fsnodeId)
 {
     bool first = (_pool[fsnodeId].common.refCount == 0);
-    if (first)
+    if (first) 
+    {
         InitializeFSNode(fsnodeId);
+        if (_alloc == fsnodeId)
+            _alloc = LocateNextFreeNode();
+    }
     
     ++_pool[fsnodeId].common.refCount;
+
     return first;
 }
 
