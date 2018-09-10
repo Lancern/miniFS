@@ -9,22 +9,24 @@ bool InfoCommand::Accept(const MFSString & string) const
 
 void InfoCommand::Action(const std::vector<MFSString> & argv) const
 {
+	MFSConsole *point = MFSGetDefaultConsole();
 	if (argv.size() != 0)
 	{
-		printf("command is wrong\n");
+		point->Log(L"指令输入有误\n");
 		return;
 	}
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	if (!space)
 	{
-		printf("并没有挂载任何空间\n");
+		point->Log(L"并没有挂载任何空间\n");
 	}
 	else {
-		printf("当前数据空间可用总空间 ");
+		point->Log(L"当前数据空间可用总空间 ");
 		std::wcout << space->GetTotalSpaceInBytes() << std::endl;
-		printf("当前数据空间可用空间 ");
+		point->Log(space->GetTotalSpaceInBytes());
+		point->Log(L"当前数据空间可用空间 ");
 		std::wcout << space->GetFreeSpaceInBytes() << std::endl;
-		printf("当前数据空间已用空间 ");
+		point->Log(L"当前数据空间已用空间 ");
 		std::wcout << space->GetTotalSpaceInBytes() - space->GetFreeSpaceInBytes() << std::endl;
 	}
 }

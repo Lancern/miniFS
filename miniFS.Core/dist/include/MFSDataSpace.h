@@ -97,14 +97,22 @@ class MFSDataSpace
             MFSDirectoryNotFoundException 路径上有一个或多个目录不存在。
             MFSFileNotFoundException 要删除的目录、文件或硬链接不存在。
 
+    bool MFSDataSpace::IsDirectory(const MFSString & path) const
+        确定一个路径所对应的项目是否为一个目录。
+        @exceptions
+            MFSInvalidPathException：路径 path 不合法。
+            MFSDirectoryNotFoundException：路径 path 上的一个或多个目录不存在。
+            MFSFileNotFoundException：路径 path 所对应的项目不存在。
+
     void MFSDataSpace::Copy(const MFSString & source, const MFSString & destination)
-        复制一个目录或文件。
-        @param source 源路径。
-        @param destination 目标路径。
+        复制一个文件。
+        @param source 源文件路径。
+        @param destination 目标文件路径。
         @exception
             MFSInvalidPathException 源路径 source 或 目标路径 destination 不合法。
             MFSDirectoryNotFoundException 源路径或目标路径上的一个或多个目录不存在。
             MFSFileNotFoundException 要复制的源文件或目标文件不存在。
+            MFSInvalidEntryTypeException source 所标识的文件系统项不是一个文件。
             MFSOutOfSpaceException 数据空间空间不足，无法完成要求的操作。
 
     void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
@@ -192,6 +200,8 @@ public:
     void CreateDirectory(const MFSString & path);
     void CreateLink(const MFSString & target, const MFSString & link);
     void Delete(const MFSString & path);
+
+    bool IsDirectory(const MFSString & path);
 
     void Copy(const MFSString & source, const MFSString & destination);
     void Move(const MFSString & source, const MFSString & destination);
