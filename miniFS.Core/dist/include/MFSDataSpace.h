@@ -114,7 +114,9 @@ class MFSDataSpace
         @exception
             MFSInvalidPathException 源路径 source 或 目标路径 destination 不合法。
             MFSDirectoryNotFoundException 源路径或目标路径上的一个或多个目录不存在。
-            MFSFileNotFoundException 要移动的源文件或目标文件不存在。
+			MFSFileAlreadyExistException 目标文件已存在。
+            MFSFileNotFoundException 要移动的源文件不存在。
+			MFSOutOfSpaceException 数据空间空间不足，无法完成要求的操作。
 
     std::vector<MFSString> MFSDataSpace::GetDirectories(const MFSString & directory)
         获取某个目录下的所有子目录名称。
