@@ -16,11 +16,11 @@ int main()
 		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 		std::vector<WCHAR> split = { L'|' };
 		std::vector<MFSString> subString;
-		std::wcout << L"miniFS>";
+		point->Log(L"miniFS@");
 		if (space)
-			std::wcout << space->GetWorkingDirectory().GetRawString();
-
-		MFSString strInput = MFSGetDefaultConsole()->ReadLine();
+			point->Log(space->GetWorkingDirectory());
+		point->Log(L">");
+		MFSString strInput = point->ReadLine();
 		subString = strInput.SplitName(split);
 		for (const MFSString & part : subString) {
 
@@ -39,7 +39,7 @@ int main()
 				}
 				tmp = tmp->link;
 			}
-			if (tmp == NULL) std::cout << "input error!" << std::endl;
+			if (tmp == NULL) point->Log(L"input error!\n");
 		}
 	}
 	return 0;
