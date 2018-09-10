@@ -11,7 +11,7 @@ MFSConsole * MFSConsole::GetDefaultConsole()
 }
 
 
-void ConsoleEventHandler(DWORD dwCtrlType)
+BOOL WINAPI ConsoleEventHandlerEntry(DWORD dwCtrlType)
 {
     if (_defaultConsole)
     {
@@ -20,17 +20,18 @@ void ConsoleEventHandler(DWORD dwCtrlType)
         case CTRL_C_EVENT:
             if (_defaultConsole->_ctrlCHandler)
                 _defaultConsole->_ctrlCHandler();
-            break;
+            return TRUE;
         case CTRL_BREAK_EVENT:
             if (_defaultConsole->_ctrlBreakHandler)
                 _defaultConsole->_ctrlBreakHandler();
-            break;
+            return TRUE;
         case CTRL_CLOSE_EVENT:
             if (_defaultConsole->_exitHandler)
                 _defaultConsole->_exitHandler();
-            break;
+            return TRUE;
         }
     }
+    return FALSE;
 }
 
 
@@ -39,6 +40,8 @@ MFSConsole::MFSConsole()
 {
     _hInput = GetStdHandle(STD_INPUT_HANDLE);
     _hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    SetConsoleCtrlHandler(&ConsoleEventHandlerEntry, TRUE);
 }
 
 MFSConsole::~MFSConsole()

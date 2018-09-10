@@ -96,7 +96,6 @@ class MFSConsole
 public:
     typedef void(*ConsoleEventHandler)();
 
-    MFSConsole();
     ~MFSConsole();
 
     void SetTitle(const MFSString & string);
@@ -128,6 +127,8 @@ public:
     static MFSConsole * GetDefaultConsole();
 
 private:
+    MFSConsole();
+
     HANDLE _hInput;
     HANDLE _hOutput;
 
@@ -135,5 +136,5 @@ private:
     ConsoleEventHandler _ctrlCHandler;
     ConsoleEventHandler _ctrlBreakHandler;
 
-    friend void ConsoleEventHandler(DWORD);
+    friend BOOL WINAPI ConsoleEventHandlerEntry(DWORD);
 };
