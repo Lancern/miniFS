@@ -15,6 +15,27 @@ void DelCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"指令输入有误\n");
 		return;
 	}
+	try
+	{
+		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
+		if (space == NULL)
+		{
+			point->Log(L"未挂载数据空间");
+			return;
+		}
+		if (argv.size() == 1) {
+			space->Delete(argv[0]);
+		}
+		else
+		{
+
+		}
+	}
+	catch (MFSException & ex)
+	{
+		point->Log(ex.GetExceptMessage() + L"\n");;
+	}
+	
 }
 
 DelCommand::DelCommand()
