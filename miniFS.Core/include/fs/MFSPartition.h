@@ -292,17 +292,11 @@ class MFSFSEntry
     bool MFSFSEntry::GetProtectedFlag() const
         获取文件系统节点的保护位。
 
-    MFSFSEntryAccess MFSFSEntry::GetAccessAttribute() const
-        获取文件系统节点的访问控制属性。
-
     void MFSFSEntry::SetHiddenFlag(bool isHidden)
         设置文件系统节点的隐藏位。
 
     void MFSFSEntry::SetProtectedFlag(bool isProtected)
         设置文件系统节点的保护位。
-
-    void MFSFSEntry::SetAccessAttributes(MFSFSEntryAccess access)
-        设置文件系统节点的访问控制属性。
 
     uint64_t MFSFSEntry::GetFileSize() const
         当文件系统节点所表示的文件系统项为一个文件时，返回该文件的字节大小；否则返回 0。
@@ -338,17 +332,10 @@ class MFSFSEntry
 
 */
 
-enum MFSFSEntryType
+enum struct MFSFSEntryType
 {
     Directory = 0,
     File = 1
-};
-
-enum MFSFSEntryAccess
-{
-    Read = MFS_FSENTRY_ACCESS_READ,
-    Write = MFS_FSENTRY_ACCESS_WRITE,
-    Execute = MFS_FSENTRY_ACCESS_EXECUTE
 };
 
 class MFSFSEntry
@@ -368,11 +355,9 @@ public:
 
     bool GetHiddenFlag() const;
     bool GetProtectedFlag() const;
-    MFSFSEntryAccess GetAccessAttributes() const;
 
     void SetHiddenFlag(bool isHidden);
     void SetProtectedFlag(bool isProtected);
-    void SetAccessAttributes(MFSFSEntryAccess access);
 
     uint64_t GetFileSize() const;
     bool SetFileSize(uint64_t size);

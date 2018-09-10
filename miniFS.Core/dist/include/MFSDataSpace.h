@@ -8,6 +8,7 @@ class MFSOSFileDevice;
 class MFSBlockDevice;
 class MFSPartition;
 class MFSFSEntry;
+enum struct MFSFSEntryType;
 
 
 /*
