@@ -39,7 +39,7 @@ int main()
 				}
 				tmp = tmp->link;
 			}
-			if (tmp == NULL) point->Log(L"input error!\n");
+			if (tmp == NULL) point->Log(L"Ö¸ÁîÊäÈëÓĞÎó\n");
 		}
 	}
 	return 0;
