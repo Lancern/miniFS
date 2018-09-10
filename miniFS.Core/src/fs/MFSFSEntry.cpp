@@ -65,14 +65,6 @@ bool MFSFSEntry::GetProtectedFlag() const
     return static_cast<bool>(_meta->common.flags & MFS_FSENTRY_FLAG_PROTECTED);
 }
 
-MFSFSEntryAccess MFSFSEntry::GetAccessAttributes() const
-{
-    DWORD read = _meta->common.flags & MFS_FSENTRY_ACCESS_READ;
-    DWORD write = _meta->common.flags & MFS_FSENTRY_ACCESS_WRITE;
-    DWORD execute = _meta->common.flags & MFS_FSENTRY_ACCESS_EXECUTE;
-    return static_cast<MFSFSEntryAccess>(read | write | execute);
-}
-
 void MFSFSEntry::SetHiddenFlag(bool isHidden)
 {
     if (isHidden)
@@ -87,12 +79,6 @@ void MFSFSEntry::SetProtectedFlag(bool isProtected)
         _meta->common.flags |= MFS_FSENTRY_FLAG_PROTECTED;
     else
         _meta->common.flags &= ~MFS_FSENTRY_FLAG_PROTECTED;
-}
-
-void MFSFSEntry::SetAccessAttributes(MFSFSEntryAccess access)
-{
-    _meta->common.flags &= ~14u;
-    _meta->common.flags |= (static_cast<DWORD>(access) & 14u);
 }
 
 uint64_t MFSFSEntry::GetFileSize() const
@@ -128,9 +114,9 @@ MFSBlockStream * MFSFSEntry::OpenDataStream()
             MFSGetPackedUnsignedValue(&_meta->spec.fileMeta.size));
 }
 
-auto MFSFSEntry::GetSubEntries() -> std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>>
+auto MFSFSEntry::GetSubEntries() -> std::vector<std::pair<MFSString, MFSFSEntry *>>
 {
-	std::vector<std::pair<MFSString, std::unique_ptr<MFSFSEntry>>> ret;
+	std::vector<std::pair<MFSString, MFSFSEntry *>> ret;
 	auto callback = [&](const WalkDirectoryBlockParameters & params)
 	{
 		for (auto&& it : *params.blockObject)

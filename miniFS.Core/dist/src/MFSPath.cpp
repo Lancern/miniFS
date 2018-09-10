@@ -11,6 +11,12 @@ bool MFSPath::IsValidPath(const MFSString & path) noexcept
     if (IsOSPath(path))
         return false;
 
+	if (path.IsEmpty())
+		return false;
+
+	if (path.StartsWith(L" ") || path.EndsWith(L" "))
+		return false;
+
     std::vector<wchar_t> invalidChars = GetInvalidNameChars();
 
     wchar_t sep = GetPathSeparator();
@@ -18,6 +24,11 @@ bool MFSPath::IsValidPath(const MFSString & path) noexcept
     {
         if (path[i] == sep)
         {
+			if (i > 0 && path[i - 1] == L' ')
+				return false;
+			if (i < path.GetLength() - 1 && path[i + 1] == L' ')
+				return false;
+
             if (i > 0 && path[i - 1] == sep)
             {
                 // Consecuive separator is invalid.
@@ -39,6 +50,8 @@ bool MFSPath::IsValidPath(const MFSString & path) noexcept
 
 bool MFSPath::IsAbsolutePath(const MFSString & path) noexcept
 {
+	if (!IsValidPath(path))
+		return false;
     return path.StartsWith(L"/");
 }
 
@@ -46,7 +59,9 @@ bool MFSPath::IsOSPath(const MFSString & path) noexcept
 {
     if (path.GetLength() < 3)
         return false;
-    return iswalpha(path[0]) && path[1] == L':' && path[2] == L'\\';
+    return ((path[0] >= L'a' && path[0] <= L'z') ||
+		(path[0] >= L'A' && path[0] <= L'Z')) &&
+		path[1] == L':' && path[2] == L'\\';
 }
 
 std::vector<MFSString> MFSPath::GetPathNames(const MFSString & path)
@@ -63,6 +78,11 @@ MFSString MFSPath::GetFileName(const MFSString & path)
         throw MFSInvalidPathException(path);
     if (path.GetLength() == 0)
         return path;
+	if (path == L"." || path == L"..")
+		return MFSString::GetEmptyString();
+
+	if (path.EndsWith(L"/"))
+		return MFSString::GetEmptyString();
 
     wchar_t sep = GetPathSeparator();
     bool endWithSep = path.EndsWith(sep);
@@ -97,12 +117,15 @@ MFSString MFSPath::GetExtension(const MFSString & path)
     if (!IsValidPath(path))
         throw MFSInvalidPathException(path);
 
+	if (path == L"." || path == L"..")
+		return MFSString::GetEmptyString();
+
     MFSString name = GetFileName(path);
     if (name.IsEmpty())
         return name;
     
     int startIndex = name.LastIndexOf(L".");
-    if (startIndex == -1)
+    if (startIndex == -1 || startIndex == name.GetLength() - 1)
         return MFSString::GetEmptyString();
     else
         return name.Substring(startIndex);
@@ -117,11 +140,8 @@ MFSString MFSPath::GetFileNameWithoutExtension(const MFSString & path)
     if (name.IsEmpty())
         return name;
 
-    int extensionStartIndex = name.LastIndexOf(L".");
-    if (extensionStartIndex == -1)
-        return name;
-    else
-        return name.Substring(0, extensionStartIndex);
+    uint32_t extensionLength = GetExtension(path).GetLength();
+    return name.Substring(0, name.GetLength() - extensionLength);
 }
 
 MFSString MFSPath::GetDirectoryPath(const MFSString & path)
@@ -139,8 +159,10 @@ MFSString MFSPath::GetDirectoryPath(const MFSString & path)
 
 MFSString MFSPath::Combine(const MFSString & path1, const MFSString & path2)
 {
-    if (!IsValidPath(path1) || !IsValidPath(path2))
-        throw MFSInvalidPathException(path);
+    if (!IsValidPath(path1))
+		throw MFSInvalidPathException(path1);
+	if (!IsValidPath(path2))
+        throw MFSInvalidPathException(path2);
     if (IsAbsolutePath(path2))
         return path2;
 
@@ -189,7 +211,7 @@ MFSString MFSPath::GetAbsolutePath(const MFSString & path)
 
     MFSDataSpace * activeSpace = MFSDataSpace::GetActiveDataSpace();
     if (!activeSpace)
-        throw new MFSDataSpaceNotLoadedException();
+        throw MFSDataSpaceNotLoadedException();
 
     return Combine(activeSpace->GetWorkingDirectory(), path);
 }

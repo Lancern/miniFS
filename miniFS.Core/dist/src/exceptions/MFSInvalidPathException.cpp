@@ -2,6 +2,6 @@
 
 
 MFSInvalidPathException::MFSInvalidPathException(const MFSString & path)
-	: MFSException(MFSString::Format(L"Path %s is invalid.", path))
+	: MFSException(MFSString::Format(L"Path %s is invalid.", path.GetRawString()))
 {
 }
