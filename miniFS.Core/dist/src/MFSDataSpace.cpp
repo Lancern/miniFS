@@ -129,7 +129,7 @@ MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
         throw MFSInvalidPathException(path);
 
     MFSString directory = MFSPath::GetDirectoryPath(path);
-    MFSFSEntry * directoryFsEntry = OpenFSEntry(directory);
+    std::unique_ptr<MFSFSEntry> directoryFsEntry(OpenFSEntry(directory));
     if (!directoryFsEntry)
         throw MFSDirectoryNotFoundException(directory);
 
@@ -141,7 +141,6 @@ MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
         else
         {
             MFSFSEntry * fileEntry = directoryFsEntry->AddSubEntry(filename);
-            delete directoryFsEntry;
             if (!fileEntry)
                 throw MFSOutOfSpaceException();
 
@@ -152,7 +151,6 @@ MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
     {
         // directoryFsEntry->ContainsSubEntry(filename).
         MFSFSEntry * fileEntry = directoryFsEntry->GetSubEntry(filename);
-        delete directoryFsEntry;
         if (!fileEntry)
             throw MFSException(L"Unexpected null fileEntry.");
 
@@ -168,36 +166,30 @@ MFSFile * MFSDataSpace::CreateFile(const MFSString & path, bool openIfExist)
     MFSString directory = MFSPath::Combine(GetWorkingDirectory(), MFSPath::GetDirectoryPath(path));
     MFSString filename = MFSPath::GetFileName(path);
     
-    MFSFSEntry * directoryFsEntry = OpenFSEntry(directory);
+    std::unique_ptr<MFSFSEntry> directoryFsEntry(OpenFSEntry(directory));
     if (!directoryFsEntry)
         throw MFSDirectoryNotFoundException(directory);
 
     if (directoryFsEntry->ContainsSubEntry(filename))
     {
         if (!openIfExist)
-        {
-            delete directoryFsEntry;
             throw MFSFileAlreadyExistException(path);
-        }
         else
         {
             MFSFSEntry * fileFsEntry = directoryFsEntry->GetSubEntry(filename);
-            delete directoryFsEntry;
-
             if (!fileFsEntry)
                 throw MFSException(L"Unexpected null fileFsEntry.");
 
-            return new MFSFile(directoryFsEntry);
+            return new MFSFile(directoryFsEntry.get());
         }
     }
     else
     {
         // !directoryFsEntry->ContainsSubEntry(filename).
         MFSFSEntry * fileFsEntry = directoryFsEntry->AddSubEntry(filename);
-        delete directoryFsEntry;
-
         if (!fileFsEntry)
             throw MFSOutOfSpaceException();
+
         return new MFSFile(fileFsEntry);
     }
 }
@@ -210,7 +202,7 @@ void MFSDataSpace::CreateDirectory(const MFSString & path, bool errorIfExist)
     MFSString absolute = MFSPath::Combine(GetWorkingDirectory(), path);
     
     std::vector<MFSString> pathNames = MFSPath::GetPathNames(absolute);
-    MFSFSEntry * entry = OpenRootFSEntry();
+    std::unique_ptr<MFSFSEntry> entry(OpenRootFSEntry());
 
     for (uint32_t i = 0; i < pathNames.size(); ++i)
     {
@@ -218,56 +210,47 @@ void MFSDataSpace::CreateDirectory(const MFSString & path, bool errorIfExist)
         if (entry->ContainsSubEntry(name))
         {
             MFSFSEntry * subEntry = entry->GetSubEntry(name);
-            delete entry;
-
             if (!subEntry)
                 throw MFSException(L"Unexpected null subEntry.");
-
             if (subEntry->GetEntryType() == MFSFSEntryType::File)
                 throw MFSFileAlreadyExistException(name);
 
-            entry = subEntry;
+            entry.reset(subEntry);
         }
         else
         {
             MFSFSEntry * subEntry = entry->AddSubEntry(name);
-            delete entry;
-
             if (!subEntry)
                 throw MFSOutOfSpaceException();
 
             subEntry->SetEntryType(MFSFSEntryType::Directory);
-            entry = subEntry;
+            entry.reset(subEntry);
         }
     }
-
-    delete entry;
 }
 
 void MFSDataSpace::CreateLink(const MFSString & target, const MFSString & link)
 {
-    MFSFSEntry * targetEntry = OpenFSEntry(target);
+    std::unique_ptr<MFSFSEntry> targetEntry(OpenFSEntry(target));
     if (!targetEntry)
         throw MFSException(L"Unexpected null targetEntry.");
 
     uint32_t targetFsnodeId = targetEntry->GetFSNodeId();
-    delete targetEntry;
+    targetEntry.release();
 
     MFSString linkDirectory = MFSPath::GetDirectoryPath(link);
     MFSString linkFilename = MFSPath::GetFileName(link);
 
-    MFSFSEntry * linkDirectoryEntry = OpenFSEntry(linkDirectory);
+    std::unique_ptr<MFSFSEntry> linkDirectoryEntry(OpenFSEntry(linkDirectory));
     if (!linkDirectoryEntry)
         throw MFSDirectoryNotFoundException(linkDirectory);
 
     if (linkDirectoryEntry->ContainsSubEntry(linkFilename))
         throw MFSFileAlreadyExistException(link);
 
-    MFSFSEntry * linkEntry = linkDirectoryEntry->AddSubEntry(linkFilename, targetFsnodeId);
+    std::unique_ptr<MFSFSEntry> linkEntry(linkDirectoryEntry->AddSubEntry(linkFilename, targetFsnodeId));
     if (!linkEntry)
         throw MFSOutOfSpaceException();
-
-    delete linkEntry;
 }
 
 void MFSDataSpace::Delete(const MFSString & path)
@@ -275,17 +258,15 @@ void MFSDataSpace::Delete(const MFSString & path)
     MFSString directory = MFSPath::GetDirectoryPath(path);
     MFSString filename = MFSPath::GetFileName(path);
 
-    MFSFSEntry * directoryEntry = OpenFSEntry(directory);
+    std::unique_ptr<MFSFSEntry> directoryEntry(OpenFSEntry(directory));
+
     if (!directoryEntry)
         throw MFSDirectoryNotFoundException(directory);
-
     if (!directoryEntry->ContainsSubEntry(filename))
         throw MFSFileNotFoundException(path);
 
     if (!directoryEntry->RemoveSubEntry(filename))
         throw MFSException(L"Unexpected RemoveSubEntry call failed.");
-
-    delete directoryEntry;
 }
 
 bool MFSDataSpace::IsDirectory(const MFSString & path)
