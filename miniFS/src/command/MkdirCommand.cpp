@@ -25,7 +25,7 @@ void MkdirCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		MFSDataSpace *space;
 		space = MFSDataSpace::GetActiveDataSpace();
-		space->CreateDirectory(argv[0]);
+		space->CreateDirectory(argv[0],true);
 	}
 	catch(MFSException & ex)
 	{
