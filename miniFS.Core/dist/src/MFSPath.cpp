@@ -78,6 +78,8 @@ MFSString MFSPath::GetFileName(const MFSString & path)
         throw MFSInvalidPathException(path);
     if (path.GetLength() == 0)
         return path;
+	if (path == L"." || path == L"..")
+		return MFSString::GetEmptyString();
 
 	if (path.EndsWith(L"/"))
 		return MFSString::GetEmptyString();
@@ -138,11 +140,8 @@ MFSString MFSPath::GetFileNameWithoutExtension(const MFSString & path)
     if (name.IsEmpty())
         return name;
 
-    int extensionStartIndex = name.LastIndexOf(L".");
-    if (extensionStartIndex == -1)
-        return name;
-    else
-        return name.Substring(0, extensionStartIndex);
+    uint32_t extensionLength = GetExtension(path).GetLength();
+    return name.Substring(0, name.GetLength() - extensionLength);
 }
 
 MFSString MFSPath::GetDirectoryPath(const MFSString & path)
@@ -212,7 +211,7 @@ MFSString MFSPath::GetAbsolutePath(const MFSString & path)
 
     MFSDataSpace * activeSpace = MFSDataSpace::GetActiveDataSpace();
     if (!activeSpace)
-        throw new MFSDataSpaceNotLoadedException();
+        throw MFSDataSpaceNotLoadedException();
 
     return Combine(activeSpace->GetWorkingDirectory(), path);
 }
