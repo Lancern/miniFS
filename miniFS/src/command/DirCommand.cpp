@@ -10,7 +10,7 @@ bool DirCommand::Accept(const MFSString & string) const
 void DirCommand::Action(const std::vector<MFSString> & argv) const
 {
 	MFSConsole *point = MFSGetDefaultConsole();
-	if (argv.size() != 0)
+	if (argv.size() > 2)
 	{
 		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
 		return;
