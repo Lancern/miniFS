@@ -18,9 +18,9 @@ void TouchCommand::Action(const std::vector<MFSString> & argv) const
 	try
 	{
 		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-		space->CreateFile(argv[0], true);
+		MFSFile * file = space->CreateFile(argv[0], false);
 	}
-	catch(MFSWindowsException & ex)
+	catch(MFSException & ex)
 	{
 		point->Log(ex.GetExceptMessage() + L"\n");
 	}
