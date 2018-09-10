@@ -49,7 +49,7 @@ class MFSPath
             MFSInvalidPathException：给定的路径不是一个合法路径。
 
     static MFSString MFSPath::Combine(const MFSString & path1, const MFSString & path2)
-        获取 path2 在以 path1 为相对参考意义下的绝对路径。
+        获取 path2 在以 path1 为相对参考意义下的路径。
         @exceptions
             MFSInvalidPathException：path1 或 path2 不是一个合法路径。
 
