@@ -17,6 +17,15 @@ class MFSConsole
     MFSString MFSConsole::GetTitle() const
         获取命令行窗口的标题。
 
+    void MFSConsole::SetHandlerOnExit(ConsoleEventHandler handler)
+        设置在应用程序退出时执行的回调函数。
+
+    void MFSConsole::SetHandlerOnCtrlC(ConsoleEventHandler handler)
+        设置在应用程序收到 Ctrl + C 组合键时执行的回调函数。
+
+    void MFSConsole::SetHandlerOnCtrlBreak(ConsoleEventHandler handler)
+        设置应用程序收到 Ctrl + Break 组合键时执行的回调函数。
+
     MFSConsoleColors MFSConsole::GetBackgroundColor() const
         获取命令行窗口的背景颜色。
 
@@ -69,7 +78,7 @@ MFSConsole * MFSGetDefaultConsole()
 
 */
 
-enum MFSConsoleColors
+enum struct MFSConsoleColors
 {
     Black = 0x0000,
     Blue = 0x0001,
@@ -85,11 +94,17 @@ enum MFSConsoleColors
 class MFSConsole
 {
 public:
+    typedef void(*ConsoleEventHandler)();
+
     MFSConsole();
     ~MFSConsole();
 
     void SetTitle(const MFSString & string);
     MFSString GetTitle() const;
+
+    void SetHandlerOnExit(ConsoleEventHandler handler);
+    void SetHandlerOnCtrlC(ConsoleEventHandler handler);
+    void SetHandlerOnCtrlBreak(ConsoleEventHandler handler);
 
     MFSConsoleColors GetBackgroundColor() const;
     MFSConsoleColors GetForegroundColor() const;
@@ -97,11 +112,11 @@ public:
     void SetForegroundColor(MFSConsoleColors color);
     void SetColor(MFSConsoleColors background, MFSConsoleColors foreground);
 
-    WCHAR ReadChar();
+    wchar_t ReadChar();
     DWORD ReadKey();
     MFSString ReadLine();
 
-    void LogChar(WCHAR ch);
+    void LogChar(wchar_t ch);
     void Log(const MFSString & string);
     void LogLine();
     void LogLine(const MFSString & string);
@@ -110,9 +125,15 @@ public:
     void LogWarningLine(const MFSString & string);
     void LogErrorLine(const MFSString & string);
 
+    static MFSConsole * GetDefaultConsole();
+
 private:
     HANDLE _hInput;
     HANDLE _hOutput;
-};
 
-MFSConsole * MFSGetDefaultConsole();
+    ConsoleEventHandler _exitHandler;
+    ConsoleEventHandler _ctrlCHandler;
+    ConsoleEventHandler _ctrlBreakHandler;
+
+    friend void ConsoleEventHandler(DWORD);
+};
