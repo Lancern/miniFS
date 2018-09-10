@@ -9,7 +9,7 @@ bool MapCommand::Accept(const MFSString & string) const
 
 void MapCommand::Action(const std::vector<MFSString> & argv) const
 {
-	MFSConsole *point = MFSGetDefaultConsole();
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	if (space == NULL)
 	{

@@ -6,10 +6,20 @@
 #include "include/MFSTest.h"
 #include "include/io/MFSConsole.h"
 
+void f()
+{
+	CloseCommand * close = new CloseCommand();
+	std::vector<MFSString> a;
+	close->Action(a);
+	return;
+}
+
 int main()
 {
 	MFSTest command;
-	MFSConsole *point = MFSGetDefaultConsole();
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+
+	point->SetHandlerOnExit(&f);
 
 	while (1)
 	{
