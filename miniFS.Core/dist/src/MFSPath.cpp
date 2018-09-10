@@ -10,10 +10,8 @@ bool MFSPath::IsValidPath(const MFSString & path) noexcept
 {
     if (IsOSPath(path))
         return false;
-
 	if (path.IsEmpty())
-		return false;
-
+		return true;
 	if (path.StartsWith(L" ") || path.EndsWith(L" "))
 		return false;
 
