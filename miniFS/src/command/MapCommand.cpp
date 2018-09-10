@@ -21,6 +21,9 @@ void MapCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"Ö¸ÁîÊäÈëÓÐÎó\n");
 		return;
 	}
+	MFSFile *file;
+	file->
+	file->GetAllBlocksId();
 }
 
 MapCommand::MapCommand()

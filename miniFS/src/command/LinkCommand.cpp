@@ -23,8 +23,11 @@ void LinkCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
-		space->CreateLink();
-
+		space->CreateLink(argv[0], argv[1]);
+	}
+	catch (MFSException & ex)
+	{
+		point->Log(ex.GetExceptMessage()+L"\n");
 	}
 }
 

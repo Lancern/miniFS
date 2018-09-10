@@ -29,7 +29,7 @@ void MountCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	catch (MFSException & ex)
 	{
-		std::wcerr << ex.GetExceptMessage().GetRawString() << std::endl;
+		point->Log(ex.GetExceptMessage()+L"\n");;
 	}
 }
 
