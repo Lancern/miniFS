@@ -60,6 +60,8 @@ public:
 
     MFSStream * OpenStream() noexcept;
 
+	std::vector<uint32_t> GetAllBlocksId() const noexcept;
+
 private:
 	MFSFSEntry * _entry;
     MFSFile(MFSFSEntry * entry);

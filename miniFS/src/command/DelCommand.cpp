@@ -9,6 +9,12 @@ bool DelCommand::Accept(const MFSString & string) const
 
 void DelCommand::Action(const std::vector<MFSString> & argv) const
 {
+	MFSConsole *point = MFSGetDefaultConsole();
+	if (argv.size() < 1 || argv.size() > 2)
+	{
+		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
+		return;
+	}
 }
 
 DelCommand::DelCommand()
