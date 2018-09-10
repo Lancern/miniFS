@@ -2,6 +2,7 @@
 
 #include "../miniFS.Core/dist/include/MFSPath.h"
 #include "../miniFS.Core/dist/include/exceptions/MFSInvalidPathException.h"
+#include "../miniFS.Core/dist/include/exceptions/MFSDataSpaceNotLoadedException.h"
 #include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -179,7 +180,9 @@ public:
 
 		Assert::IsTrue(MFSPath::GetFileName(L"/\\/") == L"");
 
-		Assert::IsTrue(MFSPath::GetFileName(L".") == L".");
+		Assert::IsTrue(MFSPath::GetFileName(L".") == L"");
+
+		Assert::IsTrue(MFSPath::GetFileName(L"..") == L"");
 
 		Assert::IsTrue(MFSPath::GetFileName(L"a") == L"a");
 
@@ -222,5 +225,104 @@ public:
 		Assert::IsTrue(MFSPath::GetExtension(L"a.b.c.") == L"");
 
 		Assert::IsTrue(MFSPath::GetExtension(L"a.b c") == L".b c");
+	}
+
+	TEST_METHOD(GetFileNameWithoutExtensionTest)
+	{
+		Assert::ExpectException<MFSInvalidPathException>([]()
+		{
+			MFSPath::GetFileNameWithoutExtension(L" ");
+		});
+
+		Assert::IsTrue(MFSPath::GetFileNameWithoutExtension(L".") == L"");
+
+		Assert::IsTrue(MFSPath::GetFileNameWithoutExtension(L"..") == L"");
+
+		Assert::IsTrue(MFSPath::GetFileNameWithoutExtension(L"a.") == L"a.");
+
+		Assert::IsTrue(MFSPath::GetFileNameWithoutExtension(L"a..") == L"a..");
+
+		Assert::IsTrue(MFSPath::GetFileNameWithoutExtension(L".a") == L"");
+
+		Assert::IsTrue(MFSPath::GetFileNameWithoutExtension(L"..a") == L".");
+
+		Assert::IsTrue(MFSPath::GetFileNameWithoutExtension(L"a.b.c") == L"a.b");
+
+		Assert::IsTrue(MFSPath::GetFileNameWithoutExtension(L"a.b.") == L"a.b.");
+	}
+
+	TEST_METHOD(GetDirectoryPathTest)
+	{
+		Assert::ExpectException<MFSInvalidPathException>([]()
+		{
+			MFSPath::GetDirectoryPath(L" ");
+		});
+
+		Assert::IsTrue(MFSPath::GetDirectoryPath(L".") == L"");
+
+		Assert::IsTrue(MFSPath::GetDirectoryPath(L"..") == L"");
+
+		Assert::IsTrue(MFSPath::GetDirectoryPath(L"./.") == L".");
+
+		Assert::IsTrue(MFSPath::GetDirectoryPath(L"/") == L"");
+
+		Assert::IsTrue(MFSPath::GetDirectoryPath(L"/a/b c") == L"/a");
+
+		Assert::IsTrue(MFSPath::GetDirectoryPath(L"a/b/") == L"a/b");
+
+		Assert::IsTrue(MFSPath::GetDirectoryPath(L"/a/b/") == L"/a/b");
+
+		Assert::IsTrue(MFSPath::GetDirectoryPath(L"a") == L"");
+	}
+
+	TEST_METHOD(CombineTest)
+	{
+		Assert::ExpectException<MFSInvalidPathException>([]()
+		{
+			MFSPath::Combine(L" ", L"/");
+		});
+
+		Assert::ExpectException<MFSInvalidPathException>([]()
+		{
+			MFSPath::Combine(L"/", L" ");
+		});
+
+		Assert::IsTrue(MFSPath::Combine(L"/", L"a") == L"/a");
+
+		Assert::IsTrue(MFSPath::Combine(L"/a", L"a") == L"/a/a");
+
+		Assert::IsTrue(MFSPath::Combine(L"a", L"a") == L"a/a");
+
+		Assert::IsTrue(MFSPath::Combine(L"a", L"/a") == L"/a");
+
+		Assert::IsTrue(MFSPath::Combine(L".", L"..") == L"..");
+
+		Assert::IsTrue(MFSPath::Combine(L"a/b", L"..") == L"a");
+
+		Assert::IsTrue(MFSPath::Combine(L"/", L"..") == L"/");
+
+		Assert::IsTrue(MFSPath::Combine(L"/a", L"./") == L"/a");
+
+		Assert::IsTrue(MFSPath::Combine(L"a", L".") == L"a");
+
+		Assert::IsTrue(MFSPath::Combine(L"/../a/./b/..", L"./../a/b/..") == L"/a");
+
+		Assert::IsTrue(MFSPath::Combine(L"/../", L"./../.") == L"/");
+
+		Assert::IsTrue(MFSPath::Combine(L"../../b/..", L"../a/b/..") == L"../../../a");
+	}
+
+	TEST_METHOD(GetAbsolutePathTest)
+	{
+		Assert::ExpectException<MFSInvalidPathException>([]()
+		{
+			MFSPath::GetAbsolutePath(L" ");
+		});
+
+		Assert::ExpectException<MFSDataSpaceNotLoadedException>([]()
+		{
+			MFSPath::GetAbsolutePath(L"/");
+		});
+
 	}
 };
