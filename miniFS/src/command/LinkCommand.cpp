@@ -14,7 +14,11 @@ void LinkCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
 		return;
-	}
+	}/*
+	try
+	{
+
+	}*/
 }
 
 LinkCommand::LinkCommand()

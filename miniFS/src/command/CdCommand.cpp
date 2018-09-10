@@ -15,7 +15,18 @@ void CdCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"Ö¸ÁîÊäÈëÓÐÎó\n");
 		return;
 	}
-	exit(0);
+	try
+	{
+		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
+		if (argv.size() == 0)
+			space->SetWorkingDirectory(L"/");
+		else
+			space->SetWorkingDirectory(argv[0]);
+	}
+	catch (MFSException &ex)
+	{
+		point->Log(ex.GetExceptMessage()+L"\n");
+	}
 }
 
 CdCommand::CdCommand()

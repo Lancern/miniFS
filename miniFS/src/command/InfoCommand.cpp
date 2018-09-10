@@ -23,7 +23,6 @@ void InfoCommand::Action(const std::vector<MFSString> & argv) const
 	else {
 		point->Log(L"当前数据空间可用总空间 ");
 		std::wcout << space->GetTotalSpaceInBytes() << std::endl;
-		point->Log(space->GetTotalSpaceInBytes());
 		point->Log(L"当前数据空间可用空间 ");
 		std::wcout << space->GetFreeSpaceInBytes() << std::endl;
 		point->Log(L"当前数据空间已用空间 ");
