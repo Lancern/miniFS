@@ -16,7 +16,7 @@ int main()
 		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 		std::vector<WCHAR> split = { L'|' };
 		std::vector<MFSString> subString;
-		point->Log(L"miniFS@");
+		point->Log(L"miniFS@ ");
 		if (space)
 			point->Log(space->GetWorkingDirectory());
 		point->Log(L">");

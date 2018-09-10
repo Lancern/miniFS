@@ -26,7 +26,7 @@ void CreateCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	catch (MFSWindowsException & ex)
 	{
-		std::wcerr << L"FUCK: " << ex.GetErrorCode() << L" " << ex.GetExceptMessage().GetRawString() << std::endl;
+		point->Log(ex.GetExceptMessage()+L"\n");;
 	}
 	//catch (MFSException & ex)
 	//{
