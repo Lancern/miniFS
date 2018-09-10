@@ -287,7 +287,34 @@ void MFSDataSpace::Copy(const MFSString & source, const MFSString & destination)
 
 void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
 {
-    // TODO: Implement MFSDataSpace::Move(const MFSString &, const MFSString &).
+	MFSString srcDirectory = MFSPath::GetDirectoryPath(source);
+	MFSString srcFilename = MFSPath::GetFileName(source);
+	MFSString dstDirectory = MFSPath::GetDirectoryPath(destination);
+	MFSString dstFilename = MFSPath::GetFileName(destination);
+
+	std::unique_ptr<MFSFSEntry> srcDirEntry(OpenFSEntry(srcDirectory));
+	if (srcDirEntry == nullptr)
+		throw MFSDirectoryNotFoundException(srcDirectory);
+	std::unique_ptr<MFSFSEntry> dstDirEntry(OpenFSEntry(dstDirectory));
+	if (dstDirEntry == nullptr)
+		throw MFSDirectoryNotFoundException(dstDirectory);
+
+	std::unique_ptr<MFSFSEntry> srcFileEntry(srcDirEntry->GetSubEntry(srcFilename));
+	if (srcFileEntry == nullptr)
+		throw MFSFileNotFoundException(source);
+	std::unique_ptr<MFSFSEntry> dstFileEntry(dstDirEntry->GetSubEntry(dstFilename));
+	if (dstFileEntry == nullptr)
+		throw MFSFileAlreadyExistException(destination);
+
+	MFSFSEntry* pEntry = dstDirEntry->AddSubEntry(dstFilename, srcFileEntry->GetFSNodeId());
+	if (pEntry)
+		delete pEntry;
+	else
+		throw MFSOutOfSpaceException();
+	srcFileEntry.release();
+	bool flag = srcDirEntry->RemoveSubEntry(srcFilename);
+	if (!flag)
+		throw MFSException(L"unexpected RemoveSubEntry failed.");
 }
 
 std::vector<MFSString> MFSDataSpace::GetDirectories(const MFSString & directory)
