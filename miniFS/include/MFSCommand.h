@@ -6,6 +6,7 @@
 #include "../../miniFS.Core/dist/include/MFSFile.h"
 #include "../../miniFS.Core/dist/include/MFSPath.h"
 #include "io/MFSConsole.h"
+#include <algorithm>
 
 #include "../../miniFS.Core/dist/include/exceptions/MFSDataSpaceNotLoadedException.h"
 #include "../../miniFS.Core/dist/include/exceptions/MFSDirectoryNotFoundException.h"
