@@ -28,6 +28,7 @@
     <ClInclude Include="dist\include\exceptions\MFSInvalidArgumentException.h" />
     <ClInclude Include="dist\include\exceptions\MFSInvalidDeviceException.h" />
     <ClInclude Include="dist\include\exceptions\MFSInvalidEntryTypeException.h" />
+    <ClInclude Include="dist\include\exceptions\MFSInvalidOperationException.h" />
     <ClInclude Include="dist\include\exceptions\MFSInvalidPathException.h" />
     <ClInclude Include="dist\include\exceptions\MFSOutOfSpaceException.h" />
     <ClInclude Include="dist\include\exceptions\MFSWindowsException.h" />
@@ -72,6 +73,7 @@
     <ClCompile Include="dist\src\exceptions\MFSInvalidArgumentException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSInvalidDeviceException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSInvalidEntryTypeException.cpp" />
+    <ClCompile Include="dist\src\exceptions\MFSInvalidOperationException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSInvalidPathException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSOutOfSpaceException.cpp" />
     <ClCompile Include="dist\src\exceptions\MFSWindowsException.cpp" />

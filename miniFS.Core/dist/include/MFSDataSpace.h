@@ -69,6 +69,7 @@ class MFSDataSpace
             MFSInvalidPathException 给定的路径不合法。
             MFSDirectoryNotFoundException 路径上有一个或多个目录不存在。
             MFSFileAlreadyExistException 文件已经存在且 openIfExist 参数为 false。
+            MFSDirectoryAlreadyExistException 已经存在一个同名的目录。
             MFSOutOfSpaceException 数据空间空间不足，无法完成要求的操作。
 
     void MFSDataSpace::CreateDirectory(const MFSString & path, bool errorIfExist)
@@ -98,6 +99,7 @@ class MFSDataSpace
             MFSInvalidPathException 路径不合法。
             MFSDirectoryNotFoundException 路径上有一个或多个目录不存在。
             MFSFileNotFoundException 要删除的目录、文件或硬链接不存在。
+            MFSInvalidOperationException 要删除的目标是一个非空目录。
 
     bool MFSDataSpace::IsDirectory(const MFSString & path) const
         确定一个路径所对应的项目是否为一个目录。
