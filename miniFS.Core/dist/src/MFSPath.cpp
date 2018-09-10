@@ -50,6 +50,8 @@ bool MFSPath::IsValidPath(const MFSString & path) noexcept
 
 bool MFSPath::IsAbsolutePath(const MFSString & path) noexcept
 {
+	if (!IsValidPath(path))
+		return false;
     return path.StartsWith(L"/");
 }
 
@@ -57,7 +59,9 @@ bool MFSPath::IsOSPath(const MFSString & path) noexcept
 {
     if (path.GetLength() < 3)
         return false;
-    return iswalpha(path[0]) && path[1] == L':' && path[2] == L'\\';
+    return ((path[0] >= L'a' && path[0] <= L'z') ||
+		(path[0] >= L'A' && path[0] <= L'Z')) &&
+		path[1] == L':' && path[2] == L'\\';
 }
 
 std::vector<MFSString> MFSPath::GetPathNames(const MFSString & path)
@@ -74,6 +78,9 @@ MFSString MFSPath::GetFileName(const MFSString & path)
         throw MFSInvalidPathException(path);
     if (path.GetLength() == 0)
         return path;
+
+	if (path.EndsWith(L"/"))
+		return MFSString::GetEmptyString();
 
     wchar_t sep = GetPathSeparator();
     bool endWithSep = path.EndsWith(sep);
@@ -108,12 +115,15 @@ MFSString MFSPath::GetExtension(const MFSString & path)
     if (!IsValidPath(path))
         throw MFSInvalidPathException(path);
 
+	if (path == L"." || path == L"..")
+		return MFSString::GetEmptyString();
+
     MFSString name = GetFileName(path);
     if (name.IsEmpty())
         return name;
     
     int startIndex = name.LastIndexOf(L".");
-    if (startIndex == -1)
+    if (startIndex == -1 || startIndex == name.GetLength() - 1)
         return MFSString::GetEmptyString();
     else
         return name.Substring(startIndex);
