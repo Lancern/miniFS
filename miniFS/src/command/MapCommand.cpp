@@ -2,7 +2,7 @@
 
 bool MapCommand::Accept(const MFSString & string) const
 {
-	if (string == L"Map")
+	if (string == L"map")
 		return true;
 	else return false;
 }
