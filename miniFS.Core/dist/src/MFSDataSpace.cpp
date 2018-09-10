@@ -377,6 +377,9 @@ void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
 	if (dstFileEntry == nullptr)
 		throw MFSFileAlreadyExistException(destination);
 
+	if (dstDirEntry->ContainsSubEntry(dstFilename))
+		throw MFSFileAlreadyExistException(destination);
+
 	MFSFSEntry* pEntry = dstDirEntry->AddSubEntry(dstFilename, srcFileEntry->GetFSNodeId());
 	if (pEntry)
 		delete pEntry;
