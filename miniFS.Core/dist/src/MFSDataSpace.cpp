@@ -277,12 +277,34 @@ void MFSDataSpace::Delete(const MFSString & path)
     MFSString directory = MFSPath::GetDirectoryPath(path);
     MFSString filename = MFSPath::GetFileName(path);
 
-    // UNDONE: Implement MFSDataSpace::Delete(const MFSString &).
+    MFSFSEntry * directoryEntry = OpenFSEntry(directory);
+    if (!directoryEntry)
+        throw MFSDirectoryNotFoundException(directory);
+
+    if (!directoryEntry->ContainsSubEntry(filename))
+        throw MFSFileNotFoundException(path);
+
+    if (!directoryEntry->RemoveSubEntry(filename))
+        throw MFSException(L"Unexpected RemoveSubEntry call failed.");
+
+    delete directoryEntry;
 }
 
 void MFSDataSpace::Copy(const MFSString & source, const MFSString & destination)
 {
-    // TODO: Implement MFSDataSpace::Copy(const MFSString & source, const MFSString & destination).
+    MFSFSEntry * sourceEntry = OpenFSEntry(source);
+    if (!sourceEntry)
+        throw MFSFileNotFoundException(source);
+    
+    // UNDONE: Implement MFSDataSpace::Copy(const MFSString &, const MFSString &).
+    if (sourceEntry->GetEntryType() == MFSFSEntryType::Directory)
+    {
+
+    }
+    else
+    {
+
+    }
 }
 
 void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
