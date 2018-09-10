@@ -3,8 +3,10 @@
 #include "../include/exceptions/MFSInvalidArgumentException.h"
 #include "../include/exceptions/MFSInvalidPathException.h"
 #include "../include/exceptions/MFSInvalidDeviceException.h"
+#include "../include/exceptions/MFSFileAlreadyExistException.h"
 #include "../include/exceptions/MFSDirectoryNotFoundException.h"
 #include "../include/exceptions/MFSWindowsException.h"
+#include "../include/exceptions/MFSOutOfSpaceException.h"
 #include "../../include/device/MFSOSFileDevice.h"
 #include "../../include/device/MFSBlockDevice.h"
 #include "../../include/fs/MFSPartition.h"
@@ -74,7 +76,7 @@ void MFSDataSpace::SetWorkingDirectory(const MFSString & path)
     if (!Exist(path))
         throw MFSInvalidPathException(L"The path given is not exist.");
 
-    _workingDirectory = path;
+    _workingDirectory = MFSPath::Combine(_workingDirectory, path);
 }
 
 uint64_t MFSDataSpace::GetTotalSpaceInBytes() const noexcept
@@ -99,8 +101,26 @@ void MFSDataSpace::Format() noexcept
 
 bool MFSDataSpace::Exist(const MFSString & path)
 {
-    // TODO: Implement MFSDataSpace::Exist(const MFSString &).
-    return true;
+    MFSString directory = MFSPath::GetDirectoryPath(path);
+    MFSFSEntry * directoryFsEntry = nullptr;
+
+    try
+    {
+        directoryFsEntry = OpenFSEntry(path);
+    }
+    catch (const MFSDirectoryNotFoundException &)
+    {
+        return false;
+    }
+
+    if (!directoryFsEntry)
+        return false;
+
+    MFSString filename = MFSPath::GetFileName(path);
+    bool result = directoryFsEntry->ContainsSubEntry(filename);
+    delete directoryFsEntry;
+
+    return result;
 }
 
 MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
@@ -111,8 +131,44 @@ MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
 
 MFSFile * MFSDataSpace::CreateFile(const MFSString & path, bool openIfExist)
 {
-    // TODO: Implement MFSDataSpace::CreateFile(const MFSString &, bool).
-    return nullptr;
+    if (!MFSPath::IsValidPath(path))
+        throw MFSInvalidPathException(path);
+
+    MFSString directory = MFSPath::Combine(GetWorkingDirectory(), MFSPath::GetDirectoryPath(path));
+    MFSString filename = MFSPath::GetFileName(path);
+    
+    MFSFSEntry * directoryFsEntry = OpenFSEntry(directory);
+    if (!directoryFsEntry)
+        throw MFSDirectoryNotFoundException(directory);
+
+    if (directoryFsEntry->ContainsSubEntry(filename))
+    {
+        if (!openIfExist)
+        {
+            delete directoryFsEntry;
+            throw MFSFileAlreadyExistException(path);
+        }
+        else
+        {
+            MFSFSEntry * fileFsEntry = directoryFsEntry->GetSubEntry(filename);
+            delete directoryFsEntry;
+
+            if (!fileFsEntry)
+                throw MFSException(L"Unexpected null fileFsEntry.");
+
+            return new MFSFile(directoryFsEntry);
+        }
+    }
+    else
+    {
+        // !directoryFsEntry->ContainsSubEntry(filename).
+        MFSFSEntry * fileFsEntry = directoryFsEntry->AddSubEntry(filename);
+        delete directoryFsEntry;
+
+        if (!fileFsEntry)
+            throw MFSOutOfSpaceException();
+        return new MFSFile(fileFsEntry);
+    }
 }
 
 void MFSDataSpace::CreateDirectory(const MFSString & path)
