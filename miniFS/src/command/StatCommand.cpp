@@ -9,7 +9,6 @@ bool StatCommand::Accept(const MFSString & string) const
 
 void StatCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 StatCommand::StatCommand()

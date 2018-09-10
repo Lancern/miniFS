@@ -72,6 +72,12 @@
     <ClInclude Include="include\command\InfoCommand.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\command\MapCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\OptCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\command\CreateCommand.cpp">
@@ -126,6 +132,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\command\InfoCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\MapCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\OptCommand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

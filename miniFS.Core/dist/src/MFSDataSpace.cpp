@@ -39,7 +39,8 @@ MFSDataSpace::MFSDataSpace(const MFSString & osFileName)
         throw MFSInvalidDeviceException();
     }
 
-    SetWorkingDirectory(L"/");
+	if (!_partition->IsRaw())
+		SetWorkingDirectory(L"/");
 }
 
 MFSDataSpace::MFSDataSpace(MFSDataSpace && another)
@@ -98,33 +99,26 @@ bool MFSDataSpace::IsFormatted() const noexcept
 void MFSDataSpace::Format() noexcept
 {
     _partition->BuildFileSystem();
+	SetWorkingDirectory(L"/");
 }
 
 bool MFSDataSpace::Exist(const MFSString & path)
 {
-    if (!MFSPath::IsValidPath(path))
-        throw MFSInvalidPathException(path);
+	MFSFSEntry * entry = nullptr;
+	try
+	{
+		entry = OpenFSEntry(path);
+	}
+	catch (const MFSDirectoryNotFoundException &)
+	{
+		return false;
+	}
+	catch (const MFSFileNotFoundException &)
+	{
+		return false;
+	}
 
-    MFSString directory = MFSPath::GetDirectoryPath(path);
-    MFSFSEntry * directoryFsEntry = nullptr;
-
-    try
-    {
-        directoryFsEntry = OpenFSEntry(path);
-    }
-    catch (const MFSDirectoryNotFoundException &)
-    {
-        return false;
-    }
-
-    if (!directoryFsEntry)
-        return false;
-
-    MFSString filename = MFSPath::GetFileName(path);
-    bool result = directoryFsEntry->ContainsSubEntry(filename);
-    delete directoryFsEntry;
-
-    return result;
+	return true;
 }
 
 MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)

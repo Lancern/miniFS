@@ -9,7 +9,6 @@ bool HelpCommand::Accept(const MFSString & string) const
 
 void HelpCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 HelpCommand::HelpCommand()

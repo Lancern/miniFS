@@ -9,7 +9,6 @@ bool DelCommand::Accept(const MFSString & string) const
 
 void DelCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 DelCommand::DelCommand()

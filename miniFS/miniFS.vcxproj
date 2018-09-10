@@ -143,6 +143,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\command\InfoCommand.h" />
+    <ClInclude Include="include\command\MapCommand.h" />
+    <ClInclude Include="include\command\OptCommand.h" />
     <ClInclude Include="include\io\MFSConsole.h" />
     <ClInclude Include="include\Commands.h" />
     <ClInclude Include="include\command\CloseCommand.h" />
@@ -173,9 +175,11 @@
     <ClCompile Include="src\command\HelpCommand.cpp" />
     <ClCompile Include="src\command\InfoCommand.cpp" />
     <ClCompile Include="src\command\LinkCommand.cpp" />
+    <ClCompile Include="src\command\MapCommand.cpp" />
     <ClCompile Include="src\command\MkdirCommand.cpp" />
     <ClCompile Include="src\command\MountCommand.cpp" />
     <ClCompile Include="src\command\MoveCommand.cpp" />
+    <ClCompile Include="src\command\OptCommand.cpp" />
     <ClCompile Include="src\command\StatCommand.cpp" />
     <ClCompile Include="src\command\TpCommand.cpp" />
     <ClCompile Include="src\command\UnmountCommand.cpp" />
