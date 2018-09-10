@@ -3,6 +3,7 @@
 #include "../include/exceptions/MFSInvalidArgumentException.h"
 #include "../include/exceptions/MFSInvalidPathException.h"
 #include "../include/exceptions/MFSInvalidDeviceException.h"
+#include "../include/exceptions/MFSInvalidEntryTypeException.h"
 #include "../include/exceptions/MFSFileAlreadyExistException.h"
 #include "../include/exceptions/MFSDirectoryNotFoundException.h"
 #include "../include/exceptions/MFSFileNotFoundException.h"
@@ -284,20 +285,75 @@ void MFSDataSpace::Delete(const MFSString & path)
     delete directoryEntry;
 }
 
+bool MFSDataSpace::IsDirectory(const MFSString & path)
+{
+    MFSString directory = MFSPath::GetDirectoryPath(path);
+    MFSString filename = MFSPath::GetFileName(path);
+
+    std::unique_ptr<MFSFSEntry> entry(OpenFSEntry(directory));
+    if (!entry)
+        throw MFSDirectoryNotFoundException(path);
+
+    if (entry->GetEntryType() != MFSFSEntryType::Directory)
+        throw MFSDirectoryNotFoundException(directory);
+
+    std::unique_ptr<MFSFSEntry> subEntry(entry->GetSubEntry(filename));
+    if (!subEntry)
+        throw MFSFileNotFoundException(path);
+
+    return subEntry->GetEntryType() == MFSFSEntryType::Directory;
+}
+
 void MFSDataSpace::Copy(const MFSString & source, const MFSString & destination)
 {
-    MFSFSEntry * sourceEntry = OpenFSEntry(source);
+    std::unique_ptr<MFSFSEntry> sourceEntry(OpenFSEntry(source));
     if (!sourceEntry)
         throw MFSFileNotFoundException(source);
-    
-    // UNDONE: Implement MFSDataSpace::Copy(const MFSString &, const MFSString &).
-    if (sourceEntry->GetEntryType() == MFSFSEntryType::Directory)
-    {
 
-    }
+    MFSString destDirectory = MFSPath::GetDirectoryPath(destination);
+    MFSString destFilename = MFSPath::GetFileName(destination);
+
+    std::unique_ptr<MFSFSEntry> destDirectoryEntry(OpenFSEntry(destDirectory));
+    if (!destDirectoryEntry)
+        throw MFSDirectoryNotFoundException(destDirectory);
+
+    if (destDirectoryEntry->ContainsSubEntry(destFilename))
+        throw MFSFileAlreadyExistException(destination);
+
+    std::unique_ptr<MFSFSEntry> destEntry(destDirectoryEntry->AddSubEntry(destFilename));
+    if (!destEntry)
+        throw MFSOutOfSpaceException();
+
+    destEntry->SetEntryType(sourceEntry->GetEntryType());
+    
+    if (sourceEntry->GetEntryType() == MFSFSEntryType::Directory)
+        throw MFSInvalidEntryTypeException(source);
     else
     {
+        if (!destEntry->SetFileSize(sourceEntry->GetFileSize()))
+            throw MFSOutOfSpaceException();
 
+        std::unique_ptr<MFSStream> sourceStream(sourceEntry->OpenDataStream());
+        if (!sourceStream)
+            throw MFSException(L"Failed to open data stream of source file.");
+
+        std::unique_ptr<MFSStream> destStream(destEntry->OpenDataStream());
+        if (!destStream)
+            throw MFSException(L"Failed to open data stream of destination file.");
+
+        std::unique_ptr<uint8_t[]> buffer(new uint8_t[MFS_DEVICE_BLOCK_SIZE]);
+        while (sourceStream->HasNext())
+        {
+            uint32_t read = sourceStream->Read(buffer.get(), MFS_DEVICE_BLOCK_SIZE, MFS_DEVICE_BLOCK_SIZE);
+            uint32_t write = destStream->Write(buffer.get(), read);
+
+            if (write != read)
+                throw MFSException(L"Failed to write to destination data stream.");
+        }
+
+        destStream->Flush();
+        destStream->Close();
+        sourceStream->Close();
     }
 }
 

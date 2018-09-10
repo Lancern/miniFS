@@ -42,6 +42,11 @@ MFSStream * MFSFile::OpenStream() noexcept
 	return _entry->OpenDataStream();
 }
 
+std::vector<uint32_t> MFSFile::GetAllBlocksId() const noexcept
+{
+	return _entry->GetAllBlocksId();
+}
+
 MFSFile::~MFSFile()
 {
 }

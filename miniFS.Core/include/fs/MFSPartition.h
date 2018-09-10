@@ -372,6 +372,8 @@ public:
     MFSFSEntry * AddSubEntry(const MFSString & name, uint32_t fsnodeId);
     bool RemoveSubEntry(const MFSString & name);
 
+	std::vector<uint32_t> GetAllBlocksId() const;
+
 private:
     class DataStream
         : public MFSPartition::Internals::ChainedBlockStream
