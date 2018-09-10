@@ -60,6 +60,7 @@ class MFSDataSpace
             MFSInvalidPathException 给定的路径不合法。
             MFSDirectoryNotFoundException 路径上有一个或多个目录不存在。
             MFSFileNotFoundException 文件不存在且 createIfNotExist 参数为 false。
+            MFSDirectoryAlreadyExistException 已经存在了一个同名目录。
 
     MFSFile * MFSDataSpace::CreateFile(const MFSString & path, bool openIfExist)
         创建一个文件。
@@ -116,7 +117,7 @@ class MFSDataSpace
             MFSInvalidPathException 源路径 source 或 目标路径 destination 不合法。
             MFSDirectoryNotFoundException 源路径或目标路径上的一个或多个目录不存在。
             MFSFileNotFoundException 要复制的源文件或目标文件不存在。
-            MFSInvalidEntryTypeException source 所标识的文件系统项不是一个文件。
+            MFSInvalidOperationException source 所标识的文件系统项不是一个文件。
             MFSOutOfSpaceException 数据空间空间不足，无法完成要求的操作。
 
     void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)

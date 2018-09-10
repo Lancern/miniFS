@@ -10,7 +10,7 @@ bool DelCommand::Accept(const MFSString & string) const
 void DelCommand::Action(const std::vector<MFSString> & argv) const
 {
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-	MFSConsole *point = MFSGetDefaultConsole();
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	if (space == NULL)
 	{
 		point->Log(L"µ±«∞Œ¥π“‘ÿø’º‰");

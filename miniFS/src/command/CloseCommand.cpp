@@ -9,7 +9,7 @@ bool CloseCommand::Accept(const MFSString & string) const
 
 void CloseCommand::Action(const std::vector<MFSString> & argv) const
 {
-	MFSConsole *point = MFSGetDefaultConsole();
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace * space = MFSDataSpace::GetActiveDataSpace();
 	if (argv.size() != 0)
 	{

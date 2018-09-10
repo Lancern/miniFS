@@ -155,6 +155,9 @@ MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
         if (!fileEntry)
             throw MFSException(L"Unexpected null fileEntry.");
 
+        if (fileEntry->GetEntryType() != MFSFSEntryType::File)
+            throw MFSDirectoryAlreadyExistException(path);
+
         return new MFSFile(fileEntry);
     }
 }
@@ -323,7 +326,7 @@ void MFSDataSpace::Copy(const MFSString & source, const MFSString & destination)
     destEntry->SetEntryType(sourceEntry->GetEntryType());
     
     if (sourceEntry->GetEntryType() == MFSFSEntryType::Directory)
-        throw MFSInvalidEntryTypeException(source);
+        throw MFSInvalidOperationException(L"Copying a directory is not supported.");
     else
     {
         if (!destEntry->SetFileSize(sourceEntry->GetFileSize()))

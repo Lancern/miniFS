@@ -9,7 +9,7 @@ bool DirCommand::Accept(const MFSString & string) const
 
 void DirCommand::Action(const std::vector<MFSString> & argv) const
 {
-	MFSConsole *point = MFSGetDefaultConsole();
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	if (space == NULL)
 	{
@@ -25,14 +25,14 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		std::vector<MFSString> diretoryList = space->GetDirectories(space->GetWorkingDirectory());
 		std::sort(diretoryList.begin(),diretoryList.end());
-		point->SetForegroundColor(Cyan);
+		point->SetForegroundColor(MFSConsoleColors::Cyan);
 		for (MFSString diretory : diretoryList)
 		{
 			point->Log(diretory + L"\n");
 		}
 		std::vector<MFSString> fileList = space->GetFiles(space->GetWorkingDirectory());
 		std::sort(fileList.begin(), fileList.end());
-		point->SetForegroundColor(White);
+		point->SetForegroundColor(MFSConsoleColors::White);
 		for (MFSString file : fileList)
 		{
 			point->Log(file + L"\n");

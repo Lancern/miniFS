@@ -9,7 +9,7 @@ bool CreateCommand::Accept(const MFSString & string) const
 
 void CreateCommand::Action(const std::vector<MFSString> & argv) const
 {
-	MFSConsole *point = MFSGetDefaultConsole();
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	if (argv.size() < 1 || argv.size() > 2)
 	{
 		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");

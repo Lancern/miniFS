@@ -9,9 +9,8 @@ bool UnmountCommand::Accept(const MFSString & string) const
 
 void UnmountCommand::Action(const std::vector<MFSString> & argv) const
 {
-	MFSDataSpace * space;
-	space = MFSDataSpace::GetActiveDataSpace();
-	MFSConsole *point = MFSGetDefaultConsole();
+	MFSDataSpace * space = MFSDataSpace::GetActiveDataSpace();
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	if (argv.size() != 0)
 	{
 		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");

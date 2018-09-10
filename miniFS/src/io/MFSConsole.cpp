@@ -3,17 +3,45 @@
 
 MFSConsole * _defaultConsole;
 
-MFSConsole * MFSGetDefaultConsole()
+MFSConsole * MFSConsole::GetDefaultConsole()
 {
     if (!_defaultConsole)
         _defaultConsole = new MFSConsole();
     return _defaultConsole;
 }
 
+
+BOOL WINAPI ConsoleEventHandlerEntry(DWORD dwCtrlType)
+{
+    if (_defaultConsole)
+    {
+        switch (dwCtrlType)
+        {
+        case CTRL_C_EVENT:
+            if (_defaultConsole->_ctrlCHandler)
+                _defaultConsole->_ctrlCHandler();
+            return TRUE;
+        case CTRL_BREAK_EVENT:
+            if (_defaultConsole->_ctrlBreakHandler)
+                _defaultConsole->_ctrlBreakHandler();
+            return TRUE;
+        case CTRL_CLOSE_EVENT:
+            if (_defaultConsole->_exitHandler)
+                _defaultConsole->_exitHandler();
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+
 MFSConsole::MFSConsole()
+    : _exitHandler(nullptr), _ctrlCHandler(nullptr), _ctrlBreakHandler(nullptr)
 {
     _hInput = GetStdHandle(STD_INPUT_HANDLE);
     _hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    SetConsoleCtrlHandler(&ConsoleEventHandlerEntry, TRUE);
 }
 
 MFSConsole::~MFSConsole()
@@ -39,6 +67,21 @@ MFSString MFSConsole::GetTitle() const
     delete[] buffer;
 
     return ret;
+}
+
+void MFSConsole::SetHandlerOnExit(ConsoleEventHandler handler)
+{
+    _exitHandler = handler;
+}
+
+void MFSConsole::SetHandlerOnCtrlC(ConsoleEventHandler handler)
+{
+    _ctrlCHandler = handler;
+}
+
+void MFSConsole::SetHandlerOnCtrlBreak(ConsoleEventHandler handler)
+{
+    _ctrlBreakHandler = handler;
 }
 
 MFSConsoleColors MFSConsole::GetBackgroundColor() const
@@ -69,9 +112,9 @@ void MFSConsole::SetForegroundColor(MFSConsoleColors color)
 	SetColor(GetBackgroundColor(), color);
 }
 
-WCHAR MFSConsole::ReadChar()
+wchar_t MFSConsole::ReadChar()
 {
-    WCHAR buffer;
+    wchar_t buffer;
     DWORD read;
     ReadConsole(_hInput, &buffer, 1, &read, NULL);
     return buffer;
@@ -107,7 +150,7 @@ MFSString MFSConsole::ReadLine()
     return MFSString(buffer.data(), static_cast<uint32_t>(buffer.size()));
 }
 
-void MFSConsole::LogChar(WCHAR ch)
+void MFSConsole::LogChar(wchar_t ch)
 {
     DWORD write;
     WriteConsoleW(_hOutput, &ch, 1, &write, NULL);
@@ -115,7 +158,7 @@ void MFSConsole::LogChar(WCHAR ch)
 
 void MFSConsole::Log(const MFSString & string)
 {
-    for (WCHAR ch : string)
+    for (wchar_t ch : string)
         LogChar(ch);
 }
 
