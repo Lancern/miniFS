@@ -104,29 +104,21 @@ void MFSDataSpace::Format() noexcept
 
 bool MFSDataSpace::Exist(const MFSString & path)
 {
-    if (!MFSPath::IsValidPath(path))
-        throw MFSInvalidPathException(path);
+	MFSFSEntry * entry = nullptr;
+	try
+	{
+		entry = OpenFSEntry(path);
+	}
+	catch (const MFSDirectoryNotFoundException &)
+	{
+		return false;
+	}
+	catch (const MFSFileNotFoundException &)
+	{
+		return false;
+	}
 
-    MFSString directory = MFSPath::GetDirectoryPath(path);
-    MFSFSEntry * directoryFsEntry = nullptr;
-
-    try
-    {
-        directoryFsEntry = OpenFSEntry(path);
-    }
-    catch (const MFSDirectoryNotFoundException &)
-    {
-        return false;
-    }
-
-    if (!directoryFsEntry)
-        return false;
-
-    MFSString filename = MFSPath::GetFileName(path);
-    bool result = directoryFsEntry->ContainsSubEntry(filename);
-    delete directoryFsEntry;
-
-    return result;
+	return true;
 }
 
 MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
