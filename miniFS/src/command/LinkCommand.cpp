@@ -9,7 +9,6 @@ bool LinkCommand::Accept(const MFSString & string) const
 
 void LinkCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 LinkCommand::LinkCommand()

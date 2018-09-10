@@ -9,7 +9,6 @@ bool TpCommand::Accept(const MFSString & string) const
 
 void TpCommand::Action(const std::vector<MFSString> & argv) const
 {
-
 }
 
 TpCommand::TpCommand()

@@ -9,9 +9,10 @@ bool CreateCommand::Accept(const MFSString & string) const
 
 void CreateCommand::Action(const std::vector<MFSString> & argv) const
 {
-	if (argv.size() < 0 || argv.size() > 2)
+	MFSConsole *point = MFSGetDefaultConsole();
+	if (argv.size() < 1 || argv.size() > 2)
 	{
-		printf("command is wrong\n");
+		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
 		return;
 	}
 	try
@@ -19,17 +20,18 @@ void CreateCommand::Action(const std::vector<MFSString> & argv) const
 		MFSDataSpace * space;
 		if(argv.size() == 1)
 			space = MFSDataSpace::CreateDataSpace(argv[0], 1024 * 1024 * 1024);
-		else space = MFSDataSpace::CreateDataSpace(argv[1], argv[0].ParseInteger<int>());
+		else 
+			space = MFSDataSpace::CreateDataSpace(argv[1], argv[0].ParseInteger<int>());
 		space->Close();
 	}
 	catch (MFSWindowsException & ex)
 	{
 		std::wcerr << L"FUCK: " << ex.GetErrorCode() << L" " << ex.GetExceptMessage().GetRawString() << std::endl;
 	}
-	catch (MFSException & ex)
-	{
-		std::wcerr << ex.GetExceptMessage().GetRawString() << std::endl;
-	}
+	//catch (MFSException & ex)
+	//{
+	//	std::wcerr << ex.GetExceptMessage().GetRawString() << std::endl;
+	//}
 }
 
 CreateCommand::CreateCommand()
