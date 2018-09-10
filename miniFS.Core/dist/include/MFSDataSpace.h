@@ -98,6 +98,7 @@ class MFSDataSpace
             MFSInvalidPathException 路径不合法。
             MFSDirectoryNotFoundException 路径上有一个或多个目录不存在。
             MFSFileNotFoundException 要删除的目录、文件或硬链接不存在。
+            MFSInvalidOperationException 要删除的目标是一个非空目录。
 
     bool MFSDataSpace::IsDirectory(const MFSString & path) const
         确定一个路径所对应的项目是否为一个目录。

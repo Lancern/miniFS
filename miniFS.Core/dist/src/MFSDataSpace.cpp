@@ -4,6 +4,7 @@
 #include "../include/exceptions/MFSInvalidPathException.h"
 #include "../include/exceptions/MFSInvalidDeviceException.h"
 #include "../include/exceptions/MFSInvalidEntryTypeException.h"
+#include "../include/exceptions/MFSInvalidOperationException.h"
 #include "../include/exceptions/MFSFileAlreadyExistException.h"
 #include "../include/exceptions/MFSDirectoryNotFoundException.h"
 #include "../include/exceptions/MFSDirectoryAlreadyExistException.h"
@@ -263,6 +264,13 @@ void MFSDataSpace::Delete(const MFSString & path)
         throw MFSDirectoryNotFoundException(directory);
     if (!directoryEntry->ContainsSubEntry(filename))
         throw MFSFileNotFoundException(path);
+
+    std::unique_ptr<MFSFSEntry> targetEntry(directoryEntry->GetSubEntry(filename));
+    if (!targetEntry)
+        throw MFSException(L"Unexpected null targetEntry.");
+
+    if (targetEntry->GetEntryType() == MFSFSEntryType::Directory && targetEntry->GetSubEntriesCount())
+        throw MFSInvalidOperationException(L"Deleting a non-empty directory is prohibited.");
 
     if (!directoryEntry->RemoveSubEntry(filename))
         throw MFSException(L"Unexpected RemoveSubEntry call failed.");
