@@ -2,7 +2,7 @@
 
 
 MFSOutOfSpaceException::MFSOutOfSpaceException()
-	: MFSOutOfSpaceException(L"Data space not loaded.")
+	: MFSOutOfSpaceException(L"Not enough space.")
 {
 }
 

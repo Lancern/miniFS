@@ -23,14 +23,7 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
-		if (space->IsDirectory(argv[0]))
-		{
-			Copy(argv[0], argv[1]);
-		}
-		else
-		{
-			space->Copy(argv[0],argv[1]);
-		}
+		Copy(argv[0], argv[1]);
 	}
 	catch (MFSException &ex)
 	{
@@ -44,9 +37,17 @@ void CopyCommand::Copy(const MFSString & space1, const MFSString & space2) const
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	if (space->IsDirectory(space1))
 	{
-		space->CreateDirectory(space2,true);
-		std::vector<MFSString> lis = space->GetFiles(space1);
-		Copy(space1 + L"",space2 + L"");
+		space->CreateDirectory(space2, true);
+		std::vector<MFSString> fileList = space->GetFiles(space1);
+		for (MFSString file : fileList)
+		{
+			Copy(space1 + L"/" + file, space2 + L"/" + file);
+		}
+		std::vector<MFSString> directoryList = space->GetDirectories(space1);
+		for (MFSString file : directoryList)
+		{
+			Copy(space1 + L"/" + file, space2 + L"/" + file);
+		}
 	}
 	else
 	{
