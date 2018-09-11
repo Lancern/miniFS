@@ -18,6 +18,8 @@ public:
     MFSOSFileDevice(HANDLE hFile, bool readonly);
     ~MFSOSFileDevice();
 
+    HANDLE GetFileHandle() const;
+
     bool CanWrite() const override;
     uint64_t GetTotalSize() const override;
 
