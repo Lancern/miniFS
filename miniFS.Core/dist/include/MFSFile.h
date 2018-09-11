@@ -51,13 +51,6 @@ class MFSFile
 public:
     ~MFSFile();
 
-    MFSDateTime GetCreationTime() const noexcept;
-    MFSDateTime GetLastAccessTime() const noexcept;
-    MFSDateTime GetLastModificationTime() const noexcept;
-
-    bool IsHidden() const noexcept;
-    void SetHidden(bool isHidden) noexcept;
-
     uint64_t GetFileSize() const noexcept;
     void SetFileSize(uint64_t size);
 

@@ -284,23 +284,29 @@ void MFSDataSpace::Delete(const MFSString & path)
         throw MFSException(L"Unexpected RemoveSubEntry call failed.");
 }
 
-bool MFSDataSpace::IsDirectory(const MFSString & path)
+MFSEntryInfo MFSDataSpace::GetEntryInfo(const MFSString & path)
 {
-    MFSString directory = MFSPath::GetDirectoryPath(path);
-    MFSString filename = MFSPath::GetFileName(path);
-
-    std::unique_ptr<MFSFSEntry> entry(OpenFSEntry(directory));
+    std::unique_ptr<MFSFSEntry> entry(OpenFSEntry(path));
     if (!entry)
-        throw MFSDirectoryNotFoundException(path);
-
-    if (entry->GetEntryType() != MFSFSEntryType::Directory)
-        throw MFSDirectoryNotFoundException(directory);
-
-    std::unique_ptr<MFSFSEntry> subEntry(entry->GetSubEntry(filename));
-    if (!subEntry)
         throw MFSFileNotFoundException(path);
 
-    return subEntry->GetEntryType() == MFSFSEntryType::Directory;
+    MFSEntryInfo info;
+    info.CreationTime = entry->GetCreationTime();
+    info.LastAccessTime = entry->GetLastAccessTime();
+    info.LastModificationTime = entry->GetLastModificationTime();
+    info.IsDirectory = (entry->GetEntryType() == MFSFSEntryType::Directory);
+    info.IsHidden = entry->GetHiddenFlag();
+
+    return info;
+}
+
+void MFSDataSpace::SetHidden(const MFSString & path, bool isHidden)
+{
+    std::unique_ptr<MFSFSEntry> entry(OpenFSEntry(path));
+    if (!entry)
+        throw MFSFileNotFoundException(path);
+
+    entry->SetHiddenFlag(isHidden);
 }
 
 void MFSDataSpace::Copy(const MFSString & source, const MFSString & destination)
@@ -364,17 +370,17 @@ void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
 	MFSString dstFilename = MFSPath::GetFileName(destination);
 
 	std::unique_ptr<MFSFSEntry> srcDirEntry(OpenFSEntry(srcDirectory));
-	if (srcDirEntry == nullptr)
+	if (!srcDirEntry)
 		throw MFSDirectoryNotFoundException(srcDirectory);
 	std::unique_ptr<MFSFSEntry> dstDirEntry(OpenFSEntry(dstDirectory));
-	if (dstDirEntry == nullptr)
+	if (!dstDirEntry)
 		throw MFSDirectoryNotFoundException(dstDirectory);
 
 	std::unique_ptr<MFSFSEntry> srcFileEntry(srcDirEntry->GetSubEntry(srcFilename));
-	if (srcFileEntry == nullptr)
+	if (!srcFileEntry)
 		throw MFSFileNotFoundException(source);
 	std::unique_ptr<MFSFSEntry> dstFileEntry(dstDirEntry->GetSubEntry(dstFilename));
-	if (dstFileEntry == nullptr)
+	if (dstFileEntry)
 		throw MFSFileAlreadyExistException(destination);
 
 	if (dstDirEntry->ContainsSubEntry(dstFilename))
