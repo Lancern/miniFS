@@ -25,13 +25,17 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		if (argv.size() == 0)
 		{
+			int i = 0;
 			std::vector<MFSString> diretoryList = space->GetDirectories(space->GetWorkingDirectory());
 			std::sort(diretoryList.begin(), diretoryList.end());
 			point->SetForegroundColor(MFSConsoleColors::Cyan);
 			for (MFSString diretory : diretoryList)
 			{
 				if (space->GetEntryInfo(space->GetWorkingDirectory()+diretory).IsHidden) continue;
-				point->LogLine(diretory);
+				point->Log(diretory + L"\t");
+				i++;
+				if (i == 4)
+					point->Log(L"\n");
 			}
 			std::vector<MFSString> fileList = space->GetFiles(space->GetWorkingDirectory());
 			std::sort(fileList.begin(), fileList.end());
@@ -39,8 +43,13 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			for (MFSString file : fileList)
 			{
 				if (space->GetEntryInfo(space->GetWorkingDirectory() + file).IsHidden) continue;
-				point->LogLine(file);
+				point->Log(file + L"\t");
+				i++;
+				if (i == 4)
+					point->Log(L"\n");
 			}
+			if (i)
+				point->Log(L"\n");
 		}
 		else if (argv.size() == 1)
 		{
