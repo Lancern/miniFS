@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../include/MFSString.h"
+#include "../../include/MFSDateTime.h"
 #include "MFSFile.h"
 #include <memory>
 
@@ -102,12 +103,22 @@ class MFSDataSpace
             MFSFileNotFoundException 要删除的目录、文件或硬链接不存在。
             MFSInvalidOperationException 要删除的目标是一个非空目录。
 
-    bool MFSDataSpace::IsDirectory(const MFSString & path) const
-        确定一个路径所对应的项目是否为一个目录。
+    MFSEntryInfo MFSDataSpace::GetEntryInfo(const MFSString & path)
+        获取一个文件或目录的属性信息。
+        @param path 文件或目录的路径。
         @exceptions
-            MFSInvalidPathException：路径 path 不合法。
-            MFSDirectoryNotFoundException：路径 path 上的一个或多个目录不存在。
-            MFSFileNotFoundException：路径 path 所对应的项目不存在。
+            MFSInvalidPathException 路径不合法。
+            MFSDirectoryNotFoundException 路径上有一个或多个目录不存在。
+            MFSFileNotFoundException 目标文件或目录不存在。
+
+    void MFSDataSpace::SetHidden(const MFSString & path, bool isHidden)
+        设置一个文件或目录的隐藏标志位。
+        @param path 文件或目录的路径。
+        @param isHidden 一个 bool 值指示是否隐藏。
+        @exceptions
+            MFSInvalidPathException 路径不合法。
+            MFSDirectoryNotFoundException 路径上有一个或多个目录不存在。
+            MFSFileNotFoundException 目标文件或目录不存在。
 
     void MFSDataSpace::Copy(const MFSString & source, const MFSString & destination)
         复制一个文件。
@@ -168,6 +179,15 @@ class MFSDataSpace
 
 */
 
+struct MFSEntryInfo
+{
+    MFSDateTime CreationTime;
+    MFSDateTime LastAccessTime;
+    MFSDateTime LastModificationTime;
+    bool IsDirectory;
+    bool IsHidden;
+};
+
 #ifdef CreateFile
 // Undef Windows-defined macro CreateFile for it conflicts with the MFSDataSpace::CreateFile.
 #undef CreateFile
@@ -206,7 +226,8 @@ public:
     void CreateLink(const MFSString & src, const MFSString & target);
     void Delete(const MFSString & path);
 
-    bool IsDirectory(const MFSString & path);
+    MFSEntryInfo GetEntryInfo(const MFSString & path);
+    void SetHidden(const MFSString & path, bool isHidden);
 
     void Copy(const MFSString & source, const MFSString & destination);
     void Move(const MFSString & source, const MFSString & destination);
