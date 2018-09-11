@@ -41,12 +41,8 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 		MFSStream *outStream = file->OpenStream();
 
 		char Buffer[257];
-		uint64_t m = 0, n = 0;
-		n = ps % 256;
-		if (n == 0)
-			m = ps / 256;
-		else
-			m = ps / 256 + 1;
+		uint32_t n = ps % 256;
+		uint64_t m = ps / 256 + (n ? 1 : 0);
 		for (uint64_t i = 0; i <= m; i++)
 		{
 			if (i != m)
@@ -76,7 +72,8 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 	FindFirstFileA(path, &FindFileData);
 	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 	{
-		printf("ÎÄ¼þ¼Ð");
+		space->CreateDirectory(argv_1, true);
+
 	}
 	else
 	{
@@ -92,12 +89,8 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 		MFSStream *outStream = file->OpenStream();
 
 		char Buffer[257];
-		uint64_t m = 0, n = 0;
-		n = ps % 256;
-		if (n == 0)
-			m = ps / 256;
-		else
-			m = ps / 256 + 1;
+		uint32_t n = ps % 256;
+		uint64_t m = ps / 256 + (n ? 1 : 0);
 		for (uint64_t i = 0; i < m; i++)
 		{
 			if (i != m - 1)
