@@ -19,6 +19,11 @@ MFSOSFileDevice::~MFSOSFileDevice()
     MFSRawDevice::~MFSRawDevice();
 }
 
+HANDLE MFSOSFileDevice::GetFileHandle() const
+{
+    return _hFile;
+}
+
 
 bool MFSOSFileDevice::CanWrite() const { return _canWrite; }
 uint64_t MFSOSFileDevice::GetTotalSize() const { return _fileSize; }
