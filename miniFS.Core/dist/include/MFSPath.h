@@ -25,6 +25,11 @@ class MFSPath
     static bool IsDirectoryPath(const MFSString & path) noexcept;
         检查给定的路径是否一定为一个目录路径。
 
+    static MFSString GetNormalizedPath(const MFSString & path)
+        获取给定路径的标准化路径。标准化路径不带有后导路径分隔符。
+        @exceptions
+            MFSInvalidPathException：给定的路径不是一个合法的路径。
+
     static std::vector<MFSString> MFSPath::GetNames(const MFSString & path)
         获取给定的路径中的各个文件或目录名称。
         @exceptions
@@ -81,6 +86,8 @@ public:
     static bool IsOSPath(const MFSString & path) noexcept;
 
     static bool IsDirectoryPath(const MFSString & path) noexcept;
+
+    static MFSString GetNormalizedPath(const MFSString & path);
 
     static std::vector<MFSString> GetPathNames(const MFSString & path);
 

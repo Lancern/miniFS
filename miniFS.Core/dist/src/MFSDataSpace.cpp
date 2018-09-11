@@ -145,6 +145,9 @@ MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
         throw MFSDirectoryNotFoundException(directory);
 
     MFSString filename = MFSPath::GetFileName(path);
+    if (filename.IsEmpty())
+        throw MFSInvalidPathException(path);
+
     if (!directoryFsEntry->ContainsSubEntry(filename))
     {
         if (!createIfNotExist)
@@ -277,15 +280,17 @@ void MFSDataSpace::CreateLink(const MFSString & src, const MFSString & target)
 
 void MFSDataSpace::Delete(const MFSString & path)
 {
-    MFSString directory = MFSPath::GetDirectoryPath(path);
-    MFSString filename = MFSPath::GetFileName(path);
+    MFSString normPath = MFSPath::GetNormalizedPath(path);
+
+    MFSString directory = MFSPath::GetDirectoryPath(normPath);
+    MFSString filename = MFSPath::GetFileName(normPath);
 
     std::unique_ptr<MFSFSEntry> directoryEntry(OpenFSEntry(directory));
 
     if (!directoryEntry)
         throw MFSDirectoryNotFoundException(directory);
     if (!directoryEntry->ContainsSubEntry(filename))
-        throw MFSFileNotFoundException(path);
+        throw MFSFileNotFoundException(normPath);
 
     std::unique_ptr<MFSFSEntry> targetEntry(directoryEntry->GetSubEntry(filename));
     if (!targetEntry)
@@ -300,9 +305,11 @@ void MFSDataSpace::Delete(const MFSString & path)
 
 MFSEntryInfo MFSDataSpace::GetEntryInfo(const MFSString & path)
 {
-    std::unique_ptr<MFSFSEntry> entry(OpenFSEntry(path));
+    MFSString normPath = MFSPath::GetNormalizedPath(path);
+
+    std::unique_ptr<MFSFSEntry> entry(OpenFSEntry(normPath));
     if (!entry)
-        throw MFSFileNotFoundException(path);
+        throw MFSFileNotFoundException(normPath);
 
     MFSEntryInfo info;
     info.CreationTime = entry->GetCreationTime();
@@ -316,28 +323,33 @@ MFSEntryInfo MFSDataSpace::GetEntryInfo(const MFSString & path)
 
 void MFSDataSpace::SetHidden(const MFSString & path, bool isHidden)
 {
-    std::unique_ptr<MFSFSEntry> entry(OpenFSEntry(path));
+    MFSString normPath = MFSPath::GetNormalizedPath(path);
+
+    std::unique_ptr<MFSFSEntry> entry(OpenFSEntry(normPath));
     if (!entry)
-        throw MFSFileNotFoundException(path);
+        throw MFSFileNotFoundException(normPath);
 
     entry->SetHiddenFlag(isHidden);
 }
 
 void MFSDataSpace::Copy(const MFSString & source, const MFSString & destination)
 {
-    std::unique_ptr<MFSFSEntry> sourceEntry(OpenFSEntry(source));
-    if (!sourceEntry)
-        throw MFSFileNotFoundException(source);
+    MFSString normSource = MFSPath::GetNormalizedPath(source);
+    MFSString normDest = MFSPath::GetNormalizedPath(destination);
 
-    MFSString destDirectory = MFSPath::GetDirectoryPath(destination);
-    MFSString destFilename = MFSPath::GetFileName(destination);
+    std::unique_ptr<MFSFSEntry> sourceEntry(OpenFSEntry(normSource));
+    if (!sourceEntry)
+        throw MFSFileNotFoundException(normSource);
+
+    MFSString destDirectory = MFSPath::GetDirectoryPath(normDest);
+    MFSString destFilename = MFSPath::GetFileName(normDest);
 
     std::unique_ptr<MFSFSEntry> destDirectoryEntry(OpenFSEntry(destDirectory));
     if (!destDirectoryEntry)
         throw MFSDirectoryNotFoundException(destDirectory);
 
     if (destDirectoryEntry->ContainsSubEntry(destFilename))
-        throw MFSFileAlreadyExistException(destination);
+        throw MFSFileAlreadyExistException(normDest);
 
     std::unique_ptr<MFSFSEntry> destEntry(destDirectoryEntry->AddSubEntry(destFilename));
     if (!destEntry)
@@ -378,10 +390,13 @@ void MFSDataSpace::Copy(const MFSString & source, const MFSString & destination)
 
 void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
 {
-	MFSString srcDirectory = MFSPath::GetDirectoryPath(source);
-	MFSString srcFilename = MFSPath::GetFileName(source);
-	MFSString dstDirectory = MFSPath::GetDirectoryPath(destination);
-	MFSString dstFilename = MFSPath::GetFileName(destination);
+    MFSString normSource = MFSPath::GetNormalizedPath(source);
+    MFSString normDest = MFSPath::GetNormalizedPath(destination);
+
+	MFSString srcDirectory = MFSPath::GetDirectoryPath(normSource);
+	MFSString srcFilename = MFSPath::GetFileName(normSource);
+	MFSString dstDirectory = MFSPath::GetDirectoryPath(normDest);
+	MFSString dstFilename = MFSPath::GetFileName(normDest);
 
 	std::unique_ptr<MFSFSEntry> srcDirEntry(OpenFSEntry(srcDirectory));
 	if (!srcDirEntry)
@@ -392,13 +407,13 @@ void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
 
 	std::unique_ptr<MFSFSEntry> srcFileEntry(srcDirEntry->GetSubEntry(srcFilename));
 	if (!srcFileEntry)
-		throw MFSFileNotFoundException(source);
+		throw MFSFileNotFoundException(normSource);
 	std::unique_ptr<MFSFSEntry> dstFileEntry(dstDirEntry->GetSubEntry(dstFilename));
 	if (dstFileEntry)
-		throw MFSFileAlreadyExistException(destination);
+		throw MFSFileAlreadyExistException(normDest);
 
 	if (dstDirEntry->ContainsSubEntry(dstFilename))
-		throw MFSFileAlreadyExistException(destination);
+		throw MFSFileAlreadyExistException(normDest);
 
 	MFSFSEntry* pEntry = dstDirEntry->AddSubEntry(dstFilename, srcFileEntry->GetFSNodeId());
 	if (pEntry)
@@ -451,7 +466,7 @@ MFSDataSpace * MFSDataSpace::CreateDataSpace(const MFSString & filename, uint64_
         GENERIC_READ | GENERIC_WRITE,
         0,
         NULL,
-        CREATE_ALWAYS,
+        CREATE_NEW,
         FILE_ATTRIBUTE_NORMAL,
         NULL
     );
