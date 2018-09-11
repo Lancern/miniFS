@@ -11,6 +11,11 @@ void TpCommand::Action(const std::vector<MFSString> & argv) const
 {
 }
 
+void TpCommand::Help() const
+{
+	return;
+}
+
 TpCommand::TpCommand()
 {
 }

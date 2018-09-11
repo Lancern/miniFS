@@ -27,9 +27,11 @@ void MapCommand::Action(const std::vector<MFSString> & argv) const
 		MFSFile *file = space->OpenFile(argv[0], false);
 		blockId = file->GetAllBlocksId();
 		point->LogLine(L"Block id:");
+		if (blockId.size() == 0)
+			point->Log(L"None");
 		for (auto id : blockId)
 		{
-			std::wcout << ' !' << id;
+			std::wcout << id;
 		}
 		point->Log(L"\n");
 	}
@@ -37,6 +39,11 @@ void MapCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		point->LogLine(ex.GetExceptMessage());
 	}
+}
+
+void MapCommand::Help() const
+{
+	return;
 }
 
 MapCommand::MapCommand()

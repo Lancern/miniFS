@@ -24,7 +24,7 @@ void TreeCommand::Action(const std::vector<MFSString> & argv) const
 	try
 	{
 		std::vector<bool>flag;
-		tree(0, flag);
+		this->tree(0, flag);
 	}
 	catch (MFSException & ex)
 	{
@@ -32,7 +32,7 @@ void TreeCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
-void tree(int depth, std::vector<bool> & flag)
+void TreeCommand::tree(int depth, std::vector<bool> & flag) const
 {
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
@@ -79,6 +79,11 @@ void tree(int depth, std::vector<bool> & flag)
 		tree(depth + 1, flag);
 		space->SetWorkingDirectory(path);
 	}
+}
+
+void TreeCommand::Help() const
+{
+	return;
 }
 
 TreeCommand::TreeCommand()

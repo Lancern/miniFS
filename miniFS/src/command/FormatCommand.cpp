@@ -24,6 +24,11 @@ void FormatCommand::Action(const std::vector<MFSString> & argv) const
 	space->Format();
 }
 
+void FormatCommand::Help() const
+{
+	return;
+}
+
 FormatCommand::FormatCommand()
 {
 }

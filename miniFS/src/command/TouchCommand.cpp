@@ -31,6 +31,11 @@ void TouchCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void TouchCommand::Help() const
+{
+	return;
+}
+
 TouchCommand::TouchCommand()
 {
 }

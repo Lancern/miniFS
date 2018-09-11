@@ -44,6 +44,11 @@ void SetHiddenCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void SetHiddenCommand::Help() const
+{
+	return;
+}
+
 SetHiddenCommand::SetHiddenCommand()
 {
 }

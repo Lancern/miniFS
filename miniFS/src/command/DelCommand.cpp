@@ -73,6 +73,11 @@ void DelCommand::Del(const MFSString & path) const
 	}
 }
 
+void DelCommand::Help() const
+{
+	return;
+}
+
 DelCommand::DelCommand()
 {
 }

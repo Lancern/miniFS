@@ -31,6 +31,11 @@ void LinkCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void LinkCommand::Help() const
+{
+	return;
+}
+
 LinkCommand::LinkCommand()
 {
 }

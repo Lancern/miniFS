@@ -31,6 +31,11 @@ void MkdirCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void MkdirCommand::Help() const
+{
+	return;
+}
+
 MkdirCommand::MkdirCommand()
 {
 }
