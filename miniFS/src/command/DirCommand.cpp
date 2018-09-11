@@ -49,6 +49,11 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 
 }
 
+void DirCommand::Help() const
+{
+	return;
+}
+
 DirCommand::DirCommand()
 {
 }

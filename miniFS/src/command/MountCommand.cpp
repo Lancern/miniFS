@@ -33,6 +33,11 @@ void MountCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void MountCommand::Help() const
+{
+	return;
+}
+
 MountCommand::MountCommand()
 {
 }

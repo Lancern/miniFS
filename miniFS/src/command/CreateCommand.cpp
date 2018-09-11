@@ -30,6 +30,11 @@ void CreateCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void CreateCommand::Help() const
+{
+	return;
+}
+
 CreateCommand::CreateCommand()
 {
 }

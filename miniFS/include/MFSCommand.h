@@ -21,6 +21,7 @@ class MFSCommand
 public:
 	virtual bool Accept(const MFSString & string) const = 0;
 	virtual void Action(const std::vector<MFSString> & argv) const = 0;
+	virtual void Help() const = 0;
 
 protected:
 	MFSCommand() = default;
