@@ -2,7 +2,7 @@
 
 
 MFSInvalidDeviceException::MFSInvalidDeviceException()
-	: MFSInvalidDeviceException(L"Data space not loaded.")
+	: MFSInvalidDeviceException(L"Invalid Device.")
 {
 }
 

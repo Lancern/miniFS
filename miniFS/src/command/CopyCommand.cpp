@@ -1,4 +1,8 @@
 #include "../../include/command/CopyCommand.h"
+#include <atlconv.h>
+#include <windows.h>
+#include <fstream>
+#include <iostream>
 
 bool CopyCommand::Accept(const MFSString & string) const
 {
@@ -23,7 +27,50 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
-		Copy(argv[0], argv[1]);
+		if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
+		{
+			WIN32_FIND_DATAA FindFileData;
+			USES_CONVERSION;
+			char * path = W2A(argv[0].GetRawString());
+			FindFirstFileA(path, &FindFileData);
+			if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				printf("wenjianjia");
+			}
+			else
+			{
+				std::ifstream in(path);
+				if (!in)
+				{
+					point->Log(L"文件打开失败");
+					return;
+				}
+				in.seekg(0, std::ios::end);
+				std::streampos ps = in.tellg();
+
+				MFSFile * file = space->CreateFile(argv[1], false);
+				file->SetFileSize(ps);
+				MFSStream *outStream = file->OpenStream();
+
+
+				std::cout << ps << std::endl;
+			}
+		}
+		else if(!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
+		{
+
+		}
+		else if (MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
+		{
+			USES_CONVERSION;
+			MFSString order = L"copy " + argv[0] + L" " + argv[1];
+			system(W2A(order.GetRawString()));
+		}
+		else
+		{
+			Copy(argv[0], argv[1]);
+		}
+		
 	}
 	catch (MFSException &ex)
 	{
