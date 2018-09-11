@@ -117,7 +117,22 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 					if (info.IsHidden) continue;
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
-					std::wcout << space->OpenFile(pwd + file, false)->GetFileSize() << L"  ";
+					uint64_t size = space->OpenFile(pwd + file, false)->GetFileSize();
+					if (size < 1024)
+					{
+						std::wcout << size;
+						point->Log(L"B  ");
+					}
+					else if (size < 1024 * 1024)
+					{
+						printf("%.2lf", double(1.0*size / 1024));
+						point->Log(L"KB  ");
+					}
+					else
+					{
+						printf("%.2lf", double(1.0*size / 1024 / 1024));
+						point->Log(L"MB  ");
+					}
 					point->LogLine(file);
 				}
 			}
@@ -143,7 +158,22 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 					MFSEntryInfo info = space->GetEntryInfo(pwd + file);
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
-					std::wcout << space->OpenFile(pwd + file, false)->GetFileSize() << L"  ";
+					uint64_t size = space->OpenFile(pwd + file, false)->GetFileSize();
+					if (size < 1024)
+					{
+						std::wcout << size;
+						point->Log(L"B  ");
+					}
+					else if (size < 1024 * 1024)
+					{
+						printf("%.2lf", double(1.0*size / 1024));
+						point->Log(L"KB  ");
+					}
+					else
+					{
+						printf("%.2lf", double(1.0*size / 1024 / 1024));
+						point->Log(L"MB  ");
+					}
 					point->LogLine(file);
 				}
 			}
@@ -208,7 +238,22 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 					MFSEntryInfo info = space->GetEntryInfo(str + file);
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
-					std::wcout << space->OpenFile(str + file, false)->GetFileSize() << L"  ";
+					uint64_t size = space->OpenFile(str + file, false)->GetFileSize();
+					if (size < 1024)
+					{
+						std::wcout << size;
+						point->Log(L"B  ");
+					}
+					else if (size < 1024 * 1024)
+					{
+						printf("%.2lf", double(1.0*size / 1024));
+						point->Log(L"KB  ");
+					}
+					else
+					{
+						printf("%.2lf", double(1.0*size / 1024 / 1024));
+						point->Log(L"MB  ");
+					}
 					point->LogLine(file);
 				}
 			}
@@ -234,7 +279,22 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 					MFSEntryInfo info = space->GetEntryInfo(pwd + file);
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
-					std::wcout << space->OpenFile(pwd + file, false)->GetFileSize() << L"  ";
+					uint64_t size = space->OpenFile(pwd + file, false)->GetFileSize();
+					if (size < 1024)
+					{
+						std::wcout << size;
+						point->Log(L"B  ");
+					}
+					else if (size < 1024 * 1024)
+					{
+						printf("%.2lf", double(1.0*size / 1024));
+						point->Log(L"KB  ");
+					}
+					else
+					{
+						printf("%.2lf", double(1.0*size / 1024 / 1024));
+						point->Log(L"MB  ");
+					}
 					point->LogLine(file);
 				}
 			}
@@ -296,7 +356,22 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 					if (info.IsHidden) continue;
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  "); 
-					std::wcout << space->OpenFile(str + file, false)->GetFileSize() << L"  ";
+					uint64_t size = space->OpenFile(str + file, false)->GetFileSize();
+					if (size < 1024)
+					{
+						std::wcout << size;
+						point->Log(L"B  ");
+					}
+					else if (size < 1024 * 1024)
+					{
+						printf("%.2lf", double(1.0*size / 1024));
+						point->Log(L"KB  ");
+					}
+					else
+					{
+						printf("%.2lf", double(1.0*size / 1024 / 1024));
+						point->Log(L"MB  ");
+					}
 					point->LogLine(file);
 				}
 			}
@@ -325,7 +400,22 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 					MFSEntryInfo info = space->GetEntryInfo(str + file);
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
-					std::wcout << space->OpenFile(str + file, false)->GetFileSize() << L"  ";
+					uint64_t size = space->OpenFile(str + file, false)->GetFileSize();
+					if (size < 1024)
+					{
+						std::wcout << size;
+						point->Log(L"B  ");
+					}
+					else if (size < 1024 * 1024)
+					{
+						printf("%.2lf", double(1.0*size / 1024));
+						point->Log(L"KB  ");
+					}
+					else
+					{
+						printf("%.2lf", double(1.0*size / 1024 / 1024));
+						point->Log(L"MB  ");
+					}
 					point->LogLine(file);
 				}
 			}

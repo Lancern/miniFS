@@ -29,11 +29,22 @@ void MapCommand::Action(const std::vector<MFSString> & argv) const
 		point->LogLine(L"Block id:");
 		if (blockId.size() == 0)
 			point->Log(L"None");
+		int i = 0;
 		for (auto id : blockId)
 		{
-			std::wcout << id;
+			i++;
+			if (i == 1) 
+				std::wcout << id;
+			else
+				std::wcout << " " << id;
+			if (i == 12)
+			{
+				i = 0;
+				point->Log(L"\n");
+			}
 		}
-		point->Log(L"\n");
+		if (i)
+			point->Log(L"\n");
 	}
 	catch (MFSException & ex)
 	{
