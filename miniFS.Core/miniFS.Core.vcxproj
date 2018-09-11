@@ -38,6 +38,7 @@
     <ClInclude Include="include\device\MFSBlockDevice.h" />
     <ClInclude Include="include\device\MFSBufferedBlockDevice.h" />
     <ClInclude Include="include\device\MFSOSSparseFileDevice.h" />
+    <ClInclude Include="include\device\MFSSparseBlockDevice.h" />
     <ClInclude Include="include\device\MFSSparseDevice.h" />
     <ClInclude Include="include\fs\MFSDirectoryBlock.h" />
     <ClInclude Include="include\fs\MFSFSNodePool.h" />
@@ -83,6 +84,7 @@
     <ClCompile Include="dist\src\MFSFile.cpp" />
     <ClCompile Include="dist\src\MFSPath.cpp" />
     <ClCompile Include="src\device\MFSOSSparseFileDevice.cpp" />
+    <ClCompile Include="src\device\MFSSparseBlockDevice.cpp" />
     <ClCompile Include="src\fs\MFSFSEntry.cpp" />
     <ClCompile Include="src\fs\MFSFSEntryDataStream.cpp" />
     <ClCompile Include="src\fs\MFSFSNodePool.cpp" />

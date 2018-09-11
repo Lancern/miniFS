@@ -57,6 +57,11 @@ bool MFSOSSparseFileDevice::ZeroRegion(uint64_t startOffset, uint64_t length)
     }
 }
 
+bool MFSOSSparseFileDevice::ZeroAll()
+{
+    return ZeroRegion(0, GetTotalSize());
+}
+
 bool MFSOSSparseFileDevice::SupportSparse() const
 {
     return _supportSparse;

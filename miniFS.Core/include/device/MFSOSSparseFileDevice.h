@@ -13,6 +13,7 @@ public:
     uint64_t GetActualAllocatedSize() const;
 
     bool ZeroRegion(uint64_t startOffset, uint64_t length) override;
+    bool ZeroAll() override;
     bool SupportSparse() const override;
 
 private:

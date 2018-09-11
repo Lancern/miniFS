@@ -12,7 +12,7 @@ class MFSOSFileDevice
 */
 
 class MFSOSFileDevice :
-    public MFSRawDevice
+    public virtual MFSRawDevice
 {
 public:
     MFSOSFileDevice(HANDLE hFile, bool readonly);

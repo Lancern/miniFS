@@ -1,4 +1,5 @@
 #include "../../include/fs/MFSPartition.h"
+#include "../../include/device/MFSSparseBlockDevice.h"
 #include "../../include/stream/MFSMemoryStream.h"
 #include "../../include/serialize/MFSBlockAllocationBitmapSerializer.h"
 #include "../../include/serialize/MFSFileAllocationTableSerializer.h"
@@ -51,6 +52,11 @@ uint64_t MFSPartition::GetFreeSpaceInBytes() const
 
 void MFSPartition::BuildFileSystem()
 {
+    // Sparse file support.
+    MFSSparseBlockDevice * sparseDevice = dynamic_cast<MFSSparseBlockDevice *>(_device);
+    if (sparseDevice)
+        sparseDevice->GetSparseDevice()->ZeroAll();
+
     // Build partition master record.
     _master.magicSeq = MFS_MAGIC_SEQ;
     _master.mfsVer = MFS_VER;

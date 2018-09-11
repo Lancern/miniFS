@@ -150,6 +150,9 @@
     <ClInclude Include="include\device\MFSOSSparseFileDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\device\MFSSparseBlockDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\device\MFSBlockDevice.cpp">
@@ -282,6 +285,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\device\MFSOSSparseFileDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\device\MFSSparseBlockDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
