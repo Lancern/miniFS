@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <fstream>
 #include <iostream>
+#include <io.h>
 
 
 bool CopyCommand::Accept(const MFSString & string) const
@@ -21,14 +22,27 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 	{
 		space->CreateDirectory(argv_1, true);
-		
+		_wfinddata_t fileinfo;
+		intptr_t handle = 0;
+		int i = 0;
+		if ((handle = _wfindfirst((argv_0 + L"\\*").GetRawString(), &fileinfo)) != -1)
+		{
+			do
+			{
+				if (wcscmp(fileinfo.name, L".") == 0 || wcscmp(fileinfo.name, L"..") == 0)
+					continue;
+				MFSString file = MFSString(fileinfo.name);
+				Cpin(argv_0 + L"\\" + file, argv_1 + L"/" +file);
+			} while (_wfindnext(handle, &fileinfo) == 0);
+			_findclose(handle);
+		}
 	}
 	else
 	{
 		std::ifstream in(argv_0.GetRawString(), std::ios::binary);
 		if (!in)
 		{
-			point->Log(L"文件以二进制形式打开失败");
+			point->Log(L"文件以二进制形式打开失败\n");
 			return false;
 		}
 
@@ -66,8 +80,6 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 {
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-	//WIN32_FIND_DATAW FindFileData;
-	//FindFirstFileW(argv_1.GetRawString(), &FindFileData);
 	if (space->GetEntryInfo(argv_0).IsDirectory)
 	{
 		CreateDirectoryW(argv_1.GetRawString(),NULL);
@@ -84,16 +96,16 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 	}
 	else
 	{
-		std::ofstream out(argv_1.GetRawString(), std::ios::binary);
-		if (!out)
-		{
-			point->Log(L"文件以二进制形式打开失败");
-			return false;
-		}
-
 		MFSFile * file = space->OpenFile(argv_0, false);
 		uint64_t ps = file->GetFileSize();
 		MFSStream *outStream = file->OpenStream();
+
+		std::ofstream out(argv_1.GetRawString(), std::ios::binary);
+		if (!out)
+		{
+			point->Log(L"文件以二进制形式打开失败\n");
+			return false;
+		}
 
 		char Buffer[257];
 		uint32_t n = ps % 256;
@@ -133,10 +145,16 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
 		{
+
 			Cpin(argv[0], argv[1]);
 		}
 		else if (!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
+			if (!space->Exist(argv[0]))
+			{
+				point->Log(L"路径不存在");
+				return;
+			}
 			MFSString str = argv[0];
 			if (str.EndsWith(L"/"))
 				str = str.Substring(0, str.GetLength() - 1);
@@ -144,9 +162,8 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 		}
 		else if (MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
-			USES_CONVERSION;
-			MFSString order = L"copy " + argv[0] + L" " + argv[1];
-			system(W2A(order.GetRawString()));
+			point->Log(L"指令输入有误\n");
+			return;
 		}
 		else
 		{

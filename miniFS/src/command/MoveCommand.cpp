@@ -43,9 +43,8 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 		}
 		else if (MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
-			USES_CONVERSION;
-			MFSString order = L"move " + argv[0] + L" " + argv[1];
-			system(W2A(order.GetRawString()));
+			point->Log(L"Ö¸ÁîÊäÈëÓÐÎó\n");
+			return;
 		}
 		else
 			space->Move(argv[0], argv[1]);
