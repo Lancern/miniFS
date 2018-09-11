@@ -35,6 +35,11 @@ void MountCommand::Action(const std::vector<MFSString> & argv) const
 
 void MountCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"卸载当前活动的数据空间（如果存在），然后挂载将给定的数据空间。\n\n");
+	point->Log(L"指令格式。\n");
+	point->Log(L"mount <name>\n\n");
+	point->Log(L"name：要挂载的数据空间的后备存储文件名。\n\n");
 	return;
 }
 

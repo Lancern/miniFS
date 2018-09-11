@@ -51,6 +51,15 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 
 void DirCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"显示给定目录下的所有目录项。\n\n");
+	point->Log(L"指令格式\n");
+	point->Log(L"dr [-a] [-l] [<path>]\n");
+	point->Log(L"dir [-a] [-l] [<path>]\n");
+	point->Log(L"ls [-a] [-l] [<path>]\n\n");
+	point->Log(L"-a：可选。指定该选项时将显示隐藏文件和目录。\n");
+	point->Log(L"-l：可选。指定该选项时将显示更加详细的信息。\n");
+	point->Log(L"path：可选。要显示目录项的目录。若不指定此参数，则命令将显示当前工作目录下的所有目录项。\n");
 	return;
 }
 

@@ -104,7 +104,13 @@ void CopyCommand::Copy(const MFSString & space1, const MFSString & space2) const
 
 void CopyCommand::Help() const
 {
-	return;
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"复制文件或目录\n\n");
+	point->Log(L"指令格式\n");
+	point->Log(L"cp <src> <dest>\n");
+	point->Log(L"copy <src> <dest>\n\n");
+	point->Log(L"src：mini-FS 文件/目录名或 Windows 文件/目录名。源文件或目录。\n");
+	point->Log(L"dest：mini-FS 文件/目录名或 Windows 文件/目录名。目标文件或目录。\n\n");
 }
 
 CopyCommand::CopyCommand()

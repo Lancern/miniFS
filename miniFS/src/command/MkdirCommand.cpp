@@ -33,6 +33,12 @@ void MkdirCommand::Action(const std::vector<MFSString> & argv) const
 
 void MkdirCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"创建目录。\n\n");
+	point->Log(L"指令格式。\n");
+	point->Log(L"mkdir <dir>\n\n");
+	point->Log(L"dir：要创建的目录路径。该路径上所有不存在的目录也会被一并创建。\n\n");
+
 	return;
 }
 

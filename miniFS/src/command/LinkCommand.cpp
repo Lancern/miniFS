@@ -33,7 +33,12 @@ void LinkCommand::Action(const std::vector<MFSString> & argv) const
 
 void LinkCommand::Help() const
 {
-	return;
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"创建硬链接\n\n");
+	point->Log(L"指令格式\n");
+	point->Log(L"link <target> <src>\n\n");
+	point->Log(L"target：要链接到的文件或目录名。\n");
+	point->Log(L"src：链接文件或目录名。\n\n");
 }
 
 LinkCommand::LinkCommand()

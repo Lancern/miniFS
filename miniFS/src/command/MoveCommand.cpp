@@ -33,6 +33,13 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 
 void MoveCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"移动文件或目录。\n\n");
+	point->Log(L"指令格式。\n");
+	point->Log(L"mv <src> <dest>\n");
+	point->Log(L"move <src> <dest>\n\n");
+	point->Log(L"src：mini-FS 文件/目录名或 Windows 文件/目录名。源文件或目录。\n");
+	point->Log(L"dest：mini-FS 文件/目录名或 Windows 文件/目录名。目标文件。\n\n");
 	return;
 }
 

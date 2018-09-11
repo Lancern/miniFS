@@ -37,7 +37,10 @@ void InfoCommand::Action(const std::vector<MFSString> & argv) const
 
 void InfoCommand::Help() const
 {
-	return;
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"显示数据空间的总空间，已用空间和剩余空间的信息\n\n");
+	point->Log(L"指令格式\n");
+	point->Log(L"info\n\n");
 }
 
 InfoCommand::InfoCommand()
