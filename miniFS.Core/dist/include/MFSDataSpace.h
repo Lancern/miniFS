@@ -48,6 +48,9 @@ class MFSDataSpace
     void MFSDataSpace::Format() noexcept
         格式化当前的数据空间。
 
+    void MFSDataSpace::Optimize() noexcept
+        对当前的数据空间执行碎片整理。
+
     bool MFSDataSpace::Exist(const MFSString & path)
         检查给定的路径是否存在。
         @exceptions
@@ -218,6 +221,7 @@ public:
     bool IsFormatted() const noexcept;
     
     void Format() noexcept;
+    void Optimize() noexcept;
 
     bool Exist(const MFSString & path);
     MFSFile * OpenFile(const MFSString & path, bool createIfNotExist);

@@ -148,7 +148,7 @@ class MFSPartition::Internals
 */
 
 class MFSFSEntry;
-class MFSPartitonOptimizer;
+class MFSPartitionOptimizer;
 
 class MFSPartition
 {

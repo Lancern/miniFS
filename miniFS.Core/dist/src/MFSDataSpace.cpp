@@ -115,6 +115,12 @@ void MFSDataSpace::Format() noexcept
 	SetWorkingDirectory(L"/");
 }
 
+void MFSDataSpace::Optimize() noexcept
+{
+    std::unique_ptr<MFSPartitionOptimizer> optimizer(_partition->GetOptimizer());
+    optimizer->Optimize();
+}
+
 bool MFSDataSpace::Exist(const MFSString & path)
 {
 	MFSFSEntry * entry = nullptr;
