@@ -23,7 +23,6 @@ void TouchCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
-		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 		MFSFile * file = space->CreateFile(argv[0], false);
 	}
 	catch(MFSException & ex)

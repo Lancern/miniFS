@@ -84,6 +84,12 @@
     <ClInclude Include="include\command\CdCommand.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\command\TreeCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\SetHiddenCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\command\CreateCommand.cpp">
@@ -150,6 +156,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\command\CdCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\TreeCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\SetHiddenCommand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

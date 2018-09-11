@@ -18,3 +18,5 @@
 #include "command/MapCommand.h"
 #include "command/TouchCommand.h"
 #include "command/CdCommand.h"
+#include "command/TreeCommand.h"
+#include "command/SetHiddenCommand.h"

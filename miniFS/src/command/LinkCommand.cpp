@@ -20,11 +20,15 @@ void LinkCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		point->Log(L"Ö¸ÁîÊäÈëÓÐÎó\n");
 		return;
-	}/*
+	}
 	try
 	{
-
-	}*/
+		space->CreateLink(argv[0], argv[1]);
+	}
+	catch (MFSException & ex)
+	{
+		point->Log(ex.GetExceptMessage()+L"\n");
+	}
 }
 
 LinkCommand::LinkCommand()

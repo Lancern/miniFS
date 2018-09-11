@@ -237,24 +237,24 @@ void MFSDataSpace::CreateDirectory(const MFSString & path, bool errorIfExist)
     }
 }
 
-void MFSDataSpace::CreateLink(const MFSString & target, const MFSString & link)
+void MFSDataSpace::CreateLink(const MFSString & src, const MFSString & target)
 {
-    std::unique_ptr<MFSFSEntry> targetEntry(OpenFSEntry(target));
+    std::unique_ptr<MFSFSEntry> targetEntry(OpenFSEntry(src));
     if (!targetEntry)
         throw MFSException(L"Unexpected null targetEntry.");
 
     uint32_t targetFsnodeId = targetEntry->GetFSNodeId();
     targetEntry.release();
 
-    MFSString linkDirectory = MFSPath::GetDirectoryPath(link);
-    MFSString linkFilename = MFSPath::GetFileName(link);
+    MFSString linkDirectory = MFSPath::GetDirectoryPath(target);
+    MFSString linkFilename = MFSPath::GetFileName(target);
 
     std::unique_ptr<MFSFSEntry> linkDirectoryEntry(OpenFSEntry(linkDirectory));
     if (!linkDirectoryEntry)
         throw MFSDirectoryNotFoundException(linkDirectory);
 
     if (linkDirectoryEntry->ContainsSubEntry(linkFilename))
-        throw MFSFileAlreadyExistException(link);
+        throw MFSFileAlreadyExistException(target);
 
     std::unique_ptr<MFSFSEntry> linkEntry(linkDirectoryEntry->AddSubEntry(linkFilename, targetFsnodeId));
     if (!linkEntry)
@@ -375,6 +375,9 @@ void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
 		throw MFSFileNotFoundException(source);
 	std::unique_ptr<MFSFSEntry> dstFileEntry(dstDirEntry->GetSubEntry(dstFilename));
 	if (dstFileEntry == nullptr)
+		throw MFSFileAlreadyExistException(destination);
+
+	if (dstDirEntry->ContainsSubEntry(dstFilename))
 		throw MFSFileAlreadyExistException(destination);
 
 	MFSFSEntry* pEntry = dstDirEntry->AddSubEntry(dstFilename, srcFileEntry->GetFSNodeId());

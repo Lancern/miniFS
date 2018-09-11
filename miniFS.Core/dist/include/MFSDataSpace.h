@@ -83,10 +83,10 @@ class MFSDataSpace
             MFSDirectoryAlreadyExist 要创建的目录已存在 且 errorIfExist 为 true。
             MFSOutOfSpaceException 数据空间空间不足，无法完成要求的操作。
             
-    void MFSDataSpace::CreateLink(const MFSString & target, const MFSString & link)
+    void MFSDataSpace::CreateLink(const MFSString & src, const MFSString & target)
         创建一个硬链接。
+        @param src 硬链接的源。
         @param target 硬链接的目标。
-        @param link 硬链接的源。
         @exceptions
             MFSInvalidPathException 目标路径 target 或 源路径link 不合法。
             MFSDirectoryNotFoundException 路径上有一个或多个目录不存在。
@@ -203,7 +203,7 @@ public:
     MFSFile * OpenFile(const MFSString & path, bool createIfNotExist);
     MFSFile * CreateFile(const MFSString & path, bool openIfExist);
     void CreateDirectory(const MFSString & path, bool errorIfExist);
-    void CreateLink(const MFSString & target, const MFSString & link);
+    void CreateLink(const MFSString & src, const MFSString & target);
     void Delete(const MFSString & path);
 
     bool IsDirectory(const MFSString & path);

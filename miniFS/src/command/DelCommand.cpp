@@ -23,12 +23,16 @@ void DelCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
-		if (argv.size() == 1) {
+		if (argv.size() == 2 && argv[2] == L"-f") {
 			space->Delete(argv[0]);
+		}
+		else if(argv.size() == 1)
+		{
+			Del(argv[0]);
 		}
 		else
 		{
-
+			point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
 		}
 	}
 	catch (MFSException & ex)
@@ -36,6 +40,37 @@ void DelCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(ex.GetExceptMessage() + L"\n");;
 	}
 	
+}
+
+void DelCommand::Del(const MFSString & path) const
+{
+	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
+	if (space->IsDirectory(path))
+	{
+		if (space->GetDirectories(path).size() == 0 && space->GetFiles(path).size() == 0)
+		{
+			space->Delete(path);
+			return;
+		}
+		else
+		{
+			std::vector<MFSString> fileList = space->GetFiles(path);
+			for (MFSString file : fileList)
+			{
+				Del(path + L"/" + file);
+			}
+			std::vector<MFSString> directoryList = space->GetDirectories(path);
+			for (MFSString file : directoryList)
+			{
+				Del(path + L"/" + file);
+			}
+		}
+		space->Delete(path);
+	}
+	else
+	{
+		space->Delete(path);
+	}
 }
 
 DelCommand::DelCommand()

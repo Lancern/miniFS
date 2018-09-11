@@ -21,6 +21,22 @@ void MapCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
 		return;
 	}
+	try
+	{
+		std::vector<uint32_t>blockId;
+		MFSFile *file = space->OpenFile(argv[0], false);
+		blockId = file->GetAllBlocksId();
+		point->LogLine(L"Block id:");
+		for (auto id : blockId)
+		{
+			std::wcout << ' !' << id;
+		}
+		point->Log(L"\n");
+	}
+	catch (MFSException & ex)
+	{
+		point->LogLine(ex.GetExceptMessage());
+	}
 }
 
 MapCommand::MapCommand()

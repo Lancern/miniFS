@@ -27,9 +27,11 @@ MFSTest::MFSTest() :Chead()
 	OptCommand *c17 = new OptCommand;
 	TouchCommand *c18 = new TouchCommand;
 	CdCommand *c19 = new CdCommand;
-	MFSCommand * list[19] = {c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19};
+	TreeCommand *c20 = new TreeCommand;
+	SetHiddenCommand *c21 = new SetHiddenCommand;
+	MFSCommand * list[21] = {c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20, c21};
 	Chead = new MFSTestunit;
-	for (int i = 0; i < 19; i++)
+	for (int i = 0; i < 21; i++)
 	{
 		MFSTestunit *tmp = new MFSTestunit;
 		tmp->link = Chead->link;
