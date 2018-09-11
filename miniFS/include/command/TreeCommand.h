@@ -9,3 +9,5 @@ public:
 
 	TreeCommand();
 };
+
+void tree(int depth, std::vector<bool> & flag);
