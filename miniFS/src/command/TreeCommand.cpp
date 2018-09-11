@@ -61,6 +61,8 @@ void TreeCommand::tree(int depth, std::vector<bool> & flag) const
 					point->Log(L"    ");
 			}
 			point->Log(L"©¸©¤©¤ ");
+			if (depth == 0)
+				flag[0] = 0;
 			flag.push_back(0);
 		}
 		else
