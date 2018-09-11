@@ -41,6 +41,9 @@ class MFSPartition
     void MFSPartition::BuildFileSystem()
         在基础块设备上建立基础文件系统结构（格式化）。
 
+    void MFSPartition::Optimize()
+        整理分区块碎片。
+
     MFSFSEntry * MFSPartition::GetRoot() const
         获取该分区上的文件系统树根节点。
 
@@ -108,7 +111,7 @@ class MFSPartition::Internals
         @param blockId 要添加到块链末尾的块编号。
         @return 操作结束后块链的第一块编号。
 
-    uint32_t GetNextChainedBlock(uint32_t blockId) const
+    uint32_t MFSPartition::Internals::GetNextChainedBlock(uint32_t blockId) const
         获取内部 MFSPartition 对象上指定设备块在块链上的下一块编号。
 
     uint32_t MFSPartition::Internals::GetAvailableFSNodeId()
@@ -121,10 +124,10 @@ class MFSPartition::Internals
         @param fsnodeId 要分配的节点在节点池中的编号。
         @return 一个 bool 值指示目标节点在操作之前的引用计数是否为 0。
 
-    MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const
+    MFSFSEntryMeta * MFSPartition::Internals::GetEntryMeta(uint32_t fsnodeId) const
         获取编号为给定值的节点元数据。
 
-    bool FreeEntryMeta(uint32_t fsnodeId)
+    bool MFSPartition::Internals::FreeEntryMeta(uint32_t fsnodeId)
         递减给定的文件系统节点的引用计数并在引用计数降至零时释放其链接到的块链。
 
     MFSBlockStream * MFSPartition::Internals::OpenBlockStream(uint32_t firstBlock)
@@ -136,9 +139,16 @@ class MFSPartition::Internals
         @param firstBlock 打开的流对象的基础块链的第一块编号。
         @param length 打开的流对象的长度。
 
+    bool MFSPartition::Internals::CopyBlock(uint32_t fromBlockId, uint32_t toBlockId)
+        将整块数据从源块复制到目标块。
+        @param formBlockId 源设备块号。
+        @param toBlockId 目标设备块号。
+        @return 返回一个 bool 值指示操作是否成功。
+
 */
 
 class MFSFSEntry;
+class MFSPartitonOptimizer;
 
 class MFSPartition
 {
@@ -189,7 +199,11 @@ public:
         MFSPartition * _partition;
 
         MFSPartition * GetPartition() const;
+        MFSBlockAllocationBitmap * GetBAB() const;
+        MFSFileAllocationTable * GetFAT() const;
+        MFSFSNodePool * GetFSNodePool() const;
 
+        uint32_t GetNextAvailableDeviceBlockId() const;
         uint32_t AllocateDeviceBlock();
         bool AllocateDeviceBlock(uint32_t blockId);
         void InitializeDeviceBlock(uint32_t blockId);
@@ -204,6 +218,7 @@ public:
         uint32_t AppendTailBlock(uint32_t firstBlockId, uint32_t blockId);
 
         uint32_t GetNextChainedBlock(uint32_t blockId) const;
+        void SetNextChainedBlock(uint32_t blockId, uint32_t nextBlockId);
 
         uint32_t GetAvailableFSNodeId();
         bool AllocateEntryMeta(uint32_t fsnodeId);
@@ -213,7 +228,10 @@ public:
         MFSBlockStream * OpenBlockStream(uint32_t firstBlock);
         MFSBlockStream * OpenBlockStream(uint32_t firstBlock, uint64_t length);
 
+        bool CopyBlock(uint32_t fromBlockId, uint32_t toBlockId);
+
         friend class MFSFSEntry;
+        friend class MFSPartitionOptimizer;
     };
 
     MFSPartition(MFSBlockDevice * device);
@@ -229,8 +247,7 @@ public:
     void BuildFileSystem();
 
     MFSFSEntry * GetRoot();
-
-    Internals GetInternalObject();
+    MFSPartitionOptimizer * GetOptimizer();
 
     void Flush();
     void Close();
@@ -249,6 +266,22 @@ private:
     bool LoadBlockAllocationManager(MFSBlockStream * deviceStream);
     bool LoadAllocationTable(MFSBlockStream * deviceStream);
     bool LoadFSNodePool(MFSBlockStream * deviceStream);
+
+    Internals GetInternalObject();
+};
+
+
+class MFSPartitionOptimizer
+{
+public:
+    MFSPartitionOptimizer(MFSPartition::Internals partition);
+
+    void Optimize();
+
+private:
+    MFSPartition::Internals _partition;
+
+    uint32_t OptimizeBlock(uint32_t blockId);
 };
 
 

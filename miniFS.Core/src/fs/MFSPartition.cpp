@@ -111,6 +111,14 @@ MFSFSEntry * MFSPartition::GetRoot()
     return entry;
 }
 
+MFSPartitionOptimizer * MFSPartition::GetOptimizer()
+{
+    if (!_validDevice || IsRaw())
+        return nullptr;
+
+    return new MFSPartitionOptimizer(GetInternalObject());
+}
+
 MFSPartition::Internals MFSPartition::GetInternalObject()
 {
     return Internals(this);

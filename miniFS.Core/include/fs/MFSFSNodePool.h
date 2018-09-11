@@ -30,9 +30,44 @@ class MFSFSNodePool
 class MFSFSNodePool
 {
 public:
+    class Iterator
+    {
+    public:
+        using difference_type = size_t;
+        using value_type = MFSFSEntryMeta;
+        using pointer = MFSFSEntryMeta *;
+        using reference = MFSFSEntryMeta &;
+        using iterator_category = std::bidirectional_iterator_tag;
+
+        Iterator & operator ++ ();
+        Iterator operator ++ (int);
+        Iterator & operator -- ();
+        Iterator operator -- (int);
+
+        bool operator == (const Iterator & another) const;
+        bool operator != (const Iterator & another) const;
+
+        value_type operator * () const;
+        reference operator * ();
+        pointer operator -> ();
+
+    private:
+        Iterator(MFSFSNodePool * container, int64_t offset);
+
+        MFSFSNodePool * _container;
+        int64_t _offset;
+
+        void LocateNextUsedNode();
+        void LocatePreviousUsedNode();
+
+        friend class MFSFSNodePool;
+    };
+
     static constexpr uint32_t InvalidFSNodeId = 0xFFFFFFFF;
 
     MFSFSNodePool(uint32_t numberOfNodes);
+
+    uint32_t GetNodesCount() const;
 
     uint32_t GetAvailableFSNodeId();
     bool Allocate(uint32_t fsnodeId);
@@ -43,6 +78,9 @@ public:
 
     MFSFSEntryMeta & Get(uint32_t fsnodeId);
     MFSFSEntryMeta Get(uint32_t fsnodeId) const;
+
+    Iterator begin();
+    Iterator end();
 
 private:
     std::unique_ptr<MFSFSEntryMeta[]> _pool;

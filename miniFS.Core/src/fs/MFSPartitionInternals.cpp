@@ -12,6 +12,26 @@ MFSPartition * MFSPartition::Internals::GetPartition() const
     return _partition;
 }
 
+MFSBlockAllocationBitmap * MFSPartition::Internals::GetBAB() const
+{
+    return _partition->_blockAllocation.get();
+}
+
+MFSFileAllocationTable * MFSPartition::Internals::GetFAT() const
+{
+    return _partition->_blockChain.get();
+}
+
+MFSFSNodePool * MFSPartition::Internals::GetFSNodePool() const
+{
+    return _partition->_fsnodePool.get();
+}
+
+uint32_t MFSPartition::Internals::GetNextAvailableDeviceBlockId() const
+{
+    return _partition->_blockAllocation->GetAvailableBlockId();
+}
+
 uint32_t MFSPartition::Internals::AllocateDeviceBlock()
 {
     uint32_t blockId = _partition->_blockAllocation->AllocBlock();
@@ -137,6 +157,11 @@ uint32_t MFSPartition::Internals::GetNextChainedBlock(uint32_t blockId) const
     return _partition->_blockChain->Get(blockId);
 }
 
+void MFSPartition::Internals::SetNextChainedBlock(uint32_t blockId, uint32_t nextBlockId)
+{
+    _partition->_blockChain->Set(blockId, nextBlockId);
+}
+
 uint32_t MFSPartition::Internals::GetAvailableFSNodeId()
 {
     return _partition->_fsnodePool->GetAvailableFSNodeId();
@@ -174,4 +199,17 @@ MFSBlockStream * MFSPartition::Internals::OpenBlockStream(uint32_t firstBlock)
 MFSBlockStream * MFSPartition::Internals::OpenBlockStream(uint32_t firstBlock, uint64_t length)
 {
     return new ChainedBlockStream(_partition, firstBlock, length);
+}
+
+bool MFSPartition::Internals::CopyBlock(uint32_t fromBlockId, uint32_t toBlockId)
+{
+    if (fromBlockId == toBlockId)
+        return true;
+
+    std::unique_ptr<uint8_t[]> buffer(new uint8_t[_partition->_device->GetBlockSize()]);
+    if (!_partition->_device->ReadBlock(buffer.get(), fromBlockId))
+        return false;
+    if (!_partition->_device->WriteBlock(toBlockId, buffer.get()))
+        return false;
+    return true;
 }

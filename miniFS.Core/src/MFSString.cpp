@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <wchar.h>
+#include "..\include\fs\MFSFSNodePool.h"
 
 MFSString::MFSString()
 	: _len(0), _data(new wchar_t[1])

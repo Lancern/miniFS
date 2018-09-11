@@ -120,6 +120,7 @@ public:
     public:
         using difference_type = size_t;
         using value_type = wchar_t;
+        using pointer = wchar_t *;
         using reference = wchar_t & ;
         using iterator_category = std::random_access_iterator_tag;
 

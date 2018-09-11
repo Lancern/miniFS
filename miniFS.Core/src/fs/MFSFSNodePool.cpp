@@ -3,10 +3,99 @@
 #include "../../include/MFSDateTime.h"
 
 
+
+MFSFSNodePool::Iterator & MFSFSNodePool::Iterator::operator++()
+{
+    if (_offset < static_cast<int64_t>(_container->GetNodesCount()))
+    {
+        ++_offset;
+        LocateNextUsedNode();
+    }
+    return *this;
+}
+
+MFSFSNodePool::Iterator MFSFSNodePool::Iterator::operator++(int)
+{
+    Iterator ret = *this;
+    this->operator++();
+    return ret;
+}
+
+MFSFSNodePool::Iterator & MFSFSNodePool::Iterator::operator--()
+{
+    if (_offset >= 0)
+    {
+        --_offset;
+        LocatePreviousUsedNode();
+    }
+    return *this;
+}
+
+MFSFSNodePool::Iterator MFSFSNodePool::Iterator::operator--(int)
+{
+    Iterator ret = *this;
+    this->operator--();
+    return ret;
+}
+
+bool MFSFSNodePool::Iterator::operator==(const Iterator & another) const
+{
+    return this->_container == another._container && this->_offset == another._offset;
+}
+
+
+bool MFSFSNodePool::Iterator::operator!=(const Iterator & another) const
+{
+    return !this->operator==(another);
+}
+
+auto MFSFSNodePool::Iterator::operator*() const -> typename value_type
+{
+    return _container->Get(_offset);
+}
+
+auto MFSFSNodePool::Iterator::operator*() -> typename reference
+{
+    return _container->Get(_offset);
+}
+
+auto MFSFSNodePool::Iterator::operator->() -> typename pointer
+{
+    return &_container->Get(_offset);
+}
+
+void MFSFSNodePool::Iterator::LocateNextUsedNode()
+{
+    while (_offset < static_cast<int64_t>(_container->GetNodesCount()) && 
+        _container->Get(static_cast<uint32_t>(_offset)).common.refCount == 0)
+        ++_offset;
+}
+
+void MFSFSNodePool::Iterator::LocatePreviousUsedNode()
+{
+    while (_offset >= 0 && 
+        _container->Get(static_cast<uint32_t>(_offset)).common.refCount == 0)
+        --_offset;
+}
+
+MFSFSNodePool::Iterator::Iterator(MFSFSNodePool * container, int64_t offset)
+    : _container(container), _offset(offset)
+{
+    LocateNextUsedNode();
+}
+
+
+
+
 MFSFSNodePool::MFSFSNodePool(uint32_t numberOfNodes)
     : _pool(new MFSFSEntryMeta[numberOfNodes]), _nodesCount(numberOfNodes), _alloc(0)
 {
     memset(_pool.get(), 0, numberOfNodes * sizeof(MFSFSEntryMeta));
+}
+
+uint32_t MFSFSNodePool::GetNodesCount() const
+{
+    return _nodesCount;
 }
 
 uint32_t MFSFSNodePool::GetAvailableFSNodeId()
@@ -52,6 +141,16 @@ MFSFSEntryMeta & MFSFSNodePool::Get(uint32_t fsnodeId)
 MFSFSEntryMeta MFSFSNodePool::Get(uint32_t fsnodeId) const
 {
     return this->operator[](fsnodeId);
+}
+
+MFSFSNodePool::Iterator MFSFSNodePool::begin()
+{
+    return Iterator(this, 0);
+}
+
+MFSFSNodePool::Iterator MFSFSNodePool::end()
+{
+    return Iterator(this, static_cast<int64_t>(GetNodesCount()));
 }
 
 uint32_t MFSFSNodePool::LocateNextFreeNode()

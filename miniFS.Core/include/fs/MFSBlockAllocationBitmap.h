@@ -12,6 +12,8 @@ public:
 	MFSBlockAllocationBitmap(uint32_t sizeBits);
 	~MFSBlockAllocationBitmap();
 
+    uint32_t GetAvailableBlockId() const;
+
 	uint32_t AllocBlock();
     bool AllocBlock(uint32_t blockId);
 	bool FreeBlock(uint32_t pos);
