@@ -1,3 +1,5 @@
+#include "../include/MFSConfig.h"
+
 #include "../include/MFSDataSpace.h"
 #include "../include/MFSPath.h"
 #include "../include/exceptions/MFSInvalidArgumentException.h"
@@ -12,7 +14,9 @@
 #include "../include/exceptions/MFSWindowsException.h"
 #include "../include/exceptions/MFSOutOfSpaceException.h"
 #include "../../include/device/MFSOSFileDevice.h"
+#include "../../include/device/MFSOSSparseFileDevice.h"
 #include "../../include/device/MFSBlockDevice.h"
+#include "../../include/device/MFSSparseBlockDevice.h"
 #include "../../include/fs/MFSPartition.h"
 
 #define MFS_DATASPACE_MIN_SIZE      uint64_t(128ull * 1024 * 1024)
@@ -33,8 +37,14 @@ MFSDataSpace::MFSDataSpace(const MFSString & osFileName)
     if (_hFile == INVALID_HANDLE_VALUE)
         throw MFSWindowsException();
 
+#ifdef MFS_ENABLE_SPARSE_FILE
+    _fileDevice.reset(new MFSOSSparseFileDevice(_hFile, false));
+    _blockDevice.reset(new MFSSparseBlockDevice(dynamic_cast<MFSSparseDevice *>(_fileDevice.get())));
+#else
     _fileDevice.reset(new MFSOSFileDevice(_hFile, false));
     _blockDevice.reset(new MFSBlockDevice(_fileDevice.get()));
+#endif
+
     _partition.reset(new MFSPartition(_blockDevice.get()));
     if (!_partition->IsValidDevice())
     {
@@ -169,6 +179,8 @@ MFSFile * MFSDataSpace::CreateFile(const MFSString & path, bool openIfExist)
 
     MFSString directory = MFSPath::Combine(GetWorkingDirectory(), MFSPath::GetDirectoryPath(path));
     MFSString filename = MFSPath::GetFileName(path);
+    if (filename.IsEmpty())
+        throw MFSInvalidPathException(path);
     
     std::unique_ptr<MFSFSEntry> directoryFsEntry(OpenFSEntry(directory));
     if (!directoryFsEntry)
@@ -248,6 +260,8 @@ void MFSDataSpace::CreateLink(const MFSString & src, const MFSString & target)
 
     MFSString linkDirectory = MFSPath::GetDirectoryPath(target);
     MFSString linkFilename = MFSPath::GetFileName(target);
+    if (linkFilename.IsEmpty())
+        throw MFSInvalidPathException(src);
 
     std::unique_ptr<MFSFSEntry> linkDirectoryEntry(OpenFSEntry(linkDirectory));
     if (!linkDirectoryEntry)
@@ -512,6 +526,12 @@ MFSFSEntry * MFSDataSpace::OpenFSEntry(const MFSString & path)
             delete entry;
             entry = subEntry;
         }
+    }
+
+    if (MFSPath::IsDirectoryPath(path) && entry->GetEntryType() != MFSFSEntryType::Directory)
+    {
+        delete entry;
+        throw MFSDirectoryNotFoundException(path);
     }
 
     return entry;

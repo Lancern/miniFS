@@ -62,6 +62,11 @@ bool MFSPath::IsOSPath(const MFSString & path) noexcept
 		path[1] == L':' && path[2] == L'\\';
 }
 
+bool MFSPath::IsDirectoryPath(const MFSString & path) noexcept
+{
+    return path.EndsWith(GetPathSeparator());
+}
+
 std::vector<MFSString> MFSPath::GetPathNames(const MFSString & path)
 {
     if (!IsValidPath(path))
@@ -79,13 +84,9 @@ MFSString MFSPath::GetFileName(const MFSString & path)
 	if (path == L"." || path == L"..")
 		return MFSString::GetEmptyString();
 
-	if (path.EndsWith(L"/"))
-		return MFSString::GetEmptyString();
-
     wchar_t sep = GetPathSeparator();
     bool endWithSep = path.EndsWith(sep);
-
-    if (endWithSep && path.GetLength() == 1)
+    if (endWithSep)
         return MFSString::GetEmptyString();
 
     int nameStart = endWithSep ? path.GetLength() - 2 : path.GetLength() - 1;
