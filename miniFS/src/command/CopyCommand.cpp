@@ -76,7 +76,8 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 	FindFirstFileA(path, &FindFileData);
 	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 	{
-		printf("ÎÄ¼þ¼Ð");
+		space->CreateDirectory(argv_1, true);
+
 	}
 	else
 	{
