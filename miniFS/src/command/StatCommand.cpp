@@ -32,7 +32,22 @@ void StatCommand::Action(const std::vector<MFSString> & argv) const
 		{
 			point->Log(L"ด๓ะก: ");
 			MFSFile *file = space->OpenFile(argv[0], false);
-			std::wcout << file->GetFileSize() << std::endl;
+			uint64_t size = file->GetFileSize();
+			if (size < 1024)
+			{
+				std::wcout << file->GetFileSize();
+				point->LogLine(L"B");
+			}
+			else if (size < 1024*1024)
+			{
+				printf("%.2lf", double(1.0*size / 1024));
+				point->LogLine(L"KB");
+			}
+			else
+			{
+				printf("%.2lf", double(1.0*size / 1024 / 1024));
+				point->LogLine(L"MB");
+			}
 		}
 	}
 	catch (MFSException & ex)

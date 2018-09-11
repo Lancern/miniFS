@@ -1,8 +1,9 @@
 #include "../../include/command/CopyCommand.h"
 #include <atlconv.h>
-#include <windows.h>
+#include <Windows.h>
 #include <fstream>
 #include <iostream>
+
 
 bool CopyCommand::Accept(const MFSString & string) const
 {
@@ -15,17 +16,16 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 {
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-	WIN32_FIND_DATAA FindFileData;
-	USES_CONVERSION;
-	char * path = W2A(argv_0.GetRawString());
-	FindFirstFileA(path, &FindFileData);
+	WIN32_FIND_DATAW FindFileData;
+	FindFirstFileW(argv_0.GetRawString(), &FindFileData);
 	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 	{
-		printf("文件夹");
+		space->CreateDirectory(argv_1, true);
+		
 	}
 	else
 	{
-		std::ifstream in(path, std::ios::binary);
+		std::ifstream in(argv_0.GetRawString(), std::ios::binary);
 		if (!in)
 		{
 			point->Log(L"文件以二进制形式打开失败");
@@ -66,18 +66,25 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 {
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-	WIN32_FIND_DATAA FindFileData;
-	USES_CONVERSION;
-	char * path = W2A(argv_1.GetRawString());
-	FindFirstFileA(path, &FindFileData);
-	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+	//WIN32_FIND_DATAW FindFileData;
+	//FindFirstFileW(argv_1.GetRawString(), &FindFileData);
+	if (space->GetEntryInfo(argv_0).IsDirectory)
 	{
-		space->CreateDirectory(argv_1, true);
-
+		CreateDirectoryW(argv_1.GetRawString(),NULL);
+		std::vector<MFSString> fileList = space->GetFiles(argv_0);
+		for (MFSString file : fileList)
+		{
+			Cpout(argv_0 + L"/" + file, argv_1 + L"\\" + file);
+		}
+		std::vector<MFSString> directoryList = space->GetDirectories(argv_0);
+		for (MFSString file : directoryList)
+		{
+			Cpout(argv_0 + L"/" + file, argv_1 + L"\\" + file);
+		}
 	}
 	else
 	{
-		std::ofstream out(path, std::ios::binary);
+		std::ofstream out(argv_1.GetRawString(), std::ios::binary);
 		if (!out)
 		{
 			point->Log(L"文件以二进制形式打开失败");

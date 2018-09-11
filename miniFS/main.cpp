@@ -24,7 +24,7 @@ int main()
 	while (1)
 	{
 		MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-		std::vector<WCHAR> split = { L'|' };
+		std::vector<WCHAR> split = { L' ', L'\t' };
 		std::vector<MFSString> subString;
 		point->Log(L"miniFS@ ");
 		if (space)
@@ -32,25 +32,24 @@ int main()
 		point->Log(L">");
 		MFSString strInput = point->ReadLine();
 		subString = strInput.SplitName(split);
-		for (const MFSString & part : subString) {
-
-			MFSTestunit *tmp = command.Chead->link;
-			std::vector<WCHAR> splitNew = { L' ', L'\t' };
-			std::vector<MFSString> paragrameter;
-			paragrameter = part.SplitName(splitNew);
-			while (tmp)
-			{
-				if (tmp->base->Accept(paragrameter[0]))
-				{
-					paragrameter.erase(paragrameter.begin());
-					//std::wcout << paragrameter.back().GetRawString();
-					tmp->base->Action(paragrameter);
-					break;
-				}
-				tmp = tmp->link;
-			}
-			if (tmp == NULL) point->Log(L"指令输入有误\n");
+		for (auto paragrameter : subString)
+		{
+			if (paragrameter.StartsWith(L"\"") && paragrameter.EndsWith(L"\""))
+				paragrameter = paragrameter.Substring(1, paragrameter.GetLength() - 2);
 		}
+		MFSTestunit *tmp = command.Chead->link;
+		while (tmp)
+		{
+			if (tmp->base->Accept(subString[0]))
+			{
+				subString.erase(subString.begin());
+				//std::wcout << paragrameter.back().GetRawString();
+				tmp->base->Action(subString);
+				break;
+			}
+			tmp = tmp->link;
+		}
+		if (tmp == NULL) point->Log(L"指令输入有误\n");
 	}
 	return 0;
 }
