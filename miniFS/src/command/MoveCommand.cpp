@@ -23,7 +23,7 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
-		space->Move(argv[0], argv[1] + L"/" + argv[0]);
+		space->Move(argv[0], argv[1]);
 	}
 	catch (MFSException & ex)
 	{

@@ -15,6 +15,7 @@ void HelpCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"÷∏¡Ó ‰»Î”–ŒÛ\n");
 		return;
 	}
+
 }
 
 HelpCommand::HelpCommand()
