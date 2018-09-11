@@ -14,21 +14,6 @@ class MFSFile
 
     成员函数：
 
-    MFSDateTime MFSFile::GetCreationTime() const noexcept
-        获取文件的创建时间。返回的时间已经本地化。
-
-    MFSDateTime MFSFile::GetLastAccessTime() const noexcept
-        获取文件的上次访问时间。返回的时间已经本地化。
-
-    MFSDateTime MFSFile::GetLastModificationTime() const noexcept
-        获取文件的上次修改时间。返回的时间已经本地化。
-
-    bool MFSFile::IsHidden() const noexcept
-        获取一个 bool 值指示文件是否为隐藏文件。
-
-    void MFSFile::SetHidden(bool isHidden) noexcept
-        设置文件的隐藏标记。
-
     uint64_t MFSFile::GetFileSize() const noexcept
         获取文件的字节大小。
 

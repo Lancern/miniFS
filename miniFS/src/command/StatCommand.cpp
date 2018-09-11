@@ -23,13 +23,17 @@ void StatCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
-		MFSFile *file = space->OpenFile(argv[0], false);
-		if (file->IsHidden()) return;
-		point->LogLine(L"创建时间: " + file->GetCreationTime().GetDateTimeString());
-		point->LogLine(L"上次访问时间: " + file->GetLastAccessTime().GetDateTimeString());
-		point->LogLine(L"上次修改时间: " + file->GetLastModificationTime().GetDateTimeString());
-		point->Log(L"大小: ");
-		std::wcout << file->GetFileSize() << std::endl;
+		MFSEntryInfo info = space->GetEntryInfo(argv[0]);
+		if (info.IsHidden) return;
+		point->LogLine(L"创建时间: " + info.CreationTime.GetDateTimeString());
+		point->LogLine(L"上次访问时间: " + info.LastAccessTime.GetDateTimeString());
+		point->LogLine(L"上次修改时间: " + info.LastModificationTime.GetDateTimeString());
+		if (!info.IsDirectory)
+		{
+			point->Log(L"大小: ");
+			MFSFile *file = space->OpenFile(argv[0], false);
+			std::wcout << file->GetFileSize() << std::endl;
+		}
 	}
 	catch (MFSException & ex)
 	{

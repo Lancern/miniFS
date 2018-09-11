@@ -45,7 +45,7 @@ void DelCommand::Action(const std::vector<MFSString> & argv) const
 void DelCommand::Del(const MFSString & path) const
 {
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-	if (space->IsDirectory(path))
+	if (space->GetEntryInfo(path).IsDirectory)
 	{
 		if (space->GetDirectories(path).size() == 0 && space->GetFiles(path).size() == 0)
 		{

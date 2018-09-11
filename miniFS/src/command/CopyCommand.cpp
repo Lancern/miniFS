@@ -82,7 +82,7 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 void CopyCommand::Copy(const MFSString & space1, const MFSString & space2) const
 {
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-	if (space->IsDirectory(space1))
+	if (space->GetEntryInfo(space1).IsDirectory)
 	{
 		space->CreateDirectory(space2, true);
 		std::vector<MFSString> fileList = space->GetFiles(space1);
