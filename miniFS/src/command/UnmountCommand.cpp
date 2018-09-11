@@ -31,6 +31,10 @@ void UnmountCommand::Action(const std::vector<MFSString> & argv) const
 
 void UnmountCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"保存所有的更改并卸载当前活动的数据空间。\n\n");
+	point->Log(L"指令格式。\n");
+	point->Log(L"unmount\n\n");
 	return;
 }
 

@@ -27,7 +27,10 @@ void CloseCommand::Action(const std::vector<MFSString> & argv) const
 
 void CloseCommand::Help() const
 {
-	return;
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"卸载当前活动的数据空间（如果存在），并退出 mini-FS 文件系统。\n\n");
+	point->Log(L"指令格式\n");
+	point->Log(L"close\n");
 }
 
 CloseCommand::CloseCommand()

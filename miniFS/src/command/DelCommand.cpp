@@ -45,7 +45,7 @@ void DelCommand::Action(const std::vector<MFSString> & argv) const
 void DelCommand::Del(const MFSString & path) const
 {
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
-	if (space->IsDirectory(path))
+	if (space->GetEntryInfo(path).IsDirectory)
 	{
 		if (space->GetDirectories(path).size() == 0 && space->GetFiles(path).size() == 0)
 		{
@@ -75,6 +75,14 @@ void DelCommand::Del(const MFSString & path) const
 
 void DelCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"删除指定的文件或目录\n\n");
+	point->Log(L"指令格式\n");
+	point->Log(L"dl [-f] <file>\n");
+	point->Log(L"del [-f] <file>\n");
+	point->Log(L"rm [-f] <file>\n\n");
+	point->Log(L"file：要删除的文件。\n");
+	point->Log(L"-f：可选。当指定该选项时，强制删除非空目录及其所有子目录和子文件。\n\n");
 	return;
 }
 

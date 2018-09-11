@@ -25,6 +25,10 @@ void OptCommand::Action(const std::vector<MFSString> & argv) const
 
 void OptCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"执行分区碎片整理。\n\n");
+	point->Log(L"指令格式。\n");
+	point->Log(L"opt\n\n");
 	return;
 }
 
