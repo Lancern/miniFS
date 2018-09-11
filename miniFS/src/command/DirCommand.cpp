@@ -25,20 +25,22 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		if (argv.size() == 0)
 		{
-			std::vector<MFSString> diretoryList = space->GetDirectories(space->GetWorkingDirectory());
+			MFSString pwd = space->GetWorkingDirectory();
+			if (!pwd.EndsWith(L"/")) pwd = pwd + L"/";
+			std::vector<MFSString> diretoryList = space->GetDirectories(pwd);
 			std::sort(diretoryList.begin(), diretoryList.end());
 			point->SetForegroundColor(MFSConsoleColors::Cyan);
 			for (MFSString diretory : diretoryList)
 			{
-				if (space->GetEntryInfo(space->GetWorkingDirectory()+diretory).IsHidden) continue;
+				if (space->GetEntryInfo(pwd+diretory).IsHidden) continue;
 				point->LogLine(diretory);
 			}
-			std::vector<MFSString> fileList = space->GetFiles(space->GetWorkingDirectory());
+			std::vector<MFSString> fileList = space->GetFiles(pwd);
 			std::sort(fileList.begin(), fileList.end());
 			point->SetForegroundColor(MFSConsoleColors::White);
 			for (MFSString file : fileList)
 			{
-				if (space->GetEntryInfo(space->GetWorkingDirectory() + file).IsHidden) continue;
+				if (space->GetEntryInfo(pwd + file).IsHidden) continue;
 				point->LogLine(file);
 			}
 		}
@@ -63,51 +65,55 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			}
 			else if (argv[0] == L"-l")
 			{
-				std::vector<MFSString> diretoryList = space->GetDirectories(space->GetWorkingDirectory());
+				MFSString pwd = space->GetWorkingDirectory();
+				if (!pwd.EndsWith(L"/")) pwd = pwd + L"/";
+				std::vector<MFSString> diretoryList = space->GetDirectories(pwd);
 				std::sort(diretoryList.begin(), diretoryList.end());
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
 				for (MFSString diretory : diretoryList)
 				{
-					MFSEntryInfo info = space->GetEntryInfo(space->GetWorkingDirectory() + diretory);
+					MFSEntryInfo info = space->GetEntryInfo(pwd + diretory);
 					if (info.IsHidden) continue;
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
 					point->LogLine(diretory);
 				}
-				std::vector<MFSString> fileList = space->GetFiles(space->GetWorkingDirectory());
+				std::vector<MFSString> fileList = space->GetFiles(pwd);
 				std::sort(fileList.begin(), fileList.end());
 				point->SetForegroundColor(MFSConsoleColors::White);
 				for (MFSString file : fileList)
 				{
-					MFSEntryInfo info = space->GetEntryInfo(space->GetWorkingDirectory() + file);
+					MFSEntryInfo info = space->GetEntryInfo(pwd + file);
 					if (info.IsHidden) continue;
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
-					std::wcout << space->OpenFile(space->GetWorkingDirectory() + file, false)->GetFileSize() << L"  ";
+					std::wcout << space->OpenFile(pwd + file, false)->GetFileSize() << L"  ";
 					point->LogLine(file);
 				}
 			}
 			else if (argv[0] == L"-al" || argv[0] == L"-la")
 			{
-				std::vector<MFSString> diretoryList = space->GetDirectories(space->GetWorkingDirectory());
+				MFSString pwd = space->GetWorkingDirectory();
+				if (!pwd.EndsWith(L"/")) pwd = pwd + L"/";
+				std::vector<MFSString> diretoryList = space->GetDirectories(pwd);
 				std::sort(diretoryList.begin(), diretoryList.end());
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
 				for (MFSString diretory : diretoryList)
 				{
-					MFSEntryInfo info = space->GetEntryInfo(space->GetWorkingDirectory() + diretory);
+					MFSEntryInfo info = space->GetEntryInfo(pwd + diretory);
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
 					point->LogLine(diretory);
 				}
-				std::vector<MFSString> fileList = space->GetFiles(space->GetWorkingDirectory());
+				std::vector<MFSString> fileList = space->GetFiles(pwd);
 				std::sort(fileList.begin(), fileList.end());
 				point->SetForegroundColor(MFSConsoleColors::White);
 				for (MFSString file : fileList)
 				{
-					MFSEntryInfo info = space->GetEntryInfo(space->GetWorkingDirectory() + file);
+					MFSEntryInfo info = space->GetEntryInfo(pwd + file);
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
-					std::wcout << space->OpenFile(space->GetWorkingDirectory() + file, false)->GetFileSize() << L"  ";
+					std::wcout << space->OpenFile(pwd + file, false)->GetFileSize() << L"  ";
 					point->LogLine(file);
 				}
 			}
@@ -163,25 +169,27 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			}
 			else if ((argv[0] == L"-a" && argv[1] == L"-l") || (argv[0] == L"-l" && argv[1] == L"-a"))
 			{
-				std::vector<MFSString> diretoryList = space->GetDirectories(space->GetWorkingDirectory());
+				MFSString pwd = space->GetWorkingDirectory();
+				if (!pwd.EndsWith(L"/")) pwd = pwd + L"/";
+				std::vector<MFSString> diretoryList = space->GetDirectories(pwd);
 				std::sort(diretoryList.begin(), diretoryList.end());
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
 				for (MFSString diretory : diretoryList)
 				{
-					MFSEntryInfo info = space->GetEntryInfo(space->GetWorkingDirectory() + diretory);
+					MFSEntryInfo info = space->GetEntryInfo(pwd + diretory);
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
 					point->LogLine(diretory);
 				}
-				std::vector<MFSString> fileList = space->GetFiles(space->GetWorkingDirectory());
+				std::vector<MFSString> fileList = space->GetFiles(pwd);
 				std::sort(fileList.begin(), fileList.end());
 				point->SetForegroundColor(MFSConsoleColors::White);
 				for (MFSString file : fileList)
 				{
-					MFSEntryInfo info = space->GetEntryInfo(space->GetWorkingDirectory() + file);
+					MFSEntryInfo info = space->GetEntryInfo(pwd + file);
 					point->Log(info.CreationTime.GetDateTimeString());
 					point->Log(L"  ");
-					std::wcout << space->OpenFile(space->GetWorkingDirectory() + file, false)->GetFileSize() << L"  ";
+					std::wcout << space->OpenFile(pwd + file, false)->GetFileSize() << L"  ";
 					point->LogLine(file);
 				}
 			}
