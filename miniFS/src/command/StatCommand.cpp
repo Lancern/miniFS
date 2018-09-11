@@ -43,6 +43,12 @@ void StatCommand::Action(const std::vector<MFSString> & argv) const
 
 void StatCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"显示指定的文件的详细信息。\n\n");
+	point->Log(L"指令格式。\n");
+	point->Log(L"attr <file>\n");
+	point->Log(L"stat <file>\n\n");
+	point->Log(L"file：要显示详细信息的文件名。\n\n");
 	return;
 }
 

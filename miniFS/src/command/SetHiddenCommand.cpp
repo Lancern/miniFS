@@ -34,6 +34,11 @@ void SetHiddenCommand::Action(const std::vector<MFSString> & argv) const
 
 void SetHiddenCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"切换文件或目录的隐藏标志位。若目标文件或目录已被设置隐藏标志位，\n则这些隐藏标志位将被移除；否则隐藏标志位将被添加。\n\n");
+	point->Log(L"指令格式。\n");
+	point->Log(L"hide <path>\n\n");
+	point->Log(L"path：要切换隐藏标志位的文件或目录。\n\n");
 	return;
 }
 

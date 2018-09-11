@@ -32,6 +32,12 @@ void CreateCommand::Action(const std::vector<MFSString> & argv) const
 
 void CreateCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"创建一个数据空间\n\n");
+	point->Log(L"指令格式\n");
+	point->Log(L"create [size] <name>\n\n");
+	point->Log(L"name：数据空间的后备存储文件名。\n");
+	point->Log(L"size：可选。数据空间的大小。以 MB 计算。默认为 1024。不得小于 128，不得超过 4096。\n\n");
 	return;
 }
 

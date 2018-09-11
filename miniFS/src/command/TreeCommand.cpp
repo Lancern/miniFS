@@ -83,6 +83,10 @@ void TreeCommand::tree(int depth, std::vector<bool> & flag) const
 
 void TreeCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"以图形显示路径的文件夹结构\n\n");
+	point->Log(L"指令格式。\n");
+	point->Log(L"tree\n\n");
 	return;
 }
 

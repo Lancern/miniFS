@@ -43,6 +43,12 @@ void MapCommand::Action(const std::vector<MFSString> & argv) const
 
 void MapCommand::Help() const
 {
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	point->Log(L"展示指定文件的所有数据块块号。\n\n");
+	point->Log(L"指令格式\n");
+	point->Log(L"map <file>\n\n");
+	point->Log(L"展示指定文件的所有数据块块号。\n");
+	point->Log(L"file：目标文件名。\n\n");
 	return;
 }
 
