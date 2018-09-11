@@ -139,7 +139,7 @@ void MFSBlockAllocationBitmap::Set(uint32_t pos)
 void MFSBlockAllocationBitmap::Reset(uint32_t pos)
 {
     _bitmap->Reset(pos);
-    if (_alloc == InvalidBlockId)
+    if (_alloc == InvalidBlockId || _alloc > pos)
         _alloc = pos;
 }
 

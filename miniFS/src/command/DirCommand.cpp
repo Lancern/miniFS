@@ -37,7 +37,10 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 				point->Log(diretory+L"\t");
 				i++;
 				if (i == 4)
+				{
+					i = 0;
 					point->Log(L"\n");
+				}
 			}
 			std::vector<MFSString> fileList = space->GetFiles(pwd);
 			std::sort(fileList.begin(), fileList.end());
@@ -48,7 +51,10 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 				point->Log(file + L"\t");
 				i++;
 				if (i == 4)
+				{
+					i = 0;
 					point->Log(L"\n");
+				}
 			}
 			if(i)
 				point->Log(L"\n");
@@ -57,20 +63,35 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 		{
 			if (argv[0] == L"-a")
 			{
+				int i = 0;
 				std::vector<MFSString> diretoryList = space->GetDirectories(space->GetWorkingDirectory());
 				std::sort(diretoryList.begin(), diretoryList.end());
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
 				for (MFSString diretory : diretoryList)
 				{
-					point->LogLine(diretory);
+					i++;
+					point->Log(diretory + L"\t");
+					if (i == 4)
+					{
+						i = 0;
+						point->Log(L"\n");
+					}
 				}
 				std::vector<MFSString> fileList = space->GetFiles(space->GetWorkingDirectory());
 				std::sort(fileList.begin(), fileList.end());
 				point->SetForegroundColor(MFSConsoleColors::White);
 				for (MFSString file : fileList)
 				{
-					point->LogLine(file);
+					i++;
+					point->Log(file + L"\t");
+					if (i == 4)
+					{
+						i = 0;
+						point->Log(L"\n");
+					}
 				}
+				if (i)
+					point->Log(L"\n");
 			}
 			else if (argv[0] == L"-l")
 			{
@@ -128,6 +149,7 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			}
 			else
 			{
+				int i = 0;
 				std::vector<MFSString> diretoryList = space->GetDirectories(argv[0]);
 				MFSString str;
 				if (!argv[0].EndsWith(L"/")) str = argv[0] + L"/";
@@ -136,7 +158,13 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 				for (MFSString diretory : diretoryList)
 				{
 					if (space->GetEntryInfo(str + diretory).IsHidden) continue;
-					point->LogLine(diretory);
+					i++;
+					point->Log(diretory + L"\t");
+					if (i == 4)
+					{
+						i = 0;
+						point->Log(L"\n");
+					}
 				}
 				std::vector<MFSString> fileList = space->GetFiles(argv[0]);
 				std::sort(fileList.begin(), fileList.end());
@@ -144,8 +172,16 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 				for (MFSString file : fileList)
 				{
 					if (space->GetEntryInfo(str + file).IsHidden) continue;
-					point->LogLine(file);
+					i++;
+					point->Log(file + L"\t");
+					if (i == 4)
+					{
+						i = 0;
+						point->Log(L"\n");
+					}
 				}
+				if (i)
+					point->Log(L"\n");
 			}
 		}
 		else if (argv.size() == 2)
@@ -204,6 +240,7 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			}
 			else if (argv[0] == L"-a")
 			{
+				int i = 0;
 				std::vector<MFSString> diretoryList = space->GetDirectories(argv[1]);
 				MFSString str;
 				if (!argv[1].EndsWith(L"/")) str = argv[1] + L"/";
@@ -211,15 +248,29 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
 				for (MFSString diretory : diretoryList)
 				{
-					point->LogLine(diretory);
+					i++;
+					point->Log(diretory + L"\t");
+					if (i == 4)
+					{
+						i = 0;
+						point->Log(L"\n");
+					}
 				}
 				std::vector<MFSString> fileList = space->GetFiles(argv[1]);
 				std::sort(fileList.begin(), fileList.end());
 				point->SetForegroundColor(MFSConsoleColors::White);
 				for (MFSString file : fileList)
 				{
-					point->LogLine(file);
+					i++;
+					point->Log(file + L"\t");
+					if (i == 4)
+					{
+						i = 0;
+						point->Log(L"\n");
+					}
 				}
+				if (i)
+					point->Log(L"\n");
 			}
 			else if (argv[0] == L"-l")
 			{
