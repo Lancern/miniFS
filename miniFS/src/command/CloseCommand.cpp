@@ -25,6 +25,11 @@ void CloseCommand::Action(const std::vector<MFSString> & argv) const
 	exit(0);
 }
 
+void CloseCommand::Help() const
+{
+	return;
+}
+
 CloseCommand::CloseCommand()
 {
 }

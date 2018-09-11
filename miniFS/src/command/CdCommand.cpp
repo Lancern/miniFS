@@ -34,6 +34,11 @@ void CdCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void CdCommand::Help() const
+{
+	return;
+}
+
 CdCommand::CdCommand()
 {
 }

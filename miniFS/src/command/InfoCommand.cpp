@@ -35,6 +35,11 @@ void InfoCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void InfoCommand::Help() const
+{
+	return;
+}
+
 InfoCommand::InfoCommand()
 {
 }

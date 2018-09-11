@@ -37,6 +37,11 @@ void StatCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void StatCommand::Help() const
+{
+	return;
+}
+
 StatCommand::StatCommand()
 {
 }

@@ -29,6 +29,11 @@ void UnmountCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void UnmountCommand::Help() const
+{
+	return;
+}
+
 UnmountCommand::UnmountCommand()
 {
 }

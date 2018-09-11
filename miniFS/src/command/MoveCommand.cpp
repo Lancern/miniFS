@@ -31,6 +31,11 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void MoveCommand::Help() const
+{
+	return;
+}
+
 MoveCommand::MoveCommand()
 {
 }

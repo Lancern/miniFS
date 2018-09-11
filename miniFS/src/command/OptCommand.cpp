@@ -23,6 +23,11 @@ void OptCommand::Action(const std::vector<MFSString> & argv) const
 	}
 }
 
+void OptCommand::Help() const
+{
+	return;
+}
+
 OptCommand::OptCommand()
 {
 }

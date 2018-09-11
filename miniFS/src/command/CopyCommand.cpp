@@ -55,6 +55,11 @@ void CopyCommand::Copy(const MFSString & space1, const MFSString & space2) const
 	}
 }
 
+void CopyCommand::Help() const
+{
+	return;
+}
+
 CopyCommand::CopyCommand()
 {
 }
