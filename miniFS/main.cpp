@@ -32,7 +32,7 @@ int main()
 		point->Log(L">");
 		MFSString strInput = point->ReadLine();
 		subString = strInput.SplitName(split);
-		for (auto paragrameter : subString)
+		for (auto & paragrameter : subString)
 		{
 			if (paragrameter.StartsWith(L"\"") && paragrameter.EndsWith(L"\""))
 				paragrameter = paragrameter.Substring(1, paragrameter.GetLength() - 2);

@@ -137,7 +137,10 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 		}
 		else if (!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
-			Cpout(argv[0], argv[1]);
+			MFSString str = argv[0];
+			if (str.EndsWith(L"/"))
+				str = str.Substring(0, str.GetLength() - 1);
+			Cpout(str, argv[1]);
 		}
 		else if (MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{

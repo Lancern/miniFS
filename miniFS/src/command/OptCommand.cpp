@@ -21,6 +21,7 @@ void OptCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"Ö¸ÁîÊäÈëÓÐÎó\n");
 		return;
 	}
+	space->Optimize();
 }
 
 void OptCommand::Help() const
