@@ -153,7 +153,7 @@
     <ClInclude Include="include\device\MFSSparseBlockDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dist\include\MFSGlobal.h">
+    <ClInclude Include="dist\include\MFSConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

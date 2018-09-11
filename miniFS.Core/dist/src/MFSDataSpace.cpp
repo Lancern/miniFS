@@ -1,4 +1,4 @@
-#include "../include/MFSGlobal.h"
+#include "../include/MFSConfig.h"
 
 #include "../include/MFSDataSpace.h"
 #include "../include/MFSPath.h"
@@ -260,6 +260,8 @@ void MFSDataSpace::CreateLink(const MFSString & src, const MFSString & target)
 
     MFSString linkDirectory = MFSPath::GetDirectoryPath(target);
     MFSString linkFilename = MFSPath::GetFileName(target);
+    if (linkFilename.IsEmpty())
+        throw MFSInvalidPathException(src);
 
     std::unique_ptr<MFSFSEntry> linkDirectoryEntry(OpenFSEntry(linkDirectory));
     if (!linkDirectoryEntry)
@@ -524,6 +526,12 @@ MFSFSEntry * MFSDataSpace::OpenFSEntry(const MFSString & path)
             delete entry;
             entry = subEntry;
         }
+    }
+
+    if (MFSPath::IsDirectoryPath(path) && entry->GetEntryType() != MFSFSEntryType::Directory)
+    {
+        delete entry;
+        throw MFSDirectoryNotFoundException(path);
     }
 
     return entry;

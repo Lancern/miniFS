@@ -22,6 +22,9 @@ class MFSPath
     static bool MFSPath::IsOSPath(const MFSString & path) noexcept
         检查给定的路径是否为底层操作系统的文件路径。
 
+    static bool IsDirectoryPath(const MFSString & path) noexcept;
+        检查给定的路径是否一定为一个目录路径。
+
     static std::vector<MFSString> MFSPath::GetNames(const MFSString & path)
         获取给定的路径中的各个文件或目录名称。
         @exceptions
@@ -76,6 +79,8 @@ public:
     static bool IsValidPath(const MFSString & path) noexcept;
     static bool IsAbsolutePath(const MFSString & path) noexcept;
     static bool IsOSPath(const MFSString & path) noexcept;
+
+    static bool IsDirectoryPath(const MFSString & path) noexcept;
 
     static std::vector<MFSString> GetPathNames(const MFSString & path);
 
