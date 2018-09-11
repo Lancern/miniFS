@@ -179,6 +179,8 @@ MFSFile * MFSDataSpace::CreateFile(const MFSString & path, bool openIfExist)
 
     MFSString directory = MFSPath::Combine(GetWorkingDirectory(), MFSPath::GetDirectoryPath(path));
     MFSString filename = MFSPath::GetFileName(path);
+    if (filename.IsEmpty())
+        throw MFSInvalidPathException(path);
     
     std::unique_ptr<MFSFSEntry> directoryFsEntry(OpenFSEntry(directory));
     if (!directoryFsEntry)
