@@ -67,6 +67,21 @@ bool MFSPath::IsDirectoryPath(const MFSString & path) noexcept
     return path.EndsWith(GetPathSeparator());
 }
 
+MFSString MFSPath::GetNormalizedPath(const MFSString & path)
+{
+    if (!IsValidPath(path))
+        throw MFSInvalidPathException(path);
+
+    if (path.IsEmpty())
+        return path;
+    
+    MFSString sep = GetPathSeparator();
+    if (path == sep || !path.EndsWith(sep))
+        return path;
+    else
+        return path.Substring(0, path.GetLength() - 1);
+}
+
 std::vector<MFSString> MFSPath::GetPathNames(const MFSString & path)
 {
     if (!IsValidPath(path))

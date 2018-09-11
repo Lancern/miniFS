@@ -40,7 +40,7 @@ void HelpCommand::AllHelp() const
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	point->Log(L"有关某个命令的详细信息，请键入 help 命令名\n");
 	point->Log(L"attr/stat		显示指定的文件的详细信息\n");
-	point->Log(L"cd/copy			更换工作目录\n");
+	point->Log(L"cd			更换工作目录\n");
 	point->Log(L"close/quit		卸载当前活动的数据空间(如果存在)，并退出mini-FS文件系统\n");
 	point->Log(L"cp/copy			复制文件或目录\n");
 	point->Log(L"create			创建一个新的数据空间\n");

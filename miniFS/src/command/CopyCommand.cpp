@@ -11,6 +11,110 @@ bool CopyCommand::Accept(const MFSString & string) const
 	else return false;
 }
 
+bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
+{
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
+	WIN32_FIND_DATAA FindFileData;
+	USES_CONVERSION;
+	char * path = W2A(argv_0.GetRawString());
+	FindFirstFileA(path, &FindFileData);
+	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+	{
+		printf("文件夹");
+	}
+	else
+	{
+		std::ifstream in(path, std::ios::binary);
+		if (!in)
+		{
+			point->Log(L"文件以二进制形式打开失败");
+			return false;
+		}
+
+		in.seekg(0, std::ios::end);
+		std::streampos ps = in.tellg();
+		in.seekg(0, std::ios::beg);
+
+		MFSFile * file = space->CreateFile(argv_1, false);
+		file->SetFileSize(ps);
+		MFSStream *outStream = file->OpenStream();
+
+		char Buffer[257];
+		uint64_t m = 0, n = 0;
+		n = ps % 256;
+		if (n == 0)
+			m = ps / 256;
+		else
+			m = ps / 256 + 1;
+		for (uint64_t i = 0; i <= m; i++)
+		{
+			if (i != m)
+			{
+				in.read(Buffer, 256);
+				outStream->Write(Buffer, 256);
+			}
+			else {
+				in.read(Buffer, n);
+				outStream->Write(Buffer, n);
+			}
+		}
+
+		outStream->Close();
+	}
+
+	return true;
+}
+
+bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) const
+{
+	MFSConsole *point = MFSConsole::GetDefaultConsole();
+	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
+	WIN32_FIND_DATAA FindFileData;
+	USES_CONVERSION;
+	char * path = W2A(argv_1.GetRawString());
+	FindFirstFileA(path, &FindFileData);
+	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+	{
+		printf("文件夹");
+	}
+	else
+	{
+		std::ofstream out(path, std::ios::binary);
+		if (!out)
+		{
+			point->Log(L"文件以二进制形式打开失败");
+			return false;
+		}
+
+		MFSFile * file = space->OpenFile(argv_0, false);
+		uint64_t ps = file->GetFileSize();
+		MFSStream *outStream = file->OpenStream();
+
+		char Buffer[257];
+		uint64_t m = 0, n = 0;
+		n = ps % 256;
+		if (n == 0)
+			m = ps / 256;
+		else
+			m = ps / 256 + 1;
+		for (uint64_t i = 0; i < m; i++)
+		{
+			if (i != m - 1)
+			{
+				outStream->Read(Buffer, 256, 256);
+				out.write(Buffer, 256);
+			}
+			else {
+				outStream->Read(Buffer, 256, n);
+				out.write(Buffer, n);
+			}
+		}
+		outStream->Close();
+	}
+	return true;
+}
+
 void CopyCommand::Action(const std::vector<MFSString> & argv) const
 {
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
@@ -29,36 +133,11 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
 		{
-			WIN32_FIND_DATAA FindFileData;
-			USES_CONVERSION;
-			char * path = W2A(argv[0].GetRawString());
-			FindFirstFileA(path, &FindFileData);
-			if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			{
-				printf("wenjianjia");
-			}
-			else
-			{
-				std::ifstream in(path);
-				if (!in)
-				{
-					point->Log(L"文件打开失败");
-					return;
-				}
-				in.seekg(0, std::ios::end);
-				std::streampos ps = in.tellg();
-
-				MFSFile * file = space->CreateFile(argv[1], false);
-				file->SetFileSize(ps);
-				MFSStream *outStream = file->OpenStream();
-
-
-				std::cout << ps << std::endl;
-			}
+			Cpin(argv[0], argv[1]);
 		}
-		else if(!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
+		else if (!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
-
+			Cpout(argv[0], argv[1]);
 		}
 		else if (MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
@@ -70,7 +149,7 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 		{
 			Copy(argv[0], argv[1]);
 		}
-		
+
 	}
 	catch (MFSException &ex)
 	{
