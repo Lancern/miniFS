@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable: 4250)  // Suppress MSVC warning C4250: "Inherits XXX via dominance".
 
 #include "MFSOSFileDevice.h"
 #include "MFSSparseDevice.h"

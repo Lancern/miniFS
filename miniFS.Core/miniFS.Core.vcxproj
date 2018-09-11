@@ -34,6 +34,7 @@
     <ClInclude Include="dist\include\exceptions\MFSWindowsException.h" />
     <ClInclude Include="dist\include\MFSDataSpace.h" />
     <ClInclude Include="dist\include\MFSFile.h" />
+    <ClInclude Include="dist\include\MFSGlobal.h" />
     <ClInclude Include="dist\include\MFSPath.h" />
     <ClInclude Include="include\device\MFSBlockDevice.h" />
     <ClInclude Include="include\device\MFSBufferedBlockDevice.h" />

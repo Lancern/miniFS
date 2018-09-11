@@ -1,3 +1,5 @@
+#include "../include/MFSGlobal.h"
+
 #include "../include/MFSDataSpace.h"
 #include "../include/MFSPath.h"
 #include "../include/exceptions/MFSInvalidArgumentException.h"
@@ -12,7 +14,9 @@
 #include "../include/exceptions/MFSWindowsException.h"
 #include "../include/exceptions/MFSOutOfSpaceException.h"
 #include "../../include/device/MFSOSFileDevice.h"
+#include "../../include/device/MFSOSSparseFileDevice.h"
 #include "../../include/device/MFSBlockDevice.h"
+#include "../../include/device/MFSSparseBlockDevice.h"
 #include "../../include/fs/MFSPartition.h"
 
 #define MFS_DATASPACE_MIN_SIZE      uint64_t(128ull * 1024 * 1024)
@@ -33,8 +37,14 @@ MFSDataSpace::MFSDataSpace(const MFSString & osFileName)
     if (_hFile == INVALID_HANDLE_VALUE)
         throw MFSWindowsException();
 
+#ifdef MFS_ENABLE_SPARSE_FILE
+    _fileDevice.reset(new MFSOSSparseFileDevice(_hFile, false));
+    _blockDevice.reset(new MFSSparseBlockDevice(dynamic_cast<MFSSparseDevice *>(_fileDevice.get())));
+#else
     _fileDevice.reset(new MFSOSFileDevice(_hFile, false));
     _blockDevice.reset(new MFSBlockDevice(_fileDevice.get()));
+#endif
+
     _partition.reset(new MFSPartition(_blockDevice.get()));
     if (!_partition->IsValidDevice())
     {
