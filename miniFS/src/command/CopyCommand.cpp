@@ -18,6 +18,13 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	WIN32_FIND_DATAW FindFileData;
+	HANDLE hand = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	COORD coord;
+	CONSOLE_CURSOR_INFO cursor;
+	GetConsoleCursorInfo(hand, &cursor);
+	cursor.bVisible = false;
+	SetConsoleCursorInfo(hand, &cursor);
 	HANDLE hFind = FindFirstFileW(argv_0.GetRawString(), &FindFileData);
 	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 	{
@@ -45,7 +52,12 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 			point->Log(L"文件以二进制形式打开失败\n");
 			return false;
 		}
-
+		GetConsoleScreenBufferInfo(hand, &csbi);
+		coord.X = 0;
+		coord.Y = csbi.dwCursorPosition.Y;
+		SetConsoleCursorPosition(hand, coord);
+		point->Log(L"\n");
+		point->LogLine(argv_0.GetRawString());
 		in.seekg(0, std::ios::end);
 		std::streampos ps = in.tellg();
 		in.seekg(0, std::ios::beg);
@@ -68,12 +80,50 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 				in.read(Buffer, n);
 				outStream->Write(Buffer, n);
 			}
+			GetConsoleScreenBufferInfo(hand, &csbi);
+			coord.X = 0;
+			coord.Y = csbi.dwCursorPosition.Y;
+			SetConsoleCursorPosition(hand, coord);
+			if (m == 0)
+			{
+				point->Log(L"100.00%  |>>>>>>>>>>>>>>>>>>>>|  0B");
+			}
+			else
+			{
+				printf("%.2lf%%", 100 * (1.0*i / m));
+				point->Log(L"  |");
+				for (int j = 0; j < 20; j++)
+				{
+					if (j <= 20 * 1.0 *i / m)
+						point->Log(L">");
+					else
+						point->Log(L" ");
+				}
+				point->Log(L"|  ");
+				if (ps < 1024)
+				{
+					std::wcout << ps;
+					point->Log(L"B");
+				}
+				else if (ps < 1024 * 1024)
+				{
+					printf("%.2lf", double(1.0*ps / 1024));
+					point->Log(L"KB");
+				}
+				else
+				{
+					printf("%.2lf", double(1.0*ps / 1024 / 1024));
+					point->Log(L"MB");
+				}
+			}
 		}
+		point->Log(L"\n");
 		in.close();
 		outStream->Close();
 	}
 	FindClose(hFind);
-
+	cursor.bVisible = true;
+	SetConsoleCursorInfo(hand, &cursor);
 	return true;
 }
 
