@@ -206,7 +206,7 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 				outStream->Read(Buffer, 256, n);
 				out.write(Buffer, n);
 			}
-			if (i % 100 == 0 || m < 100)
+			if (1)
 			{
 				cursor.bVisible = false;
 				SetConsoleCursorInfo(hand, &cursor);
