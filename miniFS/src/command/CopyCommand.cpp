@@ -24,7 +24,6 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 		space->CreateDirectory(argv_1, true);
 		_wfinddata_t fileinfo;
 		intptr_t handle = 0;
-		int i = 0;
 		if ((handle = _wfindfirst((argv_0 + L"\\*").GetRawString(), &fileinfo)) != -1)
 		{
 			do
@@ -71,6 +70,11 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 		}
 		in.close();
 		outStream->Close();
+
+		//if (ps > 1024 * 1024 * 10)
+		//{
+		//	Sleep(100);
+		//}
 	}
 	FindClose(hFind);
 
@@ -125,6 +129,10 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 		}
 		out.close();
 		outStream->Close();
+		if (ps > 1024 * 1024 * 10)
+		{
+			Sleep(100);
+		}
 	}
 	return true;
 }
@@ -147,14 +155,18 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
 		{
-
+			if (_waccess(argv[0].GetRawString(), 0) == -1)
+			{
+				point->Log(L"路径不存在\n");
+				return;
+			}
 			Cpin(argv[0], argv[1]);
 		}
 		else if (!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
 			if (!space->Exist(argv[0]))
 			{
-				point->Log(L"路径不存在");
+				point->Log(L"路径不存在\n");
 				return;
 			}
 			MFSString str = argv[0];
