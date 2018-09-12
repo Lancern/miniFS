@@ -32,9 +32,7 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 		if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
 		{
 			cp.Cpin(argv[0], argv[1]);
-			USES_CONVERSION;
-			MFSString order = L"del " + argv[0];
-			system(W2A(order.GetRawString()));
+			DeleteWindow(argv[0]);
 		}
 		else if (!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
@@ -43,9 +41,7 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 		}
 		else if (MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
-			USES_CONVERSION;
-			MFSString order = L"move " + argv[0] + L" " + argv[1];
-			system(W2A(order.GetRawString()));
+			MoveWindow(argv[0], argv[1]);
 		}
 		else
 			space->Move(argv[0], argv[1]);
@@ -66,6 +62,61 @@ void MoveCommand::Help() const
 	point->Log(L"src：mini-FS 文件/目录名或 Windows 文件/目录名。源文件或目录。\n");
 	point->Log(L"dest：mini-FS 文件/目录名或 Windows 文件/目录名。目标文件。\n\n");
 	return;
+}
+
+void MoveCommand::DeleteWindow(const MFSString & string) const
+{
+	HANDLE hFind;
+	WIN32_FIND_DATAW findData;
+	MFSString str = string;
+	if (!string.EndsWith(L"\\")) str = string + L"\\";
+	hFind = FindFirstFileW((str + L"*.*").GetRawString(), &findData);
+	do
+	{
+		MFSString temp = str + (MFSString)findData.cFileName;
+		if (wcscmp(findData.cFileName, L".") == 0 || wcscmp(findData.cFileName, L"..") == 0)
+			continue;
+		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			DeleteWindow(temp);
+		}
+		else
+		{
+			DeleteFile(temp.GetRawString());
+		}
+	} while (FindNextFileW(hFind, &findData));
+	FindClose(hFind);
+	RemoveDirectory(str.GetRawString());
+}
+
+void MoveCommand::MoveWindow(const MFSString & string1, const MFSString & string2) const
+{
+
+	HANDLE hFind;
+	WIN32_FIND_DATAW findData;
+	MFSString str1 = string1;
+	MFSString str2 = string2;
+	if (!string1.EndsWith(L"\\")) str1 = string1 + L"\\";
+	if (!string2.EndsWith(L"\\")) str2 = string2 + L"\\";
+	CreateDirectoryW(str2.GetRawString(), NULL);
+	hFind = FindFirstFileW((str1 + L"*.*").GetRawString(), &findData);
+	do
+	{
+		MFSString temp1 = str1 + (MFSString)findData.cFileName;
+		MFSString temp2 = str2 + (MFSString)findData.cFileName;
+		if (wcscmp(findData.cFileName, L".") == 0 || wcscmp(findData.cFileName, L"..") == 0)
+			continue;
+		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			MoveWindow(temp1, temp2);
+		}
+		else
+		{
+			MoveFile(temp1.GetRawString(), temp2.GetRawString());
+		}
+	} while (FindNextFileW(hFind, &findData));
+	FindClose(hFind);
+	RemoveDirectory(str1.GetRawString());
 }
 
 MoveCommand::MoveCommand()
