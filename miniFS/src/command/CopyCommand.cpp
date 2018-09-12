@@ -83,36 +83,41 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 			coord.X = 0;
 			coord.Y = csbi.dwCursorPosition.Y;
 			SetConsoleCursorPosition(hand, coord);
-			if (m == 0)
+			if (i % 100 == 0 || m < 100)
 			{
-				point->Log(L"100.00%  |>>>>>>>>>>>>>>>>>>>>|  0B");
-			}
-			else
-			{
-				printf("%.2lf%%", 100 * (1.0*i / m));
-				point->Log(L"  |");
-				for (int j = 0; j < 20; j++)
+				cursor.bVisible = false;
+				SetConsoleCursorInfo(hand, &cursor);
+				if (m == 0)
 				{
-					if (j <= 20 * 1.0 *i / m)
-						point->Log(L">");
-					else
-						point->Log(L" ");
-				}
-				point->Log(L"|  ");
-				if (ps < 1024)
-				{
-					std::wcout << ps;
-					point->Log(L"B");
-				}
-				else if (ps < 1024 * 1024)
-				{
-					printf("%.2lf", double(1.0*ps / 1024));
-					point->Log(L"KB");
+					point->Log(L"100.00%  |>>>>>>>>>>>>>>>>>>>>|  0B");
 				}
 				else
 				{
-					printf("%.2lf", double(1.0*ps / 1024 / 1024));
-					point->Log(L"MB");
+					printf("%.2lf%%", 100 * (1.0*i / m));
+					point->Log(L"  |");
+					for (int j = 0; j < 20; j++)
+					{
+						if (j <= 20 * 1.0 *i / m)
+							point->Log(L">");
+						else
+							point->Log(L" ");
+					}
+					point->Log(L"|  ");
+					if (ps < 1024)
+					{
+						std::wcout << ps;
+						point->Log(L"B");
+					}
+					else if (ps < 1024 * 1024)
+					{
+						printf("%.2lf", double(1.0*ps / 1024));
+						point->Log(L"KB");
+					}
+					else
+					{
+						printf("%.2lf", double(1.0*ps / 1024 / 1024));
+						point->Log(L"MB");
+					}
 				}
 			}
 		}
@@ -133,6 +138,13 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 
 bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) const
 {
+	HANDLE hand = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	COORD coord;
+	CONSOLE_CURSOR_INFO cursor;
+	GetConsoleCursorInfo(hand, &cursor);
+	cursor.bVisible = false;
+	SetConsoleCursorInfo(hand, &cursor);
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	if (space->GetEntryInfo(argv_0).IsDirectory)
@@ -151,6 +163,12 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 	}
 	else
 	{
+		GetConsoleScreenBufferInfo(hand, &csbi);
+		coord.X = 0;
+		coord.Y = csbi.dwCursorPosition.Y;
+		SetConsoleCursorPosition(hand, coord);
+		point->Log(L"\n");
+		point->LogLine(argv_0.GetRawString());
 		MFSFile * file = space->OpenFile(argv_0, false);
 		uint64_t ps = file->GetFileSize();
 		MFSStream *outStream = file->OpenStream();
@@ -176,7 +194,49 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 				outStream->Read(Buffer, 256, n);
 				out.write(Buffer, n);
 			}
+			if (i % 100 == 0 || m < 100)
+			{
+				cursor.bVisible = false;
+				SetConsoleCursorInfo(hand, &cursor);
+				GetConsoleScreenBufferInfo(hand, &csbi);
+				coord.X = 0;
+				coord.Y = csbi.dwCursorPosition.Y;
+				SetConsoleCursorPosition(hand, coord);
+				if (m == 0)
+				{
+					point->Log(L"100.00%  |>>>>>>>>>>>>>>>>>>>>|  0B");
+				}
+				else
+				{
+					printf("%.2lf%%", 100 * (1.0*i / m));
+					point->Log(L"  |");
+					for (int j = 0; j < 20; j++)
+					{
+						if (j <= 20 * 1.0 *i / m)
+							point->Log(L">");
+						else
+							point->Log(L" ");
+					}
+					point->Log(L"|  ");
+					if (ps < 1024)
+					{
+						std::wcout << ps;
+						point->Log(L"B");
+					}
+					else if (ps < 1024 * 1024)
+					{
+						printf("%.2lf", double(1.0*ps / 1024));
+						point->Log(L"KB");
+					}
+					else
+					{
+						printf("%.2lf", double(1.0*ps / 1024 / 1024));
+						point->Log(L"MB");
+					}
+				}
+			}
 		}
+		point->Log(L"\n");
 		out.close();
 		outStream->Close();
 		if (ps > 1024 * 1024 * 10)
