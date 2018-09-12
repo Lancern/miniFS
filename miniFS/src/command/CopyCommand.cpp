@@ -18,7 +18,7 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	WIN32_FIND_DATAW FindFileData;
-	FindFirstFileW(argv_0.GetRawString(), &FindFileData);
+	HANDLE hFind = FindFirstFileW(argv_0.GetRawString(), &FindFileData);
 	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 	{
 		space->CreateDirectory(argv_1, true);
@@ -34,8 +34,8 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 				MFSString file = MFSString(fileinfo.name);
 				Cpin(argv_0 + L"\\" + file, argv_1 + L"/" +file);
 			} while (_wfindnext(handle, &fileinfo) == 0);
-			_findclose(handle);
 		}
+		_findclose(handle);
 	}
 	else
 	{
@@ -69,9 +69,10 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 				outStream->Write(Buffer, n);
 			}
 		}
-
+		in.close();
 		outStream->Close();
 	}
+	FindClose(hFind);
 
 	return true;
 }
@@ -122,6 +123,7 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 				out.write(Buffer, n);
 			}
 		}
+		out.close();
 		outStream->Close();
 	}
 	return true;
