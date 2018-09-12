@@ -62,18 +62,35 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 		in.seekg(0, std::ios::beg);
 
 		MFSFile * file = space->CreateFile(argv_1, false);
+		point->Log(L"aaaa\n");
 		file->SetFileSize(ps);
+		point->Log(L"0.00%  |                    |  ");
 		MFSStream *outStream = file->OpenStream();
 
-		char Buffer[257];
-		uint32_t n = ps % 256;
-		uint64_t m = ps / 256 + (n ? 1 : 0);
+		char * Buffer = new char[16777217];
+		uint32_t n = ps % 16777216;
+		uint64_t m = ps / 16777216 + (n ? 1 : 0);
+		if (ps < 1024)
+		{
+			std::wcout << ps;
+			point->Log(L"B");
+		}
+		else if (ps < 1024 * 1024)
+		{
+			printf("%.2lf", double(1.0*ps / 1024));
+			point->Log(L"KB");
+		}
+		else
+		{
+			printf("%.2lf", double(1.0*ps / 1024 / 1024));
+			point->Log(L"MB");
+		}
 		for (uint64_t i = 0; i <= m; i++)
 		{
 			if (i != m)
 			{
-				in.read(Buffer, 256);
-				outStream->Write(Buffer, 256);
+				in.read(Buffer, 16777216);
+				outStream->Write(Buffer, 16777216);
 			}
 			else {
 				in.read(Buffer, n);
@@ -83,47 +100,47 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 			coord.X = 0;
 			coord.Y = csbi.dwCursorPosition.Y;
 			SetConsoleCursorPosition(hand, coord);
-			if (m == 0)
+			if (1)
 			{
-				point->Log(L"100.00%  |>>>>>>>>>>>>>>>>>>>>|  0B");
-			}
-			else
-			{
-				printf("%.2lf%%", 100 * (1.0*i / m));
-				point->Log(L"  |");
-				for (int j = 0; j < 20; j++)
+				if (m == 0)
 				{
-					if (j <= 20 * 1.0 *i / m)
-						point->Log(L">");
-					else
-						point->Log(L" ");
-				}
-				point->Log(L"|  ");
-				if (ps < 1024)
-				{
-					std::wcout << ps;
-					point->Log(L"B");
-				}
-				else if (ps < 1024 * 1024)
-				{
-					printf("%.2lf", double(1.0*ps / 1024));
-					point->Log(L"KB");
+					point->Log(L"100.00%  |>>>>>>>>>>>>>>>>>>>>|  0B");
 				}
 				else
 				{
-					printf("%.2lf", double(1.0*ps / 1024 / 1024));
-					point->Log(L"MB");
+					printf("%.2lf%%", 100 * (1.0*i / m));
+					point->Log(L"  |");
+					for (int j = 0; j < 20; j++)
+					{
+						if (j <= 20 * 1.0 *i / m)
+							point->Log(L">");
+						else
+							point->Log(L" ");
+					}
+					point->Log(L"|  ");
+					if (ps < 1024)
+					{
+						std::wcout << ps;
+						point->Log(L"B");
+					}
+					else if (ps < 1024 * 1024)
+					{
+						printf("%.2lf", double(1.0*ps / 1024));
+						point->Log(L"KB");
+					}
+					else
+					{
+						printf("%.2lf", double(1.0*ps / 1024 / 1024));
+						point->Log(L"MB");
+					}
 				}
 			}
 		}
+		delete[] Buffer;
 		point->Log(L"\n");
 		in.close();
 		outStream->Close();
 
-		//if (ps > 1024 * 1024 * 10)
-		//{
-		//	Sleep(100);
-		//}
 	}
 	FindClose(hFind);
 	cursor.bVisible = true;
