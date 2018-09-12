@@ -51,17 +51,17 @@ bool MFSFSNodePool::Iterator::operator!=(const Iterator & another) const
 
 auto MFSFSNodePool::Iterator::operator*() const -> typename value_type
 {
-    return _container->Get(_offset);
+    return _container->Get(static_cast<uint32_t>(_offset));
 }
 
 auto MFSFSNodePool::Iterator::operator*() -> typename reference
 {
-    return _container->Get(_offset);
+    return _container->Get(static_cast<uint32_t>(_offset));
 }
 
 auto MFSFSNodePool::Iterator::operator->() -> typename pointer
 {
-    return &_container->Get(_offset);
+    return &_container->Get(static_cast<uint32_t>(_offset));
 }
 
 void MFSFSNodePool::Iterator::LocateNextUsedNode()
