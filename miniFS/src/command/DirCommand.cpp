@@ -23,6 +23,10 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
+		if (argv.size() > 0)
+		{
+			
+		}
 		if (argv.size() == 0)
 		{
 			int i = 0;

@@ -204,14 +204,14 @@ public:
         MFSFSNodePool * GetFSNodePool() const;
 
         uint32_t GetNextAvailableDeviceBlockId() const;
-        uint32_t AllocateDeviceBlock();
-        bool AllocateDeviceBlock(uint32_t blockId);
+        uint32_t AllocateDeviceBlock(bool initialization);
+        bool AllocateDeviceBlock(uint32_t blockId, bool initialization);
         void InitializeDeviceBlock(uint32_t blockId);
         bool FreeDeviceBlock(uint32_t blockId);
 
-        uint32_t AllocateTailBlock(uint32_t firstBlockId);
-        uint32_t AllocateFrontBlock(uint32_t firstBlockId);
-        uint32_t AllocateBlockChain(uint32_t numberOfBlocks);
+        uint32_t AllocateTailBlock(uint32_t firstBlockId, bool initialization);
+        uint32_t AllocateFrontBlock(uint32_t firstBlockId, bool initialization);
+        uint32_t AllocateBlockChain(uint32_t numberOfBlocks, bool initialization);
 		uint32_t FreeChainedBlock(uint32_t firstBlockId, uint32_t blockId);
         uint32_t FreeBlockAfter(uint32_t position);
 

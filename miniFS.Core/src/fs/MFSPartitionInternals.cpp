@@ -32,27 +32,37 @@ uint32_t MFSPartition::Internals::GetNextAvailableDeviceBlockId() const
     return _partition->_blockAllocation->GetAvailableBlockId();
 }
 
-uint32_t MFSPartition::Internals::AllocateDeviceBlock()
+uint32_t MFSPartition::Internals::AllocateDeviceBlock(bool initialization)
 {
     uint32_t blockId = _partition->_blockAllocation->AllocBlock();
     if (blockId != MFSBlockAllocationBitmap::InvalidBlockId)
     {
         _partition->_blockChain->Set(blockId, MFSFileAllocationTable::InvalidBlockId);
 
-        // Initialize the block to zero.
-        InitializeDeviceBlock(blockId);
+        if (initialization)
+        {
+            // Initialize the block to zero.
+            InitializeDeviceBlock(blockId);
+        }
 
         --_partition->_master.freeBlocks;
     }
     return blockId;
 }
 
-bool MFSPartition::Internals::AllocateDeviceBlock(uint32_t blockId)
+bool MFSPartition::Internals::AllocateDeviceBlock(uint32_t blockId, bool initialization)
 {
     bool result = _partition->_blockAllocation->AllocBlock(blockId);
     if (result)
     {
         _partition->_blockChain->Set(blockId, MFSFileAllocationTable::InvalidBlockId);
+        
+        if (initialization)
+        {
+            // Initialize the block to zero.
+            InitializeDeviceBlock(blockId);
+        }
+
         --_partition->_master.freeBlocks;
     }
     return result;
@@ -63,7 +73,7 @@ void MFSPartition::Internals::InitializeDeviceBlock(uint32_t blockId)
     const void * buffer = VirtualAlloc(NULL, _partition->_device->GetBlockSize(), 
         MEM_RESERVE | MEM_COMMIT, PAGE_READONLY);
     _partition->_device->WriteBlock(blockId, buffer);
-    VirtualFree(const_cast<void *>(buffer), 0, MEM_FREE);
+    VirtualFree(const_cast<void *>(buffer), 0, MEM_RELEASE);
 }
 
 bool MFSPartition::Internals::FreeDeviceBlock(uint32_t blockId)
@@ -80,16 +90,16 @@ bool MFSPartition::Internals::FreeDeviceBlock(uint32_t blockId)
     return true;
 }
 
-uint32_t MFSPartition::Internals::AllocateTailBlock(uint32_t firstBlockId)
+uint32_t MFSPartition::Internals::AllocateTailBlock(uint32_t firstBlockId, bool initialization)
 {
-    uint32_t blockId = AllocateDeviceBlock();
+    uint32_t blockId = AllocateDeviceBlock(initialization);
     _partition->_blockChain->AddTail(firstBlockId, blockId);
     return blockId;
 }
 
-uint32_t MFSPartition::Internals::AllocateFrontBlock(uint32_t firstBlockId)
+uint32_t MFSPartition::Internals::AllocateFrontBlock(uint32_t firstBlockId, bool initialization)
 {
-    uint32_t blockId = AllocateDeviceBlock();
+    uint32_t blockId = AllocateDeviceBlock(initialization);
     if (blockId == MFSBlockAllocationBitmap::InvalidBlockId)
         return MFSBlockAllocationBitmap::InvalidBlockId;
 
@@ -97,19 +107,19 @@ uint32_t MFSPartition::Internals::AllocateFrontBlock(uint32_t firstBlockId)
     return blockId;
 }
 
-uint32_t MFSPartition::Internals::AllocateBlockChain(uint32_t numberOfBlocks)
+uint32_t MFSPartition::Internals::AllocateBlockChain(uint32_t numberOfBlocks, bool initialization)
 {
     if (numberOfBlocks == 0)
         return MFSBlockAllocationBitmap::InvalidBlockId;
 
-    uint32_t firstBlockId = AllocateDeviceBlock();
+    uint32_t firstBlockId = AllocateDeviceBlock(initialization);
     if (firstBlockId == MFSBlockAllocationBitmap::InvalidBlockId)
         return firstBlockId;
 
     --numberOfBlocks;
     while (numberOfBlocks > 0)
     {
-        uint32_t allocated = AllocateFrontBlock(firstBlockId);
+        uint32_t allocated = AllocateFrontBlock(firstBlockId, initialization);
         if (allocated == MFSBlockAllocationBitmap::InvalidBlockId)
         {
             while (firstBlockId != MFSFileAllocationTable::InvalidBlockId)

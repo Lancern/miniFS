@@ -62,35 +62,22 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 		in.seekg(0, std::ios::beg);
 
 		MFSFile * file = space->CreateFile(argv_1, false);
-		point->Log(L"aaaa\n");
 		file->SetFileSize(ps);
-		point->Log(L"0.00%  |                    |  ");
 		MFSStream *outStream = file->OpenStream();
 
-		char * Buffer = new char[16777217];
-		uint32_t n = ps % 16777216;
-		uint64_t m = ps / 16777216 + (n ? 1 : 0);
-		if (ps < 1024)
+		char * Buffer = new char[4194305];
+		uint32_t n = ps % 4194304;
+		uint64_t m = ps / 4194304 + (n ? 1 : 0);
+		if (m == 0)
 		{
-			std::wcout << ps;
-			point->Log(L"B");
+			point->Log(L"100.00%  |>>>>>>>>>>>>>>>>>>>>|  0B");
 		}
-		else if (ps < 1024 * 1024)
+		for (uint64_t i = 0; i < m; i++)
 		{
-			printf("%.2lf", double(1.0*ps / 1024));
-			point->Log(L"KB");
-		}
-		else
-		{
-			printf("%.2lf", double(1.0*ps / 1024 / 1024));
-			point->Log(L"MB");
-		}
-		for (uint64_t i = 0; i <= m; i++)
-		{
-			if (i != m)
+			if (i != m - 1)
 			{
-				in.read(Buffer, 16777216);
-				outStream->Write(Buffer, 16777216);
+				in.read(Buffer, 4194304);
+				outStream->Write(Buffer, 4194304);
 			}
 			else {
 				in.read(Buffer, n);
@@ -108,11 +95,11 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 				}
 				else
 				{
-					printf("%.2lf%%", 100 * (1.0*i / m));
+					printf("%.2lf%%", 100 * (1.0*(i + 1) / m));
 					point->Log(L"  |");
 					for (int j = 0; j < 20; j++)
 					{
-						if (j <= 20 * 1.0 *i / m)
+						if (j <= 20 * 1.0 *(i + 1) / m)
 							point->Log(L">");
 						else
 							point->Log(L" ");
@@ -192,21 +179,25 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 			return false;
 		}
 
-		char Buffer[257];
-		uint32_t n = ps % 256;
-		uint64_t m = ps / 256 + (n ? 1 : 0);
+		char * Buffer = new char[4194305];
+		uint32_t n = ps % 4194304;
+		uint64_t m = ps / 4194304 + (n ? 1 : 0);
+		if (m == 0)
+		{
+			point->Log(L"100.00%  |>>>>>>>>>>>>>>>>>>>>|  0B");
+		}
 		for (uint64_t i = 0; i < m; i++)
 		{
 			if (i != m - 1)
 			{
-				outStream->Read(Buffer, 256, 256);
-				out.write(Buffer, 256);
+				outStream->Read(Buffer, 4194304, 4194304);
+				out.write(Buffer, 4194304);
 			}
 			else {
-				outStream->Read(Buffer, 256, n);
+				outStream->Read(Buffer, 4194304, n);
 				out.write(Buffer, n);
 			}
-			if (i % 100 == 0 || m < 100)
+			if (1)
 			{
 				cursor.bVisible = false;
 				SetConsoleCursorInfo(hand, &cursor);
@@ -214,17 +205,17 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 				coord.X = 0;
 				coord.Y = csbi.dwCursorPosition.Y;
 				SetConsoleCursorPosition(hand, coord);
-				if (m == 0)
+				if (m == 0 && n == 0)
 				{
 					point->Log(L"100.00%  |>>>>>>>>>>>>>>>>>>>>|  0B");
 				}
 				else
 				{
-					printf("%.2lf%%", 100 * (1.0*i / m));
+					printf("%.2lf%%", 100 * (1.0 * (i + 1) / m));
 					point->Log(L"  |");
 					for (int j = 0; j < 20; j++)
 					{
-						if (j <= 20 * 1.0 *i / m)
+						if (j <= 20 * 1.0 *(i + 1) / m)
 							point->Log(L">");
 						else
 							point->Log(L" ");
@@ -251,10 +242,6 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 		point->Log(L"\n");
 		out.close();
 		outStream->Close();
-		if (ps > 1024 * 1024 * 10)
-		{
-			Sleep(100);
-		}
 	}
 	return true;
 }

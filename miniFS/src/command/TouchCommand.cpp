@@ -16,7 +16,7 @@ void TouchCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"当前未挂载空间\n");
 		return;
 	}
-	if (argv.size() != 1)
+	if (argv.size() > 2)
 	{
 		point->Log(L"指令输入有误\n");
 		return;
@@ -24,6 +24,7 @@ void TouchCommand::Action(const std::vector<MFSString> & argv) const
 	try
 	{
 		MFSFile * file = space->CreateFile(argv[0], false);
+		file->SetFileSize(argv[1].ParseInteger<int>());
 	}
 	catch(MFSException & ex)
 	{
