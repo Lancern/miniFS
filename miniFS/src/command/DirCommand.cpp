@@ -181,7 +181,7 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			{
 				int i = 0;
 				std::vector<MFSString> diretoryList = space->GetDirectories(argv[0]);
-				MFSString str;
+				MFSString str = argv[0];
 				if (!argv[0].EndsWith(L"/")) str = argv[0] + L"/";
 				std::sort(diretoryList.begin(), diretoryList.end());
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
@@ -219,7 +219,7 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			if (argv[0] == L"-al" || argv[0] == L"-la")
 			{
 				std::vector<MFSString> diretoryList = space->GetDirectories(argv[1]);
-				MFSString str;
+				MFSString str = argv[1];
 				if (!argv[1].EndsWith(L"/")) str = argv[1] + L"/";
 				std::sort(diretoryList.begin(), diretoryList.end());
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
@@ -302,7 +302,7 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			{
 				int i = 0;
 				std::vector<MFSString> diretoryList = space->GetDirectories(argv[1]);
-				MFSString str;
+				MFSString str = argv[1];
 				if (!argv[1].EndsWith(L"/")) str = argv[1] + L"/";
 				std::sort(diretoryList.begin(), diretoryList.end());
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
@@ -335,7 +335,7 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			else if (argv[0] == L"-l")
 			{
 				std::vector<MFSString> diretoryList = space->GetDirectories(argv[1]);
-				MFSString str;
+				MFSString str = argv[1];
 				if (!argv[1].EndsWith(L"/")) str = argv[1] + L"/";
 				std::sort(diretoryList.begin(), diretoryList.end());
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
@@ -381,8 +381,8 @@ void DirCommand::Action(const std::vector<MFSString> & argv) const
 			if ((argv[0] == L"-a" && argv[1] == L"-l") || (argv[0] == L"-l" && argv[1] == L"-a"))
 			{
 				std::vector<MFSString> diretoryList = space->GetDirectories(argv[2]);
-				MFSString str;
-				if (!argv[1].EndsWith(L"/")) str = argv[2] + L"/";
+				MFSString str = argv[2];
+				if (!argv[2].EndsWith(L"/")) str = argv[2] + L"/";
 				std::sort(diretoryList.begin(), diretoryList.end());
 				point->SetForegroundColor(MFSConsoleColors::Cyan);
 				for (MFSString diretory : diretoryList)
