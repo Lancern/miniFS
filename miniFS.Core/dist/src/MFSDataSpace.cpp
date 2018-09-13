@@ -88,8 +88,8 @@ void MFSDataSpace::SetWorkingDirectory(const MFSString & path)
         throw MFSInvalidPathException(path);
     if (MFSPath::IsOSPath(path))
         throw MFSInvalidPathException(path);
-    if (!Exist(path))
-        throw MFSInvalidPathException(path);
+    if (!ExistDirectory(path))
+        throw MFSDirectoryNotFoundException(path);
 
     _workingDirectory = MFSPath::Combine(_workingDirectory, path);
 }
@@ -137,7 +137,71 @@ bool MFSDataSpace::Exist(const MFSString & path)
 		return false;
 	}
 
-	return true;
+    if (entry)
+    {
+        delete entry;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool MFSDataSpace::ExistDirectory(const MFSString & path)
+{
+    MFSFSEntry * entry = nullptr;
+    try
+    {
+        entry = OpenFSEntry(path);
+    }
+    catch (const MFSDirectoryNotFoundException &)
+    {
+        return false;
+    }
+    catch (const MFSFileNotFoundException &)
+    {
+        return false;
+    }
+
+    if (entry)
+    {
+        bool ret = (entry->GetEntryType() == MFSFSEntryType::Directory);
+        delete entry;
+        return ret;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool MFSDataSpace::ExistFile(const MFSString & path)
+{
+    MFSFSEntry * entry = nullptr;
+    try
+    {
+        entry = OpenFSEntry(path);
+    }
+    catch (const MFSDirectoryNotFoundException &)
+    {
+        return false;
+    }
+    catch (const MFSFileNotFoundException &)
+    {
+        return false;
+    }
+
+    if (entry)
+    {
+        bool ret = (entry->GetEntryType() == MFSFSEntryType::File);
+        delete entry;
+        return ret;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
@@ -537,8 +601,10 @@ MFSFSEntry * MFSDataSpace::OpenFSEntry(const MFSString & path)
     std::vector<MFSString> pathNames = MFSPath::GetPathNames(absolute);
     MFSFSEntry * entry = OpenRootFSEntry();
     
-    for (const MFSString & name : pathNames)
+    for (uint32_t i = 0; i < pathNames.size(); ++i) 
     {
+        const MFSString & name = pathNames[i];
+
         MFSFSEntry * subEntry = entry->GetSubEntry(name);
         if (!subEntry)
             throw MFSDirectoryNotFoundException(name);
@@ -546,6 +612,16 @@ MFSFSEntry * MFSDataSpace::OpenFSEntry(const MFSString & path)
         {
             delete entry;
             entry = subEntry;
+
+            if (i != pathNames.size() - 1)
+            {
+                // Check whether current entry is a directory.
+                if (entry->GetEntryType() != MFSFSEntryType::Directory)
+                {
+                    delete entry;
+                    throw MFSDirectoryNotFoundException(name);
+                }
+            }
         }
     }
 

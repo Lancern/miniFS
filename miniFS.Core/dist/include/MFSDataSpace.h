@@ -35,6 +35,7 @@ class MFSDataSpace
         设置数据空间的当前工作目录。
         @exceptions
             MFSInvalidPathException 给定的路径不合法。
+            MFSDirectoryNotFoundException 指定的目录不存在。
 
     uint64_t MFSDataSpace::GetTotalSpaceInBytes() const noexcept
         获取数据空间的总字节大小。
@@ -53,6 +54,16 @@ class MFSDataSpace
 
     bool MFSDataSpace::Exist(const MFSString & path)
         检查给定的路径是否存在。
+        @exceptions
+            MFSInvalidPathException：给定的路径不是一个合法路径。
+
+    bool ExistDirectory(const MFSString & path)
+        检查给定的目录是否存在。
+        @exceptions
+            MFSInvalidPathException：给定的路径不是一个合法路径。
+
+    bool ExistFile(const MFSString & path)
+        检查给定的文件是否存在。
         @exceptions
             MFSInvalidPathException：给定的路径不是一个合法路径。
 
@@ -224,6 +235,9 @@ public:
     void Optimize() noexcept;
 
     bool Exist(const MFSString & path);
+    bool ExistDirectory(const MFSString & path);
+    bool ExistFile(const MFSString & path);
+
     MFSFile * OpenFile(const MFSString & path, bool createIfNotExist);
     MFSFile * CreateFile(const MFSString & path, bool openIfExist);
     void CreateDirectory(const MFSString & path, bool errorIfExist);
