@@ -120,10 +120,7 @@ bool MFSBlockAllocationBitmap::AllocBlock(uint32_t blockId)
     if (_bitmap->Test(blockId))
         return false;
 
-    _bitmap->Set(blockId);
-    if (blockId == _alloc)
-        LocateNextFreeBlock();
-
+    Set(blockId);
     return true;
 }
 

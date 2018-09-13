@@ -195,7 +195,7 @@ MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name, uint32_t fsnodeId)
     WalkDirectoryBlocks(callback);
     if (ret == nullptr)
     {
-        DWORD blockId = _partition.AllocateFrontBlock(_meta->common.firstBlockId);
+        DWORD blockId = _partition.AllocateFrontBlock(_meta->common.firstBlockId, true);
         if (blockId == MFSBlockAllocationBitmap::InvalidBlockId)
             return nullptr;
         _meta->common.firstBlockId = blockId;
@@ -302,7 +302,7 @@ bool MFSFSEntry::ExtendFileSize(uint64_t size)
     else
     {
         // Try allocate $required chained blocks.
-        uint32_t allocatedFirst = _partition.AllocateBlockChain(required);
+        uint32_t allocatedFirst = _partition.AllocateBlockChain(required, false);
         if (allocatedFirst == MFSBlockAllocationBitmap::InvalidBlockId)
             return false;
 
