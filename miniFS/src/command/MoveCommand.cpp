@@ -71,20 +71,28 @@ void MoveCommand::DeleteWindow(const MFSString & string) const
 	MFSString str = string;
 	if (!string.EndsWith(L"\\")) str = string + L"\\";
 	hFind = FindFirstFileW((str + L"*.*").GetRawString(), &findData);
-	do
+	if (hFind == (void *)0xffffffffffffffff)
 	{
-		MFSString temp = str + (MFSString)findData.cFileName;
-		if (wcscmp(findData.cFileName, L".") == 0 || wcscmp(findData.cFileName, L"..") == 0)
-			continue;
-		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		hFind = FindFirstFileW(str.Substring(0, str.GetLength() - 1).GetRawString(), &findData);
+		DeleteFile(str.Substring(0, str.GetLength() - 1).GetRawString());
+	}
+	else
+	{
+		do
 		{
-			DeleteWindow(temp);
-		}
-		else
-		{
-			DeleteFile(temp.GetRawString());
-		}
-	} while (FindNextFileW(hFind, &findData));
+			MFSString temp = str + (MFSString)findData.cFileName;
+			if (wcscmp(findData.cFileName, L".") == 0 || wcscmp(findData.cFileName, L"..") == 0)
+				continue;
+			if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				DeleteWindow(temp);
+			}
+			else
+			{
+				DeleteFile(temp.GetRawString());
+			}
+		} while (FindNextFileW(hFind, &findData));
+	}
 	FindClose(hFind);
 	RemoveDirectory(str.GetRawString());
 }
@@ -98,23 +106,30 @@ void MoveCommand::MoveWindow(const MFSString & string1, const MFSString & string
 	MFSString str2 = string2;
 	if (!string1.EndsWith(L"\\")) str1 = string1 + L"\\";
 	if (!string2.EndsWith(L"\\")) str2 = string2 + L"\\";
-	CreateDirectoryW(str2.GetRawString(), NULL);
 	hFind = FindFirstFileW((str1 + L"*.*").GetRawString(), &findData);
-	do
+	if (hFind == (void *)0xffffffffffffffff)
 	{
-		MFSString temp1 = str1 + (MFSString)findData.cFileName;
-		MFSString temp2 = str2 + (MFSString)findData.cFileName;
-		if (wcscmp(findData.cFileName, L".") == 0 || wcscmp(findData.cFileName, L"..") == 0)
-			continue;
-		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		MoveFile(str1.Substring(0, str1.GetLength() - 1).GetRawString(), str2.Substring(0, str2.GetLength() - 1).GetRawString());
+	}
+	else
+	{
+		CreateDirectoryW(str2.GetRawString(), NULL);
+		do
 		{
-			MoveWindow(temp1, temp2);
-		}
-		else
-		{
-			MoveFile(temp1.GetRawString(), temp2.GetRawString());
-		}
-	} while (FindNextFileW(hFind, &findData));
+			MFSString temp1 = str1 + (MFSString)findData.cFileName;
+			MFSString temp2 = str2 + (MFSString)findData.cFileName;
+			if (wcscmp(findData.cFileName, L".") == 0 || wcscmp(findData.cFileName, L"..") == 0)
+				continue;
+			if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				MoveWindow(temp1, temp2);
+			}
+			else
+			{
+				MoveFile(temp1.GetRawString(), temp2.GetRawString());
+			}
+		} while (FindNextFileW(hFind, &findData));
+	}
 	FindClose(hFind);
 	RemoveDirectory(str1.GetRawString());
 }
