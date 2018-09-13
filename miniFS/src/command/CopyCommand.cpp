@@ -36,7 +36,6 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 				if (wcscmp(fileinfo.name, L".") == 0 || wcscmp(fileinfo.name, L"..") == 0)
 					continue;
 				MFSString file = MFSString(fileinfo.name);
-				
 				try
 				{
 					Cpin(argv_0 + L"\\" + file, argv_1 + L"/" + file, flag);
@@ -50,7 +49,9 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 					}
 					else
 					{
-						throw;
+						FindClose(hFind);
+						_findclose(handle);
+						throw MFSFileAlreadyExistException(argv_0 + L"\\" + file);
 					}
 				}
 			} while (_wfindnext(handle, &fileinfo) == 0);
@@ -76,8 +77,16 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 		in.seekg(0, std::ios::end);
 		std::streampos ps = in.tellg();
 		in.seekg(0, std::ios::beg);
-
-		MFSFile * file = space->CreateFile(argv_1, false);
+		MFSFile * file;
+		try
+		{
+			file = space->CreateFile(argv_1, false);
+		}
+		catch(const MFSFileAlreadyExistException)
+		{
+			in.close();
+			throw;
+		}
 		try
 		{
 			file->SetFileSize(ps);

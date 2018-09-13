@@ -20,7 +20,7 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"当前未挂载空间\n");
 		return;
 	}
-	if (argv.size() != 2)
+	if (argv.size() != 2 && argv.size() != 3)
 	{
 		point->Log(L"指令输入有误\n");
 		return;
@@ -29,22 +29,38 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		CopyCommand cp;
 		DelCommand del;
-		if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
+		if (argv.size() == 3)
 		{
-			cp.Cpin(argv[0], argv[1]);
-			DeleteWindow(argv[0]);
-		}
-		else if (!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
-		{
-			cp.Cpout(argv[0], argv[1]);
-			del.Del(argv[0]);
-		}
-		else if (MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
-		{
-			MoveWindow(argv[0], argv[1]);
+			if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
+			{
+				if (argv[2] == L"-m")
+					cp.Cpin(argv[0], argv[1], 1);
+				else
+					cp.Cpin(argv[0], argv[1], 0);
+				DeleteWindow(argv[0]);
+			}
+			else
+				point->LogLine(L"指令输入有误");
 		}
 		else
-			space->Move(argv[0], argv[1]);
+		{
+			if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
+			{
+				cp.Cpin(argv[0], argv[1], 0);
+				DeleteWindow(argv[0]);
+			}
+			else if (!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
+			{
+				cp.Cpout(argv[0], argv[1]);
+				del.Del(argv[0]);
+			}
+			else if (MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
+			{
+				MoveWindow(argv[0], argv[1]);
+			}
+			else
+				space->Move(argv[0], argv[1]);
+		}
 	}
 	catch (MFSException & ex)
 	{
