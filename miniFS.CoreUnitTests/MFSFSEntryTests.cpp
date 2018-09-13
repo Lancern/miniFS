@@ -80,7 +80,7 @@ public:
         Logger::WriteMessage(L"Metadata of the new entry \"lancern\":");
         LogFSEntryMetadata(subEntry.get());
 
-        subEntry.release();
+        subEntry.reset(nullptr);
 
         if (!root->RemoveSubEntry(L"lancern"))
             Assert::Fail(L"ERR: Failed to remove sub-entry \"lancern\" from root directory failed.");
@@ -90,10 +90,10 @@ public:
         // Assert #4.
         Assert::IsFalse(root->ContainsSubEntry(L"lancern"), L"Existence check failed after removing sub entry.");
 
-        root.release();
-        partition.release();
-        fileBlockDevice.release();
-        fileDevice.release();
+        root.reset(nullptr);
+        partition.reset(nullptr);
+        fileBlockDevice.reset(nullptr);
+        fileDevice.reset(nullptr);
 
         CloseHandle(hFile);
     }

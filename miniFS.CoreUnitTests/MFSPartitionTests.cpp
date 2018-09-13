@@ -32,9 +32,9 @@ public:
         partition->Close();
         fileBlockDevice->Close();
         fileDevice->Close();
-        partition.release();
-        fileBlockDevice.release();
-        fileDevice.release();
+        partition.reset(nullptr);
+        fileBlockDevice.reset(nullptr);
+        fileDevice.reset(nullptr);
 
         LONG tmpFileSize = 128 * 1024 * 1024;
         if (SetFilePointer(hFile, tmpFileSize, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
@@ -90,9 +90,9 @@ public:
         partition->Close();
         fileBlockDevice->Close();
         fileDevice->Close();
-        partition.release();
-        fileBlockDevice.release();
-        fileDevice.release();
+        partition.reset(nullptr);
+        fileBlockDevice.reset(nullptr);
+        fileDevice.reset(nullptr);
 
         CloseHandle(hFile);
 	}

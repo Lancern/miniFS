@@ -329,7 +329,7 @@ void MFSDataSpace::CreateLink(const MFSString & src, const MFSString & target)
         throw MFSException(L"Unexpected null targetEntry.");
 
     uint32_t targetFsnodeId = targetEntry->GetFSNodeId();
-    targetEntry.release();
+    targetEntry.reset(nullptr);
 
     MFSString linkDirectory = MFSPath::GetDirectoryPath(target);
     MFSString linkFilename = MFSPath::GetFileName(target);
@@ -485,7 +485,7 @@ void MFSDataSpace::Move(const MFSString & source, const MFSString & destination)
 	else
 		throw MFSOutOfSpaceException();
 
-	srcFileEntry.release();
+	srcFileEntry.reset(nullptr);
 	bool flag = srcDirEntry->RemoveSubEntry(srcFilename);
 	if (!flag)
 		throw MFSException(L"unexpected RemoveSubEntry failed.");
