@@ -51,7 +51,7 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 					{
 						FindClose(hFind);
 						_findclose(handle);
-						throw MFSFileAlreadyExistException(argv_0 + L"\\" + file);
+						throw;
 					}
 				}
 			} while (_wfindnext(handle, &fileinfo) == 0);
@@ -84,6 +84,7 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 		}
 		catch(const MFSFileAlreadyExistException)
 		{
+			FindClose(hFind);
 			in.close();
 			throw;
 		}
@@ -161,7 +162,6 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 		point->Log(L"\n");
 		in.close();
 		outStream->Close();
-
 	}
 	FindClose(hFind);
 	cursor.bVisible = true;
