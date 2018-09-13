@@ -16,14 +16,27 @@ void MkdirCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"当前未挂载空间\n");
 		return;
 	}
-	if (argv.size() != 1)
+	if (argv.size() < 1 || argv.size() > 2)
 	{
 		point->Log(L"指令输入有误\n");
 		return;
 	}
 	try 
 	{
-		space->CreateDirectory(argv[0],true);
+		if(argv.size() == 1)
+			space->CreateDirectory(argv[0],true);
+		else
+		{
+			wchar_t a[5];
+			for (int i = 0; i < argv[1].ParseInteger<int>() ; i++)
+			{
+				wsprintfW(a, L"%d", i);
+				MFSFile * file = space->CreateFile(a, false);
+				file->SetFileSize(1);
+				point->LogLine(a);
+				delete file;
+			}
+		}
 	}
 	catch(MFSException & ex)
 	{
