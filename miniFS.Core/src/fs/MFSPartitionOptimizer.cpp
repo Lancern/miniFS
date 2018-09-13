@@ -20,6 +20,9 @@ void MFSPartitionOptimizer::Optimize()
             baseBlock = _partition.GetNextChainedBlock(baseBlock))
         {
             uint32_t nextBlock = _partition.GetNextChainedBlock(baseBlock);
+			if (nextBlock == MFSFileAllocationTable::InvalidBlockId)
+				break;
+
             _partition.SetNextChainedBlock(baseBlock, OptimizeBlock(nextBlock));
         }
     }

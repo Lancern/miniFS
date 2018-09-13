@@ -23,11 +23,25 @@ void DelCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	try
 	{
-		if (argv.size() == 2 && argv[2] == L"-f") {
-			space->Delete(argv[0]);
+		if (argv.size() == 2 && argv[1] == L"-f") {
+			Del(argv[0]);
+		}
+		else if (argv.size() == 2 && argv[0] == L"-f")
+		{
+			Del(argv[1]);
 		}
 		else if(argv.size() == 1)
 		{
+			if (space->GetEntryInfo(argv[0]).IsDirectory)
+			{
+				if (space->GetDirectories(argv[0]).size() || space->GetFiles(argv[0]).size())
+				{
+					point->Log(L"文件夹不为空，无法删除\n");
+					return;
+				}
+				else
+					Del(argv[0]);
+			}
 			Del(argv[0]);
 		}
 		else
