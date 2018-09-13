@@ -12,6 +12,11 @@ MFSPartition * MFSPartition::Internals::GetPartition() const
     return _partition;
 }
 
+MFSFSMasterInfo MFSPartition::Internals::GetMasterInfo() const
+{
+    return _partition->_master;
+}
+
 MFSBlockAllocationBitmap * MFSPartition::Internals::GetBAB() const
 {
     return _partition->_blockAllocation.get();
@@ -109,12 +114,12 @@ uint32_t MFSPartition::Internals::AllocateFrontBlock(uint32_t firstBlockId, bool
 
 uint32_t MFSPartition::Internals::AllocateBlockChain(uint32_t numberOfBlocks, bool initialization)
 {
-    if (numberOfBlocks == 0)
+    if (numberOfBlocks == 0 || numberOfBlocks > _partition->_master.freeBlocks)
         return MFSBlockAllocationBitmap::InvalidBlockId;
 
     uint32_t firstBlockId = AllocateDeviceBlock(initialization);
     if (firstBlockId == MFSBlockAllocationBitmap::InvalidBlockId)
-        return firstBlockId;
+        return MFSBlockAllocationBitmap::InvalidBlockId;
 
     --numberOfBlocks;
     while (numberOfBlocks > 0)

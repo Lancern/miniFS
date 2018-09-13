@@ -66,6 +66,18 @@ class MFSPartition::Internals
     MFSPartition * MFSPartition::Internals::GetPartition() const
         获取内部的 MFSPartition 对象。
 
+    MFSFSMasterInfo MFSPartition::Internals::GetMasterInfo() const
+        获取内部的 MFSPartition 对象的分区主记录。
+
+    MFSBlockAllocationBitmap * MFSPartition::Internals::GetBAB() const
+        获取内部的 MFSPartition 对象的 BAB。
+
+    MFSFileAllocationTable * GetFAT() const;
+        获取内部的 MFSPartition 对象的 FAT。
+
+    MFSFSNodePool * GetFSNodePool() const;
+        获取内部的 MFSPartition 对象的文件系统节点池。
+
     uint32_t MFSPartition::Internals::AllocateDeviceBlock()
         在内部的 MFSPartition 对象上分配一个设备块并返回分配的设备块编号并建立其 FAT 块链。
         若分配失败，返回 MFSBlockAllocationBitmap::InvalidBlockId。
@@ -199,6 +211,7 @@ public:
         MFSPartition * _partition;
 
         MFSPartition * GetPartition() const;
+        MFSFSMasterInfo GetMasterInfo() const;
         MFSBlockAllocationBitmap * GetBAB() const;
         MFSFileAllocationTable * GetFAT() const;
         MFSFSNodePool * GetFSNodePool() const;

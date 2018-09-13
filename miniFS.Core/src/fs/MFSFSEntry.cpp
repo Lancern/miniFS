@@ -277,6 +277,9 @@ bool MFSFSEntry::TruncateFileSize(uint64_t size)
 bool MFSFSEntry::ExtendFileSize(uint64_t size)
 {
     uint32_t blockSize = _partition.GetPartition()->GetDevice()->GetBlockSize();
+    if (CEIL_DIV(size, blockSize) > _partition.GetMasterInfo().freeBlocks)
+        return false;
+
     uint32_t extendedBlocksCount = static_cast<uint32_t>(CEIL_DIV(size, blockSize));
 
     uint32_t blockPtr = _meta->common.firstBlockId;
