@@ -148,7 +148,8 @@ void MFSBlockAllocationBitmap::Reset(uint32_t pos)
 void MFSBlockAllocationBitmap::LocateNextFreeBlock()
 {
     bool found = false;
-    for (uint32_t i = _alloc + 1; i != _alloc; i = (i + 1) % _bitmap->Size())
+    for (uint32_t i = (_alloc + 1) % _bitmap->Size();
+		i != _alloc; i = (i + 1) % _bitmap->Size())
     {
         if (!_bitmap->Test(i))
         {
