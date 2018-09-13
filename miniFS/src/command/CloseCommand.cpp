@@ -2,7 +2,7 @@
 
 bool CloseCommand::Accept(const MFSString & string) const
 {
-	if (string == L"close")
+	if (string == L"close" || string == L"quit")
 		return true;
 	else return false;
 }

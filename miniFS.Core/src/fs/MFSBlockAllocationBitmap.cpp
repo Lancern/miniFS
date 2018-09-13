@@ -65,7 +65,7 @@ bool MFSBlockAllocationBitmap::Bitmap::Test(uint32_t pos) const
 
 uint32_t MFSBlockAllocationBitmap::Bitmap::Size() const
 {
-	return _bitmap.size() * BIT_PACK_SIZE;
+	return static_cast<uint32_t>(_bitmap.size()) * BIT_PACK_SIZE;
 }
 
 void MFSBlockAllocationBitmap::Bitmap::Set(uint32_t pos, bool value)

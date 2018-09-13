@@ -212,9 +212,10 @@ bool MFSFSEntry::RemoveSubEntry(const MFSString & name)
 
 	auto callback = [&](WalkDirectoryBlockParameters & params)
 	{
-		if (params.blockObject->EraseDir(name) != MFSFSNodePool::InvalidFSNodeId)
+		uint32_t subEntryFsNodeId = params.blockObject->EraseDir(name);
+		if (subEntryFsNodeId != MFSFSNodePool::InvalidFSNodeId)
 		{
-            _partition.FreeEntryMeta(_fsnodeId);
+            _partition.FreeEntryMeta(subEntryFsNodeId);
             --_meta->spec.directoryMeta.childCount;
             if (params.blockObject->Empty())
             {
