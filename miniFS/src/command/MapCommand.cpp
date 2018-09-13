@@ -28,7 +28,7 @@ void MapCommand::Action(const std::vector<MFSString> & argv) const
 		blockId = file->GetAllBlocksId();
 		point->LogLine(L"Block id:");
 		if (blockId.size() == 0)
-			point->Log(L"None");
+			point->LogLine(L"None");
 		int i = 0;
 		for (auto id : blockId)
 		{

@@ -24,7 +24,14 @@ void StatCommand::Action(const std::vector<MFSString> & argv) const
 	try
 	{
 		MFSEntryInfo info = space->GetEntryInfo(argv[0]);
-		if (info.IsHidden) return;
+		if (info.IsHidden)
+		{
+			if (!info.IsDirectory)
+				point->Log(L"文件");
+			else
+				point->Log(L"文件夹");
+			point->LogLine(L"已隐藏");
+		}
 		point->LogLine(L"创建时间: " + info.CreationTime.GetDateTimeString());
 		point->LogLine(L"上次访问时间: " + info.LastAccessTime.GetDateTimeString());
 		point->LogLine(L"上次修改时间: " + info.LastModificationTime.GetDateTimeString());
