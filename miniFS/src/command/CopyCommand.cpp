@@ -44,11 +44,14 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 				{
 					if (flag)
 					{
+						FindClose(hFind);
 						space->Delete(argv_1 + L"/" + file);
 						Cpin(argv_0 + L"\\" + file, argv_1 + L"/" + file, flag);
 					}
 					else
 					{
+						cursor.bVisible = true;
+						SetConsoleCursorInfo(hand, &cursor);
 						FindClose(hFind);
 						_findclose(handle);
 						throw;
@@ -64,6 +67,8 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 		if (!in.is_open())
 		{
 			point->Log(L"文件以二进制形式打开失败\n");
+			cursor.bVisible = true;
+			SetConsoleCursorInfo(hand, &cursor);
 			return false;
 		}
 		cursor.bVisible = false;
@@ -82,11 +87,13 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 		{
 			file = space->CreateFile(argv_1, false);
 		}
-		catch(const MFSFileAlreadyExistException)
+		catch(MFSFileAlreadyExistException)
 		{
 			FindClose(hFind);
 			in.close();
-			throw;
+			cursor.bVisible = true;
+			SetConsoleCursorInfo(hand, &cursor);
+			throw MFSFileAlreadyExistException(argv_1);
 		}
 		try
 		{
@@ -95,6 +102,8 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 		catch (MFSException )
 		{
 			space->Delete(file->GetFileName());
+			cursor.bVisible = true;
+			SetConsoleCursorInfo(hand, &cursor);
 			throw;
 		}
 		
@@ -208,6 +217,8 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 		if (!out.is_open())
 		{
 			point->Log(L"文件以二进制形式打开失败\n");
+			cursor.bVisible = true;
+			SetConsoleCursorInfo(hand, &cursor);
 			return false;
 		}
 		cursor.bVisible = false;
