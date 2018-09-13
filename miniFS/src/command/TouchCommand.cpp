@@ -26,6 +26,7 @@ void TouchCommand::Action(const std::vector<MFSString> & argv) const
 		MFSFile * file = space->CreateFile(argv[0], false);
 		if(argv.size() == 2)
 			file->SetFileSize(argv[1].ParseInteger<int>());
+		delete file;
 	}
 	catch(MFSException & ex)
 	{

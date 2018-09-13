@@ -29,14 +29,23 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 	{
 		CopyCommand cp;
 		DelCommand del;
+		bool flag = false;
 		if (argv.size() == 3)
 		{
+			if (argv[2] == L"-m")
+				flag = true;
 			if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
 			{
-				if (argv[2] == L"-m")
-					cp.Cpin(argv[0], argv[1], 1);
-				else
-					cp.Cpin(argv[0], argv[1], 0);
+				try
+				{
+					cp.Cpin(argv[0], argv[1], flag);
+				}
+				catch (MFSException & ex)
+				{
+					space->Delete(argv[1]);
+					cp.Cpin(argv[0], argv[1], flag);
+					throw;
+				}
 				DeleteWindow(argv[0]);
 			}
 			else
@@ -64,7 +73,7 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 	}
 	catch (MFSException & ex)
 	{
-		point->Log(ex.GetExceptMessage() + L"\n");;
+		point->Log(ex.GetExceptMessage() + L"\n");
 	}
 }
 

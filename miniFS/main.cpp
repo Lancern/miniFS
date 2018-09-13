@@ -11,6 +11,7 @@ void f()
 	CloseCommand * close = new CloseCommand();
 	std::vector<MFSString> a;
 	close->Action(a);
+	delete close;
 	return;
 }
 
