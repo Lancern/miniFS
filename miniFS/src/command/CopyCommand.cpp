@@ -13,7 +13,7 @@ bool CopyCommand::Accept(const MFSString & string) const
 	else return false;
 }
 
-bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
+bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const bool flag) const
 {
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
@@ -38,7 +38,23 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 				if (wcscmp(fileinfo.name, L".") == 0 || wcscmp(fileinfo.name, L"..") == 0)
 					continue;
 				MFSString file = MFSString(fileinfo.name);
-				Cpin(argv_0 + L"\\" + file, argv_1 + L"/" +file);
+				
+				try
+				{
+					Cpin(argv_0 + L"\\" + file, argv_1 + L"/" + file, flag);
+				}
+				catch (const MFSFileAlreadyExistException)
+				{
+					if (flag)
+					{
+						space->Delete(argv_1 + L"/" + file);
+						Cpin(argv_0 + L"\\" + file, argv_1 + L"/" + file, flag);
+					}
+					else
+					{
+						throw;
+					}
+				}
 			} while (_wfindnext(handle, &fileinfo) == 0);
 		}
 		_findclose(handle);
@@ -46,7 +62,7 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 	else
 	{
 		std::ifstream in(argv_0.GetRawString(), std::ios::binary);
-		if (!in)
+		if (!in.is_open())
 		{
 			point->Log(L"文件以二进制形式打开失败\n");
 			return false;
@@ -62,7 +78,16 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 		in.seekg(0, std::ios::beg);
 
 		MFSFile * file = space->CreateFile(argv_1, false);
-		file->SetFileSize(ps);
+		try
+		{
+			file->SetFileSize(ps);
+		}
+		catch (MFSException )
+		{
+			space->Delete(file->GetFileName());
+			throw;
+		}
+		
 		MFSStream *outStream = file->OpenStream();
 
 		char * Buffer = new char[4194305];
@@ -173,7 +198,7 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 		MFSStream *outStream = file->OpenStream();
 
 		std::ofstream out(argv_1.GetRawString(), std::ios::binary);
-		if (!out)
+		if (!out.is_open())
 		{
 			point->Log(L"文件以二进制形式打开失败\n");
 			return false;
@@ -250,18 +275,30 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 {
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
+	bool flag = false;
 	if (space == NULL)
 	{
 		point->Log(L"当前未挂载空间");
 		return;
 	}
-	if (argv.size() != 2)
+	if (argv.size() < 2 || argv.size() > 3)
 	{
 		point->Log(L"指令输入有误\n");
 		return;
 	}
 	try
 	{
+		if (argv.size() == 3)
+		{
+			if (argv[2] == L"-m")
+			{
+				flag = true;
+			}
+			else {
+				point->Log(L"指令输入有误\n");
+				return;
+			}
+		}
 		if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
 		{
 			if (_waccess(argv[0].GetRawString(), 0) == -1)
@@ -269,7 +306,22 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 				point->Log(L"路径不存在\n");
 				return;
 			}
-			Cpin(argv[0], argv[1]);
+			try
+			{
+				Cpin(argv[0], argv[1], flag);
+			}
+			catch (const MFSFileAlreadyExistException)
+			{
+				if (flag)
+				{
+					space->Delete(argv[1]);
+					Cpin(argv[0], argv[1], flag);
+				}
+				else
+				{
+					throw;
+				}
+			}
 		}
 		else if (!MFSPath::IsOSPath(argv[0]) && MFSPath::IsOSPath(argv[1]))
 		{
@@ -290,7 +342,7 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 		}
 		else
 		{
-			Copy(argv[0], argv[1]);
+			Copy(argv[0], argv[1], flag);
 		}
 
 	}
@@ -301,7 +353,7 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 	
 }
 
-void CopyCommand::Copy(const MFSString & space1, const MFSString & space2) const
+void CopyCommand::Copy(const MFSString & space1, const MFSString & space2, const bool flag) const
 {
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	if (space->GetEntryInfo(space1).IsDirectory)
@@ -310,17 +362,43 @@ void CopyCommand::Copy(const MFSString & space1, const MFSString & space2) const
 		std::vector<MFSString> fileList = space->GetFiles(space1);
 		for (MFSString file : fileList)
 		{
-			Copy(space1 + L"/" + file, space2 + L"/" + file);
+			try
+			{
+				Copy(space1 + L"/" + file, space2 + L"/" + file, flag);
+			}
+			catch (MFSException )
+			{
+				space->Delete(space2 + L"/" + file);
+				throw;
+			}
 		}
 		std::vector<MFSString> directoryList = space->GetDirectories(space1);
 		for (MFSString file : directoryList)
 		{
-			Copy(space1 + L"/" + file, space2 + L"/" + file);
+			Copy(space1 + L"/" + file, space2 + L"/" + file, flag);
 		}
 	}
 	else
 	{
-		space->Copy(space1, space2);
+		try
+		{
+			space->Copy(space1, space2);
+		}
+		catch (const MFSFileAlreadyExistException)
+		{
+			if (flag)
+			{
+				space->Delete(space2);
+				space->Copy(space1, space2);
+			}
+			else
+				throw;
+		}
+		catch (MFSException)
+		{
+			space->Delete(space2);
+			throw;
+		}
 	}
 }
 
