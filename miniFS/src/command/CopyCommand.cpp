@@ -23,8 +23,6 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 	COORD coord;
 	CONSOLE_CURSOR_INFO cursor;
 	GetConsoleCursorInfo(hand, &cursor);
-	cursor.bVisible = false;
-	SetConsoleCursorInfo(hand, &cursor);
 	HANDLE hFind = FindFirstFileW(argv_0.GetRawString(), &FindFileData);
 	if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 	{
@@ -51,6 +49,8 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1) const
 			point->Log(L"文件以二进制形式打开失败\n");
 			return false;
 		}
+		cursor.bVisible = false;
+		SetConsoleCursorInfo(hand, &cursor);
 		GetConsoleScreenBufferInfo(hand, &csbi);
 		coord.X = 0;
 		coord.Y = csbi.dwCursorPosition.Y;
@@ -142,8 +142,6 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 	COORD coord;
 	CONSOLE_CURSOR_INFO cursor;
 	GetConsoleCursorInfo(hand, &cursor);
-	cursor.bVisible = false;
-	SetConsoleCursorInfo(hand, &cursor);
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	MFSDataSpace *space = MFSDataSpace::GetActiveDataSpace();
 	if (space->GetEntryInfo(argv_0).IsDirectory)
@@ -178,7 +176,8 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 			point->Log(L"文件以二进制形式打开失败\n");
 			return false;
 		}
-
+		cursor.bVisible = false;
+		SetConsoleCursorInfo(hand, &cursor);
 		char * Buffer = new char[4194305];
 		uint32_t n = ps % 4194304;
 		uint64_t m = ps / 4194304 + (n ? 1 : 0);
@@ -243,6 +242,8 @@ bool CopyCommand::Cpout(const MFSString & argv_0, const MFSString & argv_1) cons
 		out.close();
 		outStream->Close();
 	}
+	cursor.bVisible = true;
+	SetConsoleCursorInfo(hand, &cursor);
 	return true;
 }
 
