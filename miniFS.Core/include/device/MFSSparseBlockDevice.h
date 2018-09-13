@@ -13,6 +13,7 @@ public:
     MFSSparseDevice * GetSparseDevice() const;
 
     bool ZeroBlock(uint64_t blockId);
+    bool ZeroBlocks(uint64_t startBlock, uint64_t blockCount);
 
 private:
     MFSSparseDevice * _sparseDevice;

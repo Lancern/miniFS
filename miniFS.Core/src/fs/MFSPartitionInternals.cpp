@@ -86,11 +86,6 @@ bool MFSPartition::Internals::FreeDeviceBlock(uint32_t blockId)
     if (_partition->_blockAllocation->FreeBlock(blockId))
     {
         ++_partition->_master.freeBlocks;
-
-        // Sparse file support.
-        MFSSparseBlockDevice * sparseDevice = dynamic_cast<MFSSparseBlockDevice *>(_partition->_device);
-        if (sparseDevice)
-            sparseDevice->ZeroBlock(blockId);
     }
     return true;
 }

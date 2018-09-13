@@ -1,4 +1,5 @@
 #include "../../include/fs/MFSPartition.h"
+#include "../../include/device/MFSSparseBlockDevice.h"
 
 
 MFSPartitionOptimizer::MFSPartitionOptimizer(MFSPartition::Internals partition)
@@ -21,6 +22,15 @@ void MFSPartitionOptimizer::Optimize()
             uint32_t nextBlock = _partition.GetNextChainedBlock(baseBlock);
             _partition.SetNextChainedBlock(baseBlock, OptimizeBlock(nextBlock));
         }
+    }
+
+    // Sparse file support.
+    MFSSparseBlockDevice * sparseBlockDevice 
+        = dynamic_cast<MFSSparseBlockDevice *>(_partition.GetPartition()->GetDevice());
+    if (sparseBlockDevice)
+    {
+        MFSFSMasterInfo masterInfo = _partition.GetMasterInfo();
+        sparseBlockDevice->ZeroBlocks(masterInfo.totalBlocks - masterInfo.freeBlocks, masterInfo.freeBlocks);
     }
 }
 
