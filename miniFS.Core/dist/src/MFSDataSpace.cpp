@@ -21,7 +21,7 @@
 
 #define MFS_DATASPACE_MIN_SIZE      uint64_t(128ull * 1024 * 1024)
 #define MFS_DATASPACE_MAX_SIZE      uint64_t(4ull * 1024 * 1024 * 1024)
-#define MFS_DEVICE_BLOCK_SIZE       uint64_t(4ull * 1024 * 1024)
+#define MFS_DEVICE_BLOCK_SIZE       uint64_t(4ull * 1024)
 
 
 MFSDataSpace::MFSDataSpace(const MFSString & osFileName)
