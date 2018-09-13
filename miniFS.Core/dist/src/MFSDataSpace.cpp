@@ -228,7 +228,7 @@ MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
             if (!fileEntry)
                 throw MFSOutOfSpaceException();
 
-            return new MFSFile(fileEntry);
+            return new MFSFile(fileEntry, path);
         }
     }
     else
@@ -241,7 +241,7 @@ MFSFile * MFSDataSpace::OpenFile(const MFSString & path, bool createIfNotExist)
         if (fileEntry->GetEntryType() != MFSFSEntryType::File)
             throw MFSDirectoryAlreadyExistException(path);
 
-        return new MFSFile(fileEntry);
+        return new MFSFile(fileEntry, path);
     }
 }
 
@@ -272,7 +272,7 @@ MFSFile * MFSDataSpace::CreateFile(const MFSString & path, bool openIfExist)
             if (fileFsEntry->GetEntryType() != MFSFSEntryType::File)
                 throw MFSDirectoryAlreadyExistException(path);
 
-            return new MFSFile(directoryFsEntry.get());
+            return new MFSFile(directoryFsEntry.get(), path);
         }
     }
     else
@@ -283,7 +283,7 @@ MFSFile * MFSDataSpace::CreateFile(const MFSString & path, bool openIfExist)
             throw MFSOutOfSpaceException();
 
         fileFsEntry->SetEntryType(MFSFSEntryType::File);
-        return new MFSFile(fileFsEntry);
+        return new MFSFile(fileFsEntry, path);
     }
 }
 

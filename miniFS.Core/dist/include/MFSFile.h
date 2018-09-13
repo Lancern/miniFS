@@ -14,6 +14,9 @@ class MFSFile
 
     成员函数：
 
+    MFSString GetFileName() const noexcept
+        获取文件名。
+
     uint64_t MFSFile::GetFileSize() const noexcept
         获取文件的字节大小。
 
@@ -36,6 +39,8 @@ class MFSFile
 public:
     ~MFSFile();
 
+    MFSString GetFileName() const noexcept;
+
     uint64_t GetFileSize() const noexcept;
     void SetFileSize(uint64_t size);
 
@@ -45,7 +50,9 @@ public:
 
 private:
 	MFSFSEntry * _entry;
-    MFSFile(MFSFSEntry * entry);
+    MFSString _filename;
+
+    MFSFile(MFSFSEntry * entry, const MFSString & filename);
 
     friend class MFSDataSpace;
 };
