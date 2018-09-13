@@ -44,6 +44,7 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 				{
 					if (flag)
 					{
+						FindClose(hFind);
 						space->Delete(argv_1 + L"/" + file);
 						Cpin(argv_0 + L"\\" + file, argv_1 + L"/" + file, flag);
 					}
@@ -82,10 +83,11 @@ bool CopyCommand::Cpin(const MFSString & argv_0, const MFSString & argv_1, const
 		{
 			file = space->CreateFile(argv_1, false);
 		}
-		catch(const MFSFileAlreadyExistException)
+		catch(MFSFileAlreadyExistException)
 		{
+			FindClose(hFind);
 			in.close();
-			throw;
+			throw MFSFileAlreadyExistException(argv_1);
 		}
 		try
 		{
