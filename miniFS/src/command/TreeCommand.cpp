@@ -63,7 +63,7 @@ void TreeCommand::tree(int depth, std::vector<bool> & flag) const
 			point->Log(L"©¸©¤©¤ ");
 			if (depth == 0)
 				flag[0] = 0;
-			if (flag.size() > depth)
+			if (static_cast<int>(flag.size()) > depth)
 				flag[depth] = 0;
 			else
 				flag.push_back(0);
