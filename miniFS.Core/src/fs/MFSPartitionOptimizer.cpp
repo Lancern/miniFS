@@ -39,7 +39,7 @@ void MFSPartitionOptimizer::Optimize()
 
 uint32_t MFSPartitionOptimizer::OptimizeBlock(uint32_t blockId)
 {
-    uint32_t targetBlockId = _partition.GetAvailableFSNodeId();
+    uint32_t targetBlockId = _partition.GetNextAvailableDeviceBlockId();
     if (targetBlockId != MFSBlockAllocationBitmap::InvalidBlockId &&
         targetBlockId < blockId)
     {

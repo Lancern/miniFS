@@ -172,7 +172,7 @@ void MFSPartition::Internals::SetNextChainedBlock(uint32_t blockId, uint32_t nex
     _partition->_blockChain->Set(blockId, nextBlockId);
 }
 
-uint32_t MFSPartition::Internals::GetAvailableFSNodeId()
+uint32_t MFSPartition::Internals::GetNextAvailableFSNodeId()
 {
     return _partition->_fsnodePool->GetAvailableFSNodeId();
 }

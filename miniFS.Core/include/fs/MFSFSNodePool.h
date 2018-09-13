@@ -16,7 +16,7 @@ class MFSFSNodePool
     MFSFSNodePool::MFSFSNodePool(uint32_t numberOfNodes)
         从节点池中的节点数量初始化 MFSFSNodePool 类的新实例。
 
-    uint32_t GetAvailableFSNodeId()
+    uint32_t GetNextAvailableFSNodeId()
         获取节点池中下一个可用的文件系统节点编号。若没有可用的编号，返回 InvalidFSNodeId。
 
     bool Allocate(uint32_t fsnodeId)

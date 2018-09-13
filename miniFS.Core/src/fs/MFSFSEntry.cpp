@@ -165,7 +165,7 @@ MFSFSEntry * MFSFSEntry::GetSubEntry(const MFSString & name)
 
 MFSFSEntry * MFSFSEntry::AddSubEntry(const MFSString & name)
 {
-    uint32_t fsnodeId = _partition.GetAvailableFSNodeId();
+    uint32_t fsnodeId = _partition.GetNextAvailableFSNodeId();
     if (fsnodeId == MFSFSNodePool::InvalidFSNodeId)
         return nullptr;
 

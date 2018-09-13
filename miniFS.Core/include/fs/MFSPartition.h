@@ -126,7 +126,7 @@ class MFSPartition::Internals
     uint32_t MFSPartition::Internals::GetNextChainedBlock(uint32_t blockId) const
         获取内部 MFSPartition 对象上指定设备块在块链上的下一块编号。
 
-    uint32_t MFSPartition::Internals::GetAvailableFSNodeId()
+    uint32_t MFSPartition::Internals::GetNextAvailableFSNodeId()
         在内部的 MFSPartition 对象上获取下一个可用的文件系统节点的编号。
         若没有可用的文件系统节点，返回 MFSFSNodePool::InvalidFSNodeId。
 
@@ -233,7 +233,7 @@ public:
         uint32_t GetNextChainedBlock(uint32_t blockId) const;
         void SetNextChainedBlock(uint32_t blockId, uint32_t nextBlockId);
 
-        uint32_t GetAvailableFSNodeId();
+        uint32_t GetNextAvailableFSNodeId();
         bool AllocateEntryMeta(uint32_t fsnodeId);
         MFSFSEntryMeta * GetEntryMeta(uint32_t fsnodeId) const;
         bool FreeEntryMeta(uint32_t fsnodeId);
