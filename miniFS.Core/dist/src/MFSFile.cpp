@@ -27,7 +27,12 @@ MFSFile::~MFSFile()
 {
 }
 
-MFSFile::MFSFile(MFSFSEntry * entry)
-	: _entry(entry)
+MFSString MFSFile::GetFileName() const noexcept
+{
+    return _filename;
+}
+
+MFSFile::MFSFile(MFSFSEntry * entry, const MFSString & filename)
+	: _entry(entry), _filename(filename)
 {
 }
