@@ -302,6 +302,11 @@ void CopyCommand::Action(const std::vector<MFSString> & argv) const
 		point->Log(L"当前未挂载空间");
 		return;
 	}
+	if (!space->IsFormatted())
+	{
+		point->Log(L"当前空间未初始化\n");
+		return;
+	}
 	if (argv.size() < 2 || argv.size() > 3)
 	{
 		point->Log(L"指令输入有误\n");
