@@ -45,7 +45,7 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 				{
 					cp.Cpin(argv[0], argv[1], flag);
 				}
-				catch (MFSException & ex)
+				catch (MFSException &)
 				{
 					space->Delete(argv[1]);
 					cp.Cpin(argv[0], argv[1], flag);

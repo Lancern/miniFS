@@ -37,6 +37,7 @@ class MFSBlockStream
 {
 public:
     MFSBlockStream(MFSBlockDevice * device);
+    ~MFSBlockStream();
     
     bool CanRead() const override;
     bool CanWrite() const override;

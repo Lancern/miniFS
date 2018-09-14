@@ -1,13 +1,15 @@
 #include "../../include/stream/MFSBlockStream.h"
 
 MFSBlockStream::MFSBlockStream(MFSBlockDevice * device)
-    : _device(device), _insideOffset(0), _blockOffset(0), _dirty(false)
+    : _device(device), _buffer(new uint8_t[device->GetBlockSize()]), _insideOffset(0), _blockOffset(0), _dirty(false)
 {
-    uint8_t * buffer = new uint8_t[device->GetBlockSize()];
-    _buffer.reset(buffer);
-
     // Load first block.
-    device->ReadBlock(buffer, 0);
+    device->ReadBlock(_buffer.get(), 0);
+}
+
+MFSBlockStream::~MFSBlockStream()
+{
+    Close();
 }
 
 bool MFSBlockStream::CanRead() const
@@ -121,7 +123,7 @@ void MFSBlockStream::Close()
     {
         Flush();
         _device = NULL;
-        _buffer.release();
+        _buffer.reset(nullptr);
     }
 }
 
