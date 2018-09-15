@@ -13,7 +13,7 @@ void DelCommand::Action(const std::vector<MFSString> & argv) const
 	MFSConsole *point = MFSConsole::GetDefaultConsole();
 	if (space == NULL)
 	{
-		point->Log(L"当前未挂载空间");
+		point->Log(L"当前未挂载空间\n");
 		return;
 	}
 	if (!space->IsFormatted())
