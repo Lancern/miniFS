@@ -55,7 +55,7 @@ void HelpCommand::AllHelp() const
 	point->Log(L"mkdir			创建目录\n");
 	point->Log(L"mount			卸载当前活动的数据空间，然后挂载给定的数据空间\n");
 	point->Log(L"mv/move			移动文件或目录\n");
-	point->Log(L"opt			值行分区碎片整理\n");
+	point->Log(L"opt			执行分区碎片整理\n");
 	point->Log(L"unmount			保存所有的更改并卸载当前活动的数据空间\n");
 	point->Log(L"cls			清空当前屏幕中的显示\n");
 	return;

@@ -1,5 +1,5 @@
 #include "../../include/command/MkdirCommand.h"
-
+#include <string>
 bool MkdirCommand::Accept(const MFSString & string) const
 {
 	if (string == L"mkdir")
@@ -28,13 +28,27 @@ void MkdirCommand::Action(const std::vector<MFSString> & argv) const
 		else
 		{
 			wchar_t a[5];
-			for (int i = 0; i < argv[1].ParseInteger<int>() ; i++)
+			for (int i = 1; i < argv[1].ParseInteger<int>() ; i++)
 			{
 				wsprintfW(a, L"%d", i);
-				MFSFile * file = space->CreateFile(a, false);
-				file->SetFileSize(1);
-				point->LogLine(a);
-				delete file;
+				//MFSFile * file = space->CreateFile(a, false);
+				//file->SetFileSize(1);
+
+
+				space->CreateDirectory(a,true);
+				if(i%1000 == 0)
+					point->LogLine(a);
+
+				//delete file;
+				//if (i % 1000 == 0)
+				//{
+				//	space->Close();
+				//	delete space;
+				//	MFSDataSpace::SetActiveDataSpace(NULL);
+				//	space = new MFSDataSpace(L"F:\files\test1.dat");
+				//	MFSDataSpace::SetActiveDataSpace(space);
+				//	point->LogLine(L"mount");
+				//}
 			}
 		}
 	}

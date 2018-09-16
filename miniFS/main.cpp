@@ -38,6 +38,10 @@ int main()
 			if (paragrameter.StartsWith(L"\"") && paragrameter.EndsWith(L"\""))
 				paragrameter = paragrameter.Substring(1, paragrameter.GetLength() - 2);
 		}
+		if (subString.size() == 0)
+		{
+			continue;
+		}
 		MFSTestunit *tmp = command.Chead->link;
 		while (tmp)
 		{

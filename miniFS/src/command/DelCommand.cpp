@@ -42,7 +42,10 @@ void DelCommand::Action(const std::vector<MFSString> & argv) const
 				else
 					Del(argv[0]);
 			}
-			Del(argv[0]);
+			else
+			{
+				Del(argv[0]);
+			}
 		}
 		else
 		{

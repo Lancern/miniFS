@@ -55,6 +55,11 @@ void MoveCommand::Action(const std::vector<MFSString> & argv) const
 		{
 			if (MFSPath::IsOSPath(argv[0]) && !MFSPath::IsOSPath(argv[1]))
 			{
+				if (_waccess(argv[0].GetRawString(), 0) == -1)
+				{
+					point->Log(L"Â·¾¶²»´æÔÚ\n");
+					return;
+				}
 				cp.Cpin(argv[0], argv[1], 0);
 				DeleteWindow(argv[0]);
 			}
